@@ -1,16 +1,9 @@
----
-layout: default
-id: index
-title: Meditaciones grupales
----
 <h2>En grupo meditamos mejor</h2>
-<div id="charts">
-	<canvas id="myChart" width="400"></canvas>	
-</div>
 
-<script src="js/Chart.min.js"></script>
+<canvas id="myChart" height="100%"></canvas>
 
+<script src="bhavana/js/Chart.min.js"></script>
 <script>
-	runMe.push(getAllMeditationTimesPerDay);
+	Cala.runOnReady(getAllMeditationTimesPerDay);
 </script>
 

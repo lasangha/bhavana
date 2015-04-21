@@ -1,16 +1,8 @@
----
-layout: default
-id: index
-title: Estadísticas
----
 <h2>Mi meditación diaria</h2>
 
-<div id="myCharts">
-	<canvas id="myChart" height="200" width="400"></canvas>	
-</div>
+<canvas id="myChart" height="100%"></canvas>
 
-<script src="js/Chart.min.js"></script>
-
+<script src="bhavana/js/Chart.min.js"></script>
 <script>
-	$(document).on('pageinit','[data-role=page]',getMyMeditationTimesPerDay);
+	Cala.runOnReady(getMyMeditationTimesPerDay);
 </script>

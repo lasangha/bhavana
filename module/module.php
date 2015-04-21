@@ -38,6 +38,18 @@ function bhavana_init(){
 			'action' => 'bhavana_causesAddTo',
 			'access' => 'users_openAccess',
 			'params' => array()
+		),
+		array(
+			'r' => 'bhavana_meditations_get_my_times',
+			'action' => 'bhavana_meditationsGetMyTimes',
+			'access' => 'users_openAccess',
+			'params' => array()
+		),
+		array(
+			'r' => 'bhavana_meditations_get_group_meditations',
+			'action' => 'bhavana_meditationsGetGroupMeditations',
+			'access' => 'users_openAccess',
+			'params' => array()
 		)
 	);
 
@@ -108,5 +120,95 @@ function bhavana_causesAddTo(){
 	return SUCCESS_ALL_GOOD;
 
 }
+
+/**
+ * Retrieves the meditation times, per day, for this person
+ */
+function bhavana_meditationsGetMyTimes(){
+
+	global $user;
+
+	$q = sprintf("
+		SELECT FROM_UNIXTIME(timestamp, '%%Y.%%e.%%m') AS day, SUM(totalTime) AS totalTime
+		FROM meditations
+		WHERE idUser = '%s'
+		AND timestamp > %s
+		GROUP BY day
+		ORDER BY day
+		", $user->idUser, (time()-(params_get('goBack', 7)*86400)));
+
+	$res = db_query($q, 2);
+	$labels = array();
+	$times = array();
+	if($res > 0){
+		foreach($res as $r){
+			$labels[] = $r->day;
+			$times[] = $r->totalTime;
+		}
+	}
+	return array("labels" => $labels, "times" => $times);
+
+}
+
+/**
+ * Get group meditations times per day
+ */
+function bhavana_meditationsGetGroupMeditations(){
+
+	grace_debug("Getting meditation times per day");
+
+	$q = sprintf("
+		SELECT FROM_UNIXTIME(m.timestamp, '%%Y.%%e.%%m') AS day, SUM(m.totalTime) AS totalTime, m.idCause, c.name AS cName, c.code AS cCode
+		FROM meditations m
+		INNER JOIN causes c ON c.idCause = m.idCause
+		WHERE timestamp > 90
+		GROUP BY idCause, day
+		ORDER BY day
+		", (time()-(params_get('ini', 0)*86400)));
+
+	$r = db_query($q, 2);
+
+	$stuff = array();
+	$details = array();
+	$dates  = array();
+
+	foreach($r as $row){
+		$stuff[$row->cCode][] = array("name" => $row->cName, "day" => $row->day, "totalTime" => $row->totalTime);
+		$details[$row->cName]['details'][$row->day] = $row->totalTime;
+		$dates[] = $row->day;
+	}
+
+	# Remove duplicates
+	$dates = array_unique($dates);
+
+	# Lets fix the dates (remove keys)
+	$nDates = array();
+	foreach($dates as $d){
+		$nDates[] = $d;
+	}
+
+	# Fix dates to see if there are any missing ones?
+	foreach($details as $topic => $d){
+		foreach($dates as $date){
+			if(!array_key_exists($date, $details[$topic]['details'])){
+				$details[$topic]['details'][$date] = 0;
+				# Sort them out
+			}
+		}
+				ksort($details[$topic]['details']);
+	}
+
+	# Now, lets get rid of all that is not needed
+	$justTheNumbers = array();
+	foreach($details as $topic => $d){
+		foreach($dates as $date){
+			$justTheNumbers[$topic][] = $details[$topic]['details'][$date];
+		}
+	}
+
+	return array('details' => $justTheNumbers, 'dates' => $nDates);
+
+}
+
 /**@}*/
 /** @}*/

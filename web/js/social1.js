@@ -20,10 +20,15 @@
 
  *****************************************************************************/                   
 var Cala = Cala || {};
+
 // Some variables
 //var Cala_tplPath = "tpl/";
+
+// Where is the api?
 //var Cala_apiUrl = "";
 
+//Where do you want me to go upon logout?
+//var Cala_goOnOut = 'index.html';
 var Cala = function() {
 
 	var params = {};
@@ -99,7 +104,7 @@ var VAR_CURRENT_CONVERSATION_RECIEVER_ID     = "currentConversationRecieverId"; 
 var VAR_CURRENT_CONVERSATION_RECIPIENT_WIREZ = "currentConversationRecipientWirez"; // Deprecated
 
 // Some other constants
-var VAR_CURRENT_USER_WIREZ  = "userWirez";
+var VAR_CURRENT_USER_NAME  = "userWirez";
 var VAR_CURRENT_SESSION_KEY = "currentSessionKey";
 
 // Last message read
@@ -278,7 +283,7 @@ function getUrlVars(){
 // Global variable to know for whom the background was requested for, this is here because I can't really tell the api to 
 // send this information to the function that makes the actual change, if you know better, please let me know :)
 // @deprecated ?
-var tplBackgroundRequestedForWire = keyGet(VAR_CURRENT_USER_WIREZ, "---");
+var tplBackgroundRequestedForWire = keyGet(VAR_CURRENT_USER_NAME, "---");
 
 function tplBackgroundGenerateRandom(){
 	say("Generating random background");
@@ -365,8 +370,8 @@ function tplSetCorrectBackground(){
 	if($("body").hasClass("custom")){
 		say("This page uses a custom background");
 		// Request the user's background
-		_tplSetBodyBackgroundCorrectly(wirez_userGetBackgroundPath(keyGet(VAR_CURRENT_USER_WIREZ, "---"), bg));	
-	//	_tplRequestNewBackground(keyGet(VAR_CURRENT_USER_WIREZ, "---"));
+		_tplSetBodyBackgroundCorrectly(wirez_userGetBackgroundPath(keyGet(VAR_CURRENT_USER_NAME, "---"), bg));	
+	//	_tplRequestNewBackground(keyGet(VAR_CURRENT_USER_NAME, "---"));
 	}
 	else{
 		_tplSetBodyBackgroundCorrectly(bg);
@@ -429,7 +434,7 @@ function _setConvDetailsSuccess(response){
 	// Set the background, I will put the background from the other party
 	say("Changing the background of this conversation");
 
-	if(keyGet(VAR_CURRENT_USER_WIREZ, "---") == details.recipientWire){
+	if(keyGet(VAR_CURRENT_USER_NAME, "---") == details.recipientWire){
 		say("I am the eggman");
 		$("#toWire").val(details.senderWire);
 		_tplRequestNewBackground(details.senderWire);
@@ -638,15 +643,15 @@ function amILoggedIn(){
 	say("Am I logged in?");
 
 	// This should be changed to the actual name
-	myName = keyGet(VAR_CURRENT_USER_WIREZ, "---");
+	myName = keyGet(VAR_CURRENT_USER_NAME, "---");
 
-	wirez_requestData.iam = keyGet(VAR_CURRENT_USER_WIREZ, "");
-	_IAM         = keyGet(VAR_CURRENT_USER_WIREZ, "");
+	wirez_requestData.iam = keyGet(VAR_CURRENT_USER_NAME, "");
+	_IAM         = keyGet(VAR_CURRENT_USER_NAME, "");
 
 	_SESSION_KEY = keyGet(VAR_CURRENT_SESSION_KEY, "123");
 	wirez_requestData.sessionKey = keyGet(VAR_CURRENT_SESSION_KEY, "123");
 
-	if(keyGet(VAR_CURRENT_USER_WIREZ, "---") != "---"){
+	if(keyGet(VAR_CURRENT_USER_NAME, "---") != "---"){
 		say("Yes I am");
 		$("#logMeIn").text("");
 
@@ -680,13 +685,13 @@ function _logMeOutRmKeys(){
 
 	msgAlert("Good bye :)");
 
-	keysGone = [VAR_CURRENT_USER_WIREZ, VAR_CURRENT_SESSION_KEY, VAR_LAST_MSG_ID];
+	keysGone = [VAR_CURRENT_USER_NAME, VAR_CURRENT_SESSION_KEY, VAR_LAST_MSG_ID];
 
 	for(i = 0; i < keysGone.length; i++){
 		removeKey(keysGone[i]);
 	}
 
-	iGoTo("login.html");
+	iGoTo(Cala_goOnOut);
 
 }
 
@@ -705,7 +710,7 @@ function logMeIn(){
 
 	say("Logging in");
 
-	wirez_userLogMeIn($("#myWire").val(), $("#myPwd").val(), _logMeInSuccess, _logMeInError);
+	wirez_userLogMeIn($("#userName").val(), $("#pwd").val(), _logMeInSuccess, _logMeInError);
 
 	return false;
 }
@@ -721,12 +726,11 @@ function _logMeInSuccess(details){
 		_logMeInError();
 	}
 	else{
-		keyStore(VAR_CURRENT_USER_WIREZ, details.userWire);
+		keyStore(VAR_CURRENT_USER_NAME, details.userName);
 		keyStore(VAR_CURRENT_SESSION_KEY, details.sessionKey);
 		_SESSION_KEY = details.sessionKey;
 
-		iGoTo(('#goToAfterLogin').val());
-		//				"?x=msgListing");
+		iGoTo($('#goToAfterLogin').val());
 	}
 }
 
@@ -739,7 +743,14 @@ function _logMeInError(error){
 // Register a new user
 function userRegister(){
 	say("Register a new user");
-	wirez_userRegister($("#myNameRegister").val(), $("#myWireRegister").val(), $("#myPwdRegister").val(), _userRegisterSuccess, _userRegisterError);
+	wirez_userRegister(
+			$("#myFullNameRegister").val(), 
+			$("#myUserNameRegister").val(),
+			$("#myEmailRegister").val(),
+			$("#myPwdRegister").val(),
+			$("#myPwdAgainRegister").val(),
+			_userRegisterSuccess,
+			_userRegisterError);
 	return false;
 }
 
@@ -776,7 +787,7 @@ function sendMsg(){
 	say("Sending message");
 
 	wirez_sendMsg(
-			keyGet(VAR_CURRENT_USER_WIREZ, "---"),
+			keyGet(VAR_CURRENT_USER_NAME, "---"),
 			$('#toWire').val(),
 			$('#mainTextMessages').val(),
 			$('#idConversation').val(),
@@ -851,7 +862,7 @@ function _getRecentMessagesParse(data){
 			console.log("s-ssssssssssssssssssssssssssssssssssssssssssssssssssssss");
 			$("#msgsListingNoMessagesFoundWrapper").html("");
 			var thisConversation = data.resp.msgs[conversation];
-			thisConversation['withWhom'] = thisConversation.recipientWire == keyGet(VAR_CURRENT_USER_WIREZ, "---")
+			thisConversation['withWhom'] = thisConversation.recipientWire == keyGet(VAR_CURRENT_USER_NAME, "---")
 				? thisConversation.senderWire
 				: thisConversation.recipientWire;
 			thisConversation['subject'] = messagesFixTitle(thisConversation['subject']);
@@ -967,7 +978,7 @@ function _getMgsInConversationSuccess(data){
 
 		var msgs = data.resp.msgs;
 
-		thisUserWire = keyGet(VAR_CURRENT_USER_WIREZ, "--");
+		thisUserWire = keyGet(VAR_CURRENT_USER_NAME, "--");
 
 		for(var prop in msgs) {
 			var thisMsg = msgs[prop];
@@ -1222,7 +1233,7 @@ function myAccountSetBackground(){
 	tmpDate = new Date();
 	say("Changing the background");
 	$("body").attr("src", "img/loader_big.gif");
-	$("#myAccountMyAvatar").attr("src", wirez_userGetAvatarPath(keyGet(VAR_CURRENT_USER_WIREZ, "---"), "250") + "&" + tmpDate.getTime());
+	$("#myAccountMyAvatar").attr("src", wirez_userGetAvatarPath(keyGet(VAR_CURRENT_USER_NAME, "---"), "250") + "&" + tmpDate.getTime());
 }
 
 // Set the avatar in the account page, this is for each user too see THEIR own avatar
@@ -1230,7 +1241,7 @@ function myAccountSetAvatar(){
 	tmpDate = new Date();
 	say("Changing the avatar");
 	$("#myAccountMyAvatar").attr("src", "img/loader_big.gif");
-	$("#myAccountMyAvatar").attr("src", wirez_userGetAvatarPath(keyGet(VAR_CURRENT_USER_WIREZ, "---"), "250") + "&" + tmpDate.getTime());
+	$("#myAccountMyAvatar").attr("src", wirez_userGetAvatarPath(keyGet(VAR_CURRENT_USER_NAME, "---"), "250") + "&" + tmpDate.getTime());
 }
 
 /**
@@ -1256,7 +1267,7 @@ function setPageForConversations(){
 					recipientWire: params['withWire'],
 				subject: messagesFixTitle(""),
 				idConversation: 0,
-				senderWire: keyGet(VAR_CURRENT_USER_WIREZ, "--")
+				senderWire: keyGet(VAR_CURRENT_USER_NAME, "--")
 				}
 			});
 		}

@@ -2,8 +2,8 @@
 	<h1>Login</h1>
 	<form class="navbar-form navbar-left" role="search">
 		<div class="form-group">
-			<input type="text" class="form-control" name="myWire" id="myWire" value="" placeholder="User Name">
-			<input type="password" class="form-control" name="myPwd" id="myPwd" value="" placeholder="Password">
+			<input type="text" class="form-control" name="myUserName" id="userName" value="" placeholder="User Name">
+			<input type="password" class="form-control" name="myPwd" id="pwd" value="" placeholder="Password">
 		</div>
 		<button type="submit" class="btn btn-default" onClick="return logMeIn();">Login</button>
 	</form>
@@ -13,11 +13,11 @@
 	<h1>Register New Account</h1>
 	<div class="form-group">
 		<form class="navbar-form navbar-left" role="search">
-			<input type="text" class="form-control" name="myWireRegister" id="myWireRegister" value="" placeholder="Wire">
+			<input type="text" class="form-control" name="myUserNameRegister" id="myUserNameRegister" value="" placeholder="Full Name">
+			<input type="text" class="form-control" name="myFullNameRegister" id="myFullNameRegister" value="" placeholder="User Name">
+			<input type="email" class="form-control" name="myEmailRegister" id="myEmailRegister" value="" placeholder="email">
 			<input type="password" class="form-control" name="myPwdRegister" id="myPwdRegister" value="" placeholder="Password">
 			<input type="password" class="form-control" name="myPwdAgainRegister" id="myPwdAgainRegister" value="" placeholder="Password Again">
-			<input type="text" class="form-control" name="myEmailRegister" id="myEmailRegister" value="" placeholder="Email Address">
-			<input type="text" class="form-control" name="myNameRegister" id="myNameRegister" value="" placeholder="User Name">
 			<input type="hidden" id="goToAfterLogin" value="?x=msgListing">
 			<button type="submit" class="btn btn-default" onClick="return userRegister();">Register</button>
 		</div>

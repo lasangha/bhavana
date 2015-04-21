@@ -88,7 +88,7 @@ function getMeditationMaxCauseTime(){
 		url: Cala_apiUrl,
 		dataType: "json",
 		data: {
-			r: "mcauses_get_max_time",
+			r: "causes_get_max_time",
 			w: "bhavana",
 			iam: _IAM,
 		   	sessionKey: _SESSION_KEY
@@ -271,27 +271,20 @@ function createChart(chartTitle, canvasId, chartLabels, chartData, type){
 // Get all meditation times per day
 function getAllMeditationTimesPerDay(){
 
-	/*
-	   if(checkConnection(false) == false){
-	   console.log("No connectivity");
-	   alert("Lo sentimos, pero se requiere de una conexión a internet para llevar a cabo esta función.");
-	   return false;
-	   }
-	   */
-	console.log("There is connexion, lets get the times");
+	say("There is connexion, lets get the times");
 
 	$.ajax({
 		type: 'GET',
-		url: apiPath,
+		url: Cala_apiUrl,
 		dataType: "json",
 		data: {
-			what: "getAllMeditationTimesPerDay",
+			w: "bhavana",
+			r: "bhavana_meditations_get_group_meditations",
 		ini: 7, //Start 7 days ago
 		},
 		success: function (allDetails) {
-
 			var newData = {
-				labels: allDetails.dates,
+				labels: allDetails.resp.dates,
 		datasets: [
 	{
 		label: "Paz",
@@ -301,7 +294,7 @@ function getAllMeditationTimesPerDay(){
 		pointStrokeColor: "#fff",
 		pointHighlightFill: "#fff",
 		pointHighlightStroke: "rgba(255,255,153,1)",
-		data: allDetails.details['Paz']
+		data: allDetails.resp.details['Paz']
 	},
 	{
 		label: "Humildad",
@@ -311,7 +304,7 @@ function getAllMeditationTimesPerDay(){
 		pointStrokeColor: "#fff",
 		pointHighlightFill: "#fff",
 		pointHighlightStroke: "rgba(51,255,153,1)",
-		data: allDetails.details['Humildad']
+		data: allDetails.resp.details['Humildad']
 	},
 	{
 		label: "Compasión",
@@ -321,7 +314,7 @@ function getAllMeditationTimesPerDay(){
 		pointStrokeColor: "#fff",
 		pointHighlightFill: "#fff",
 		pointHighlightStroke: "rgba(76,153,0,1)",
-		data: allDetails.details['Compasi\u00f3n']
+		data: allDetails.resp.details['Compasi\u00f3n']
 	}
 	]
 			};
@@ -341,27 +334,20 @@ function getAllMeditationTimesPerDay(){
 
 // Get my meditation times per day
 function getMyMeditationTimesPerDay(){
-	/*
-	   if(checkConnection(false) == false){
-	   console.log("No connectivity");
-	   alert("Lo sentimos, pero se requiere de una conexión a internet para llevar a cabo esta función.");
-	   return false;
-	   }
-	   */
-	console.log("There is connexion, lets get the times");
+	
+	say("Lets get the times");
 
 	$.ajax({
 		type: 'GET',
-		url: apiPath,
+		url: Cala_apiUrl,
 		dataType: "json",
 		data: {
-			what: "getMyMeditationTimes",
-		ini: 7, //Start 7 days ago
-		email: getKey("myEmail", "buddha@lasangha.org")
+			r: "bhavana_meditations_get_my_times",
+			w: "bhavana",
+			goBack: 7 //Start 7 days ago
 		},
 		success: function (details) {
-			createChart("Meditación por día", "myChart", details.labels, details.times, 'lines');
-			//console.log("Esta es la data" + details.times);
+			createChart("Meditación por día", "myChart", details.resp.labels, details.resp.times, 'lines');
 		}
 	});
 

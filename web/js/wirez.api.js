@@ -384,7 +384,7 @@ function wirez_userLogMeIn(_iam, _pwd, callMeSuccess, callMeError){
 		},
 		success: function (data) {
 			// @todo this should not be done here, all required information should be returned from the PHP Api
-			details = {sessionKey: data.resp, userWire: _iam}
+			details = {sessionKey: data.resp, userName: _iam}
 			callMeSuccess(details);
 		},
 		error: function (data){
@@ -420,25 +420,30 @@ function wirez_userLogMeOut(callMeSuccess, callMeError){
 }
 
 // Register a new account
-function wirez_userRegister(_userName, _userWire, _userPwd, callMeSuccess, callMeError){
+function wirez_userRegister(_fullName, _userName, _email, _userPwd, _userPwdAgain, callMeSuccess, callMeError){
 
 	d("Register account");
 
 	$.ajax({
 		type: 'GET',
-		url: apiUrl + 'index.php',
+		url: Cala_apiUrl,
 		dataType: "json",
 		data: {
-			what: "userRegister",
-		userName: _userName,
-		userWire: _userWire,
-		userPwd: _userPwd,
-		iam: ''
+			r: "users_register",
+			w: "users",
+			fullName: _fullName,
+			userName: _userName,
+			email: _email,
+			userPwd: _userPwd,
+			userPwdAgain: _userPwdAgain,
+			about: '',
+			country: '',
+			iam: ''
 		},
 		success: function (data) {
 
 			if(data != ERROR_USER_EXISTS && data != ERROR_BAD_REQUEST){
-				details = {sessionKey: data, userWire: _userWire, success: 1}
+				details = {sessionKey: data, userName: _userName, success: 1}
 			}else{
 				d("Something wrong happened");
 				details = {success: data}
