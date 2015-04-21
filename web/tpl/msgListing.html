@@ -1,0 +1,29 @@
+<div id="lastMsgId" style="visibility: hidden; display: none;">0</div>
+
+<button onClick="return getRecentMessages()" type="button" class="btn btn-warning btn-sm" aria-label="Refresh Conversation">
+	<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+</button>
+
+<div align="center" id="msgsListingNoMessagesFoundWrapper">
+	<div width="60%" class="panel panel-default msgsListingNoMessages" align="center">
+		<div class="panel-body">
+			<a class="thumbnail" id="msgsListingNoMsgsFoundImgLink" href="directory.html">
+			<img src="img/loader_100.gif" class="msgsListingNoMsgsFound" id="msgsListingNoMsgsFoundImage">
+			</a>
+			<div class="caption" id="msgsListingNoMessagesFoundCaption">
+				<h3 id="msgsListingNoMessagesFoundTitle">Looking for messages</h3>
+				<p>No Messages at the moment, why don't you say something?</p>
+				<p><a href="directory.html" class="btn btn-success" role="button" id="msgsListingNoMsgsFoundLink">Talk to someone :)</a>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div id="msgsListing">
+	<ul id="latestMessages"></ul>
+</div>
+
+<script>
+	Cala.runOnReady(getRecentMessages);
+</script>

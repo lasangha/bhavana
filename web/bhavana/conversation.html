@@ -1,0 +1,57 @@
+---
+layout: default
+title: Conversaciones
+id: conversation
+---
+
+<div id="messagesInConversationDetailsTitle">
+		<h2 id="conversationMessageTitle">Just Chatting</h2>
+</div>
+
+<div id="messagesInConversationSearching">
+	<div id="messagesInConversationSearchingInternal" align="center" class="jumbotron emptyWell">
+		<div class="thumbnail messagesInConversationNotFoundImageContainer">
+			<img src="img/loader_100.gif" class="messagesInConversationNotFoundImage">
+		</div>
+		<div class="caption" id="messagesInConversationNotFound">
+			<h3 id="messagesInConversationNotFoundTitle">Looking for messages</h3>
+			<p>No Messages at the moment, why don't you say something?</p>
+		</div>
+	</div>
+</div>
+
+<div id="messagesInConversation" style="margin-bottom: 38px;">
+	<ul id="allMessagesInConversation" class="list-group"></ul>
+</div>
+
+<nav class="navbar navbar-default navbar-fixed-bottom navBarBottomMessaging">
+	<div class="container">
+		<table width="100%">
+			<tr>
+				<td width="5%">
+					<button onClick="return getMsgsInConversation()" type="button" class="btn btn-warning btn-sm" aria-label="Refresh Conversation">
+						<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+					</button>
+				</td>
+				<td width="85%">
+					<form action="#" method="post">
+						<input type="text" name="to" id="toWire" value="" placeholder="Con quién quiere hablar?">
+						<input type="text" name="subject" id="subject" value="" placeholder="Just Chatting">
+						<textarea name="text" id="mainTextMessages" rows="1"></textarea>
+						<input type="hidden" name="idConversation" id="idConversation" value="0">
+						<input type="hidden" name="lastMsgId" id="lastMsgId" value="0">
+						<input type="hidden" name="from" id="fromWire" value="#">
+					</div>
+				</td>
+				<td width="10%">
+					<button onClick="return sendMsg()" type="button" class="btn btn-success btn-sm" aria-label="Send Message">
+						<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+					</button>
+					<button onClick="return getMsgsInConversation()" type="button" class="btn btn-info btn-sm" aria-label="Refresh Conversation">
+						<span class="glyphicon glyphicon-paperclip" aria-hidden="true"></span>
+					</button>
+
+				</td>
+			</div>
+		</nav>
+

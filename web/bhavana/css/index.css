@@ -1,0 +1,193 @@
+body{
+	padding-top: 70px;
+	background: url("../img/bgs/bg_1.jpg") no-repeat center center fixed;
+	background-size: cover;
+}
+
+/* General */
+.emptyWell{
+	background-color: rgba(248,248,248,0.4);
+
+	-webkit-box-shadow: 1px 1px 3px 0px rgba(133,125,133,1);
+	-moz-box-shadow: 1px 1px 3px 0px rgba(133,125,133,1);
+	box-shadow: 1px 1px 3px 0px rgba(133,125,133,1);
+}
+
+/* Top Nav Bar */
+.navBarTopMainBar{
+	background-color: rgba(255,255,255,0.0);
+}
+
+.navBarTopMainBarInternal{
+	background-color: rgba(214,214,214,0.9);
+	padding: 0px;
+	margin: 0px;
+}
+
+/**
+ * People Directory
+ */
+#peopleListingWrapper{
+	background-color: rgba(0,0,0,0);
+	border: 0px solid #000;
+	padding: 1px 15px;
+}
+
+.peopleListingEach{
+	height: 170px;
+}
+
+.peopleListingName{
+	background-color: rgba(248,248,248,0.4);
+	padding: 3px;
+	border-bottom: 1px solid #fff;
+	margin-bottom: 3px;
+}
+
+.peopleListingNameEach{
+	font-weight: bold;
+}
+
+.peopleListingAbout{
+	background-color: rgba(248,248,248,0.8);
+	padding: 4px;
+	margin-top: 30px;
+	border: 1px solid #000;
+	width: 100%;
+}
+
+.peopleListingAvatar{
+	width:100px;
+	height: 100px;
+}
+
+.peopleListingAvatarThumb{
+	float: right;
+}
+
+.directorySearchNotFoundImageContainer{
+	width: 300px;
+}
+.directorySearchingNotFoundImage{
+
+}
+
+/* Messaging and Messages in conversation */
+
+.navBarBottomMessaging{
+	background-color: rgba(214,214,214,0.9);
+}
+
+.messagesInConversationEach{
+	background-color: rgba(0,0,0,0);
+	border: 0px solid #000;
+	padding: 1px 15px;
+	min-height: 90px;
+}
+
+.messagesInConversationTextEachOne{
+	margin-top: 3px;
+}
+
+.messagesInConversationHeaderEach{
+	background-color: rgba(248,248,248,0.4);
+	padding: 3px;
+	margin-right: 100px;
+	border-bottom: 1px solid #fff;
+}
+
+.messagesInConversationTextEach{
+	padding: 0px 0px 3px 0px;
+	background-color: rgba(248,248,248,0.4);
+}
+
+.messagesInConversationNotFoundImage{
+	margin: 3px;
+}
+
+.messagesInConversationNotFoundImageContainer{
+	margin: 3px;
+}
+
+.messagesInConversationSenderAvatarImage, .messagesInConversationRecipientAvatarImage{
+	height: 34px;
+	margin: 2px;
+}
+.messagesInConversationSenderAvatar{
+	float: left;
+}
+
+.messagesInConversationRecipientAvatar{
+	float: right;
+}
+
+.avatarSmallListing{
+	width: 50px;
+	height: 50px;
+}
+
+#mainTextMessages{
+	width: 100%;
+}
+
+/* Recent messages in the top bar */
+.topNavBarMessagesContainer{
+	padding: 1px;
+	border-bottom: 1px solid #eee;
+}
+
+.topNavBarMessagesAvatar{
+	float: left;
+	width: 24px;
+}
+.topNavBarMessagesSubject{
+	font-weight: bold;
+	font-size: 80%;
+}
+
+.topNavBarMessagesText{
+	font-size: 80%;
+}
+
+.topNavBarMessagesSenderName{
+	font-size: 10px;	
+}
+
+/* Recent messages */
+.msgsListingNoMessages{
+	width: 60%;
+	background-color: rgba(248,248,248,0.4);
+
+}
+
+.msgsListingNoMsgsFoundLink{
+	background-color: rgba(248,248,248,0.4);
+}
+
+.msgsListingNoMsgsFound{
+	width: 200px;
+}
+
+#msgsListingNoMessagesFoundCaption{
+}
+
+#msgsListingNoMsgsFoundImage{
+}
+
+/* My Account Edit*/
+.myAccountEditWrapper{
+	background-color: rgba(248,248,248,0.4);
+}
+
+#myAccountMyAvatarWrapper{
+	float: right;
+}
+
+#myAccountMyAvatar{
+	width: 250px;
+}
+
+#myAccountMyAbout{
+	width: 150px;
+}
+

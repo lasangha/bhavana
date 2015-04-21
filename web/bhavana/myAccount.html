@@ -1,0 +1,45 @@
+---
+layout: default
+title: My Account
+id: myAccount
+addClass: custom
+---
+
+<div class="well myAccountEditWrapper">
+	<form method="POST" enctype="multipart/form-data" id="myAccountForm">
+
+		<div class="thumbnail" id="myAccountMyAvatarWrapper">
+			<img src="avatars/loader_big.gif" alt="My Avatar" title="My Avatar" id="myAccountMyAvatar">
+		</div>
+		<div class="form-group">
+			<div id="myAccountPersonalAvatarUploader">
+				My Avatar
+				<div class="formInfo">Can be your picture, or your dog's, what ever you like.</div>
+			</div>
+			<div id="myAccountPersonalBgUploader">
+				My Personal Background
+				<div class="formInfo">
+					Other people will see it when they are talking to you.
+					If you have one setup now, you should see it in the background of this page.
+				</div>
+			</div>
+			<input type="text" id="myAccountAbout" value="" placeholder="About Me" title="Something about your self">
+			<div class="formInfo">Something about you</div>
+			<input type="text" id="myAccountName" value="" placeholder="My Name">
+			<div class="formInfo">What is your name?</div>
+			<input type="text" id="myAccountWire" value="" placeholder="My Wire">
+			<div class="formInfo">This is your unique identifier, this is how people will reach you, sometimes your name can be complicated.</div>
+			<div class="myAccountPasswordFields well">
+				<h4>Change your password if you want to</h4>
+				<input type="password" id="myAccountPwd" value="" placeholder="My Password">
+				<input type="password" id="myAccountPwdAgain" value="" placeholder="My Password Again">
+			</div>
+		</div>
+		<button type="submit" class="btn btn-default myAccountSubmit" onClick="return userUpdateProfile();">Update Account</button>
+
+	</form>
+</div>
+
+<script type="text/javascript" src="tools/uploader/jquery.form.js"></script>
+<script src="tools/uploader/jquery.uploadfile.min.js"></script>
+

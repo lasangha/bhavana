@@ -1,0 +1,34 @@
+<br />
+<div class="ui-corner-all custom-corners">
+	<div class="ui-bar ui-bar-a">
+		Hemos meditado <span id="causesTotalMinutes">#</span> minutos por <span id="causesCause">#</span>
+	</div>
+	<div class="ui-body ui-body-a" align="center">
+	</div>
+</div>
+<br />
+<ul data-role="listview" data-inset="true">
+	<li><a href="#" onClick="return Bhavana_gotoLastSessionPage();" data-ajax="false">Ir al Curso</a></li>
+	<li><a href="i_basics.html" data-ajax="false">Introducción</a></li>
+</ul>
+<br />
+<ul data-role="listview" data-inset="true">
+	<li><a href="myStats.html" data-ajax="false">Mis estadísticas de meditación</a></li>
+	<li><a href="groupStats.html" data-ajax="false">Estadísticas grupales de meditación</a></li>
+	<li><a href="meditationLocations.html" data-ajax="false">Mapa de Meditaciones</a></li>
+	<li><a href="preferences.html" data-ajax="false">Configuración</a></li>
+</ul>
+
+<div align="center" id="companyLogo">
+	<p><img src="img/logo_sangha.png" style="width: 250px"></p>
+</div>
+
+<div id="meditationCausesTimes"></div>
+
+<button onClick="return logOut();">Salir</button>
+
+<script>
+	Cala.runOnReady(getMeditationMaxCauseTime);
+</script>
+
+

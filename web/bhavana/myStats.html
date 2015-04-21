@@ -1,0 +1,16 @@
+---
+layout: default
+id: index
+title: Estadísticas
+---
+<h2>Mi meditación diaria</h2>
+
+<div id="myCharts">
+	<canvas id="myChart" height="200" width="400"></canvas>	
+</div>
+
+<script src="js/Chart.min.js"></script>
+
+<script>
+	$(document).on('pageinit','[data-role=page]',getMyMeditationTimesPerDay);
+</script>

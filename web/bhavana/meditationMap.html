@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+ <head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="format-detection" content="telephone=no" />
+<title>¿Dónde medita la gente?</title>
+<link rel="stylesheet" href="css/ol.css">
+<script src="js/ol.js"></script>
+</head>
+
+<body>
+<div id="myMap"></div>
+
+<script>
+
+console.log("creating the map");
+
+    var map = new ol.Map({
+        target: 'myMap',
+        layers: [
+        new ol.layer.Tile({
+            source: new ol.source.OSM()
+        }),
+            new ol.layer.Vector({
+                source: new ol.source.GeoJSON({
+                    projection: 'EPSG:3857',
+                url: 'http://app.lasangha.org/api/api.php?what=getMeditationLocations'
+                })
+            })
+    ],
+        view: new ol.View({
+            center: [0, 0],
+        zoom: 1
+        }),
+    });
+    
+</script>
+  </body>
+</html>
+

@@ -1,0 +1,22 @@
+<h1 id="sessionTitle">Esta Sesión</h1>
+<div id="sessionDesc">Vamos a meditar...</div>
+
+<div class="">
+	<form action="#">
+		<select id="cause" onChange="Bhavana_showPlayer(10)">
+			<option value="0">Seleccione su intención para empezar la sesión...</option>
+			<option value="paz">La Paz</option>
+			<option value="com">Compasión</option>
+			<option value="hum">Humildad</option>
+		</select>
+	</form>
+</div>
+
+<div id="sessionsNavigator">
+	<a href="?x=sessions" id="goBack">Anterior</a>
+	<a href="?x=sessions" id="goNext">Siguiente</a>
+</div>
+
+<div id="sessionsPlayer"></div>
+
+<script src="bhavana/js/sessions.js"></script>
