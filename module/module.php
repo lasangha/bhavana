@@ -39,7 +39,6 @@ function bhavana_init(){
 			'access' => 'users_openAccess',
 			'params' => array()
 		)
-
 	);
 
 	return $paths;
