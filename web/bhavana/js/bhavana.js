@@ -5,13 +5,16 @@ var soundsPath = "http://app.lasangha.org/www/audio/meditations/";
 var audioFilePath = "";
 
 // Shows the player
-function Bhavana_showPlayer(time){
-
+function Bhavana_startMeditation(code, time){
 	say("I am showing the player");
-	$("#sessionsPlayer").show();
+	$("#bhavana_selectMeditationIntention").fadeOut('slow', function(){
+		$("#bhavana_meditationInstrucctions").fadeIn('slow', function(){
+			$("#sessionsPlayer").fadeIn('slow');
+		});
+	});
 	if(time > 0){
 		say("Add time to the causes");
-		Bhavana_addToCause(time);
+		Bhavana_addToCause(time, code);
 	}
 }
 
@@ -206,7 +209,7 @@ function setSessionDetails(subjects, subjectsDets){
 }
 
 // Add meditation times to the causes
-function Bhavana_addToCause(time){
+function Bhavana_addToCause(_totalTime, _causeCode){
 
 	say("I will submit this time to the causes");
 
@@ -219,9 +222,8 @@ function Bhavana_addToCause(time){
 			sessionKey: _SESSION_KEY,
 			w: "bhavana",
 			r: "causes_add_to",
-			causeCode: $('#cause').val(),
-			totalTime: time,
-			email: keyGet("myEmail", "buddha@lasangha.org"),
+			causeCode: _causeCode,
+			totalTime: _totalTime,
 		},
 		success: function (data) {
 			say(data)

@@ -1,34 +1,61 @@
-<br />
-<div class="ui-corner-all custom-corners">
-	<div class="ui-bar ui-bar-a">
+<div align="center">
+	<div class="alert alert-info" role="alert">
 		Hemos meditado <span id="causesTotalMinutes">#</span> minutos por <span id="causesCause">#</span>
-	</div>
-	<div class="ui-body ui-body-a" align="center">
-	</div>
+	</div>	
 </div>
-<br />
-<ul data-role="listview" data-inset="true">
-	<li><a href="#" onClick="return Bhavana_gotoLastSessionPage();" data-ajax="false">Ir al Curso</a></li>
-	<li><a href="?x=intro" data-ajax="false">Introducción</a></li>
-</ul>
-<br />
-<ul data-role="listview" data-inset="true">
-	<li><a href="?x=myStats" data-ajax="false">Mis estadísticas de meditación</a></li>
-	<li><a href="?x=groupStats" data-ajax="false">Estadísticas grupales de meditación</a></li>
-	<li><a href="?x=meditationLocations" data-ajax="false">Mapa de Meditaciones</a></li>
-	<li><a href="?x=user" data-ajax="false">Configuración</a></li>
-</ul>
 
-<div align="center" id="companyLogo">
-	<p><img src="img/logo_sangha.png" style="width: 250px"></p>
+<div class="row">
+	<div class="col-md-6">
+		<div class="list-group">
+			<div align="center">
+				<a class="list-group-item list-group-item-info" href="#" onClick="return false;">
+					<strong>El Curso</strong>
+				</a>
+			</div>
+			<a href="#" class="list-group-item" onClick="return Bhavana_gotoLastSessionPage();">
+				<span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>
+				Volver al Curso
+			</a>
+			<a href="?x=intro" class="list-group-item">
+				<span class="glyphicon glyphicon-expand" aria-hidden="true"></span>
+				Introducción
+			</a>
+		</div>
+		<div class="list-group">
+			<div align="center">
+				<a class="list-group-item list-group-item-info" href="#" onClick="return false;">
+					<strong>Datos</strong>
+				</a>
+			</div>
+			<a class="list-group-item" href="?x=myStats">
+				<span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
+				Mis estadísticas de meditación
+			</a>
+			<a class="list-group-item" href="?x=groupStats">
+				<span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span>
+				Estadísticas grupales de meditación
+			</a>
+			<a class="list-group-item" href="?x=meditationLocations">
+				<span class="glyphicon glyphicon-globe" aria-hidden="true"></span>
+				Mapa de Meditaciones
+			</a>
+			<a class="list-group-item" href="?x=user">
+				<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+				Configuración
+			</a>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div align="center" id="companyLogo">
+			<p><img src="img/logo_sangha.png" style="width: 250px"></p>
+		</div>
+	</div>
 </div>
 
 <div id="meditationCausesTimes"></div>
 
-<button onClick="return logOut();">Salir</button>
-
 <script>
-	Cala.runOnReady(getMeditationMaxCauseTime);
+Cala.runOnReady(getMeditationMaxCauseTime);
 </script>
 
 

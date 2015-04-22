@@ -670,7 +670,8 @@ function amILoggedIn(){
 	}
 
 	// Set a new background
-	tplSetCorrectBackground();
+	// This should be set by Wirez, not general Cala
+	//tplSetCorrectBackground();
 
 }
 

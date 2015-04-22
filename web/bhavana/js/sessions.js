@@ -2,7 +2,7 @@
 var Bhavana_Categories = {
 	samatha: {
 		title: "Samatha",
-		desc: "Tranquilidad",
+		desc: "Tranquilidad, volviendo al cuerpo.",
 		sessions: ['_rRoD28-WgU', '2FS6AsNCy3I', 'Yy8nWIiP4_M']
 	},
 	vipassana: {
@@ -61,7 +61,8 @@ var Bhavana_Session = {
 		}
 	},
 	playerCreate: function(id){
-		return '<iframe width="560" height="315" src="https://www.youtube.com/embed/'+id+'" frameborder="0" allowfullscreen></iframe>';  
+		return '<iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" src="https://www.youtube.com/embed/'+id+'" frameborder="0" allowfullscreen></iframe>';
+
 	},
 	setPager: function(categories){
 		// Get the possition in the array of key of this category

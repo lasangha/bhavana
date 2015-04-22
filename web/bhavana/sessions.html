@@ -1,22 +1,49 @@
-<h1 id="sessionTitle">Esta Sesión</h1>
-<div id="sessionDesc">Vamos a meditar...</div>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h1 id="sessionTitle">Esta Sesión</h1>
+	</div>
+	<div class="panel-body">
 
-<div class="">
-	<form action="#">
-		<select id="cause" onChange="Bhavana_showPlayer(10)">
-			<option value="0">Seleccione su intención para empezar la sesión...</option>
-			<option value="paz">La Paz</option>
-			<option value="com">Compasión</option>
-			<option value="hum">Humildad</option>
-		</select>
-	</form>
+
+<div class="row">
+	<div class="col-md-6">
+		<p id="sessionDesc">Vamos a meditar...</p>
+		<div align="center">
+			<div class="btn-group" role="group" id="bhavana_selectMeditationIntention">
+				<button type="button" class="btn btn-default btn-lg dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+					Hoy voy a meditar por...
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" role="menu">
+					<li><a href="#" onClick="return Bhavana_startMeditation('paz', '9');">La Paz</a></li>
+					<li><a href="#" onClick="return Bhavana_startMeditation('com', '9');">Compasión</a></li>
+					<li><a href="#" onClick="return Bhavana_startMeditation('hum', '9');">Humildad</a></li>
+				</ul>
+			</div>
+			<div id="bhavana_meditationInstrucctions">
+				<div class="alert alert-info" role="alert">
+					Cierre los ojos, inicie el video y comience su meditación....
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div align="center"	id="sessionsPlayer" class="bhavanaVideosResponsive"></div>
+	</div>
 </div>
 
-<div id="sessionsNavigator">
-	<a href="?x=sessions" id="goBack">Anterior</a>
-	<a href="?x=sessions" id="goNext">Siguiente</a>
+	</div>
 </div>
 
-<div id="sessionsPlayer"></div>
+<nav>
+	<ul class="pager">
+		<li>
+		<a href="?x=sessions" id="goBack">Anterior</a>
+		</li>
+		<li>
+		<a href="?x=sessions" id="goNext">Siguiente</a>
+		</li>
+	</ul>
+</nav>
 
 <script src="bhavana/js/sessions.js"></script>

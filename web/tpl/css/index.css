@@ -1,7 +1,9 @@
 body{
-	padding-top: 70px;
-	background: url("../img/bgs/bg_1.jpg") no-repeat center center fixed;
+	padding-top: 30px;
+	/* This should go into wirez
+	 * background: url("../img/bgs/bg_1.jpg") no-repeat center center fixed;
 	background-size: cover;
+	*/
 }
 
 /* General */
