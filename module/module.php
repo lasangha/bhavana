@@ -50,6 +50,12 @@ function bhavana_init(){
 			'action' => 'bhavana_meditationsGetGroupMeditations',
 			'access' => 'users_openAccess',
 			'params' => array()
+		),
+		array(
+			'r' => 'bhavana_meditations_get_locations',
+			'action' => 'bhavana_meditationsGetLocations',
+			'access' => 'users_openAccess',
+			'params' => array()
 		)
 	);
 
@@ -207,6 +213,32 @@ function bhavana_meditationsGetGroupMeditations(){
 	}
 
 	return array('details' => $justTheNumbers, 'dates' => $nDates);
+
+}
+
+/**
+ * Get the medatation locations in order to create a map
+ */
+function bhavana_meditationsGetLocations(){
+
+	$q = "SELECT coordinates, timestamp
+        FROM meditations
+        WHERE timestamp > " . (time() - 1296000) . " AND coordinates != '' GROUP BY coordinates ORDER BY timestamp DESC LIMIT 0, 60";
+
+    $res = db_query($q, 2);
+
+    $dats = array();
+	foreach($res as $record){
+		$dats[] = sprintf('{"type":"Feature","id":"%s","properties":{"name":"90"},"geometry":{"type":"Point","coordinates":[%s]}}',
+			$record->timestamp,
+			$record->coordinates);
+    }
+
+	$dats = implode(",", $dats);
+
+	//return array("type" => "FeatureCollection", "features" => $dats);
+    return '{"type":"FeatureCollection","features":['.$dats.']}';
+    //exit;
 
 }
 

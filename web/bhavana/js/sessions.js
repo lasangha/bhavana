@@ -61,7 +61,7 @@ var Bhavana_Session = {
 		}
 	},
 	playerCreate: function(id){
-		return '<iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" src="https://www.youtube.com/embed/'+id+'" frameborder="0" allowfullscreen></iframe>';
+		return '<iframe class="Cala_videosResponsive" src="https://www.youtube.com/embed/'+id+'" frameborder="0" allowfullscreen></iframe>';
 
 	},
 	setPager: function(categories){

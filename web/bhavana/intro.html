@@ -156,9 +156,8 @@
 							</div>
 						</div>
 						<div class="col-md-6">
-							<div class="bhavanaVideosResponsive">
-								<!-- Thanks to http://stackoverflow.com/questions/15844500/shrink-a-youtube-video-to-responsive-width -->
-								<iframe id="Bhavana_videoTips" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+							<div class="Cala_videosResponsiveWrapper">
+								<iframe id="Bhavana_videoTips" class="Cala_videosResponsive"
 									src="https://www.youtube.com/embed/videoseries?list=PLTgEM1UTivW2RQvzrwmFbaO6V5JwrG9Xh&autoplay=1"
 									frameborder="0" allowfullscreen>
 								</iframe>
@@ -173,7 +172,11 @@
 <script>
 function Bhavana_setTip(which){
 	say("Changing the video to " + which);
-	var videosPath = 'https://www.youtube.com/embed/' + which + '?list=PLTgEM1UTivW2RQvzrwmFbaO6V5JwrG9Xh';
-	$("#Bhavana_videoTips").attr('src', videosPath);
+	var videosPath = 'https://www.youtube.com/embed/' + which + '?list=PLTgEM1UTivW2RQvzrwmFbaO6V5JwrG9Xh&autoplay=1';
+	//var videosPath = 'https://www.youtube.com/embed/' + which +;
+	$("#Bhavana_videoTips").slideUp('slow', function(){
+			$("#Bhavana_videoTips").attr('src', videosPath);
+			$("#Bhavana_videoTips").slideDown('slow', function(){});
+			});
 }
 </script>
