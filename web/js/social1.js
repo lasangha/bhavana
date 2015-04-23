@@ -74,6 +74,51 @@ var Cala = function() {
 
 }();
 
+// Register a new account
+function Cala_userRegister(params){
+
+	say("Register account");
+
+	$.ajax({
+		type: 'GET',
+		url: Cala_apiUrl,
+		dataType: "json",
+		data: {
+			r: "users_register",
+			w: "users",
+			fullName: params.options.fullName,
+			userName: params.options.userName,
+			email: params.options.email,
+			pwd: params.options.pwd,
+			about: params.options.about,
+			country: params.options.country,
+			iam: '', // During registration this is not important
+			sessionKey: ''
+		},
+		//! @todo This is not very standard procedure, I should also log the person in
+		success: function (data) {
+			if(data.resp != ERROR_USER_EXISTS && data.resp != ERROR_BAD_REQUEST){
+				// Log the user in
+				say("Seems like it worked");
+				Cala_usersLogMeInSuccess(data);
+			}else{
+				say("Something wrong happened");
+			}
+			params.onSuccess(data);
+			/*
+				//details = {sessionKey: data.resp, userName: params.options.userName, success: 1};
+			}else{
+				details = {success: data.resp};
+			}
+			*/
+		},
+		error: function (data){
+			params.onError(data);
+		}
+	});
+
+}
+
 /*****************************************************************************/
 /*!
  * Social 1: Implementation for Wirez
@@ -494,7 +539,7 @@ function _getPeopleListError(){
 /**
  *  Log users in
  */
-function Cala_usersLogMeIn(_iam, _pwd, callMeSuccess, callMeError){
+function Cala_usersLogMeIn(details){
 
 	d("Loging in");
 
@@ -505,18 +550,28 @@ function Cala_usersLogMeIn(_iam, _pwd, callMeSuccess, callMeError){
 		data: {
 			w: "users",
 			r: "users_log_me_in",
-			iam: _iam,
-			pwd: _pwd
+			iam: '',
+			userName: details.params.userName,
+			pwd: details.params.pwd
 		},
-		success: function (data) {
-			details = {sessionKey: data.resp, userName: _iam}
-			callMeSuccess(details);
+		success: function (data){
+			if(data.resp != ERROR_USER_WRONG_LOGIN_INFO){
+				Cala_usersLogMeInSuccess(data);
+				details.onSuccess(data);
+			}else{
+				details.onError(ERROR_USER_WRONG_LOGIN_INFO);
+			}
 		},
 		error: function (data){
-			callMeError(ERROR_ERROR);
+			details.onError(ERROR_ERROR);
 		}
 	});
+}
 
+function Cala_usersLogMeInSuccess(data){
+	keyStore(VAR_CURRENT_USER_NAME, data.resp.userName);
+	keyStore(VAR_CURRENT_SESSION_KEY, data.resp.sessionKey);
+	Calas_SESSION_KEY = data.resp.sessionKey;
 }
 
 /**
@@ -532,9 +587,9 @@ function Cala_usersGetMyDetails(callMeSuccess, callMeError){
 		dataType: "json",
 		data: {
 			w: "users",
-			r: "users_get_my_details",
-			iam: Cala_IAM,
-			sessionKey: Cala_SESSION_KEY
+		r: "users_get_my_details",
+		iam: Cala_IAM,
+		sessionKey: Cala_SESSION_KEY
 		},
 		success: function (data) {
 			callMeSuccess(data);
@@ -716,7 +771,7 @@ function _logMeOutRmKeys(){
 
 	Tpl_msgSuccess("Good bye :)");
 
-	keysGone = [VAR_CURRENT_USER_NAME, VAR_CURRENT_SESSION_KEY, VAR_LAST_MSG_ID];
+	keysGone = [VAR_CURRENT_USER_NAME, VAR_CURRENT_SESSION_KEY];
 
 	for(i = 0; i < keysGone.length; i++){
 		removeKey(keysGone[i]);
@@ -737,11 +792,18 @@ function _logMeOutError(){
 }
 
 // I log people in
-function logMeIn(){
+function Tpl_logMeIn(){
 
 	say("Logging in");
 
-	Cala_usersLogMeIn($("#userName").val(), $("#pwd").val(), _logMeInSuccess, _logMeInError);
+	Cala_usersLogMeIn({
+		params: {
+			userName: $("#myUserName").val(),
+		pwd: $("#myPwd").val()
+		},
+		onSuccess: _logMeInSuccess,
+		onError: _logMeInError
+	});
 
 	return false;
 }
@@ -751,59 +813,60 @@ function logMeIn(){
  */
 function _logMeInSuccess(details){
 
-	say("Able to login?" + details.sessionKey);
+	say("Able to login?");
 
-	if(parseInt(details.sessionKey) < 0){
+	if(parseInt(details.resp.sessionKey) < 0){
 		_logMeInError();
 	}
 	else{
-		keyStore(VAR_CURRENT_USER_NAME, details.userName);
-		keyStore(VAR_CURRENT_SESSION_KEY, details.sessionKey);
-		Calas_SESSION_KEY = details.sessionKey;
-
+		//! @todo This should be done by the Cala api
 		iGoTo($('#goToAfterLogin').val());
 	}
 }
 
 function _logMeInError(error){
 	say("Error trying to login:" + error);
-	alert("Wrong log in information");
-	return false;
+	Tpl_msgDanger("Los datos no son correctos");
 }
 
 // Register a new user
-function userRegister(){
+function Tpl_userRegister(){
+
 	say("Register a new user");
-	wirez_userRegister(
-			$("#myFullNameRegister").val(), 
-			$("#myUserNameRegister").val(),
-			$("#myEmailRegister").val(),
-			$("#myPwdRegister").val(),
-			$("#myPwdAgainRegister").val(),
-			_userRegisterSuccess,
-			_userRegisterError);
+
+	if($("#myPwdR").val() != $("#myPwdAgainR").val() || $("#myPwdR").val() == ""){
+		Tpl_msgDanger("Las claves de acceso no coinciden");
+		return false;
+	}
+
+	Cala_userRegister({
+		options: {
+			fullName: $("#myFullNameR").val(), 
+		userName: $("#myUserNameR").val(),
+		email: $("#myEmailR").val(),
+		pwd: $("#myPwdR").val(),
+		country: 'crc',
+		about: ''},
+		onSuccess: function(data){
+			say("Success in registration request");
+			if(data.resp == ERROR_USER_EXISTS){
+				Tpl_msgDanger("Este usuario ya existe");
+			}
+			else if(data.resp != ERROR_BAD_REQUEST){
+				_logMeInSuccess(data);
+			}
+			else{
+				msgAlert("Sucedio un error, quizá hay campos pendientes");
+			}
+		},
+		onError: function(){
+			say("Error in registration request");
+			Tpl_msgDanger("Sucedió un error, favor intentar nuevamente");	
+		}
+	});
+
 	return false;
-}
 
-function _userRegisterSuccess(data){
-
-	say("Success in registration request");
-
-	if(data.success == ERROR_USER_EXISTS){
-		msgAlert("This user already exists");
-	}
-	else if(data.success != ERROR_BAD_REQUEST){
-		msgAlert("Successfully registered :), You can now login");
-		_logMeInSuccess(data);
-	}
-	else{
-		msgAlert("Something wrong happened, you may have some pending fields");
-	}
-	return false;
-}
-
-function _userRegisterError(data){
-	say("Error in registration request");
 }
 
 /*****************************************************************************/
@@ -1343,11 +1406,11 @@ function wirez_uploadSomething(_w, _r, _id, _onSuccess, _onError){
  * Helper function to actually present messages to the user, you should never
  * call this directly
  */
-function _Tpl_msgAlert(what, goWhere, type){
+function _Tpl_msgAlert(what, type){
 
 	$("#Cala_alertMessages").html(''
-			+ '<div class="alert alert-'+type+' alert-dismissible" role="alert">'
-			+ '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+			+ '<div class="alert alert-'+type+' alert-dismissible fade in" role="alert">'
+			+ '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>'
 			+ what
 			+'</div>'
 			);

@@ -62,8 +62,8 @@ var ERROR_MSGS_NOTHING_FOUND    = "-100";
 var ERROR_DB_NO_RESULTS_FOUND   = "-200";
 var ERROR_NO_REQUEST_DONE       = "-10";
 
-var SUCCESS_ALL_GOOD            = "-1";
-var ERROR_BAD_REQUEST           = "-2";
+var SUCCESS_ALL_GOOD            = "1";
+var ERROR_BAD_REQUEST           = "-1";
 
 var SUCCESS_USER_BG_EXISTS      = "301";
 var ERROR_NO_VALID_USER         = "-300";
@@ -317,7 +317,7 @@ function wirez_getPeopleList(name, initHere, callMeSuccess, callMeError){
 
 
 // Update profile
-function wirez_userUpdateProfile(options){
+function wirez_userUpdateProfile1(options){
 
 	d("Updating profile");
 
@@ -401,46 +401,6 @@ function wirez_userLogMeOut(callMeSuccess, callMeError){
 		},
 		success: function (data) {
 			callMeSuccess(data);
-		},
-		error: function (data){
-			callMeError(ERROR_ERROR);
-		}
-	});
-
-}
-
-// Register a new account
-function wirez_userRegister(_fullName, _userName, _email, _userPwd, _userPwdAgain, callMeSuccess, callMeError){
-
-	d("Register account");
-
-	$.ajax({
-		type: 'GET',
-		url: Cala_apiUrl,
-		dataType: "json",
-		data: {
-			r: "users_register",
-			w: "users",
-			fullName: _fullName,
-			userName: _userName,
-			email: _email,
-			userPwd: _userPwd,
-			userPwdAgain: _userPwdAgain,
-			about: '',
-			country: '',
-			iam: ''
-		},
-		success: function (data) {
-
-			if(data != ERROR_USER_EXISTS && data != ERROR_BAD_REQUEST){
-				details = {sessionKey: data, userName: _userName, success: 1}
-			}else{
-				d("Something wrong happened");
-				details = {success: data}
-			}
-
-			callMeSuccess(details);
-
 		},
 		error: function (data){
 			callMeError(ERROR_ERROR);
