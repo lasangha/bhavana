@@ -19,9 +19,20 @@
  *  \___\__,_|_|\__,_|
 
  *****************************************************************************/                   
+// Version
+var version = "0.1.2-dev";
+
+//! The main instance of Cala
 var Cala = Cala || {};
 
-// Some variables
+//! Some constants
+var ERROR_NO_VALID_USER         = "-300";
+var ERROR_USER_WRONG_LOGIN_INFO = "-301";
+var ERROR_USER_NO_VALID_SESSION = "-302";
+var ERROR_USER_ACCESS_DENIED    = "-303";
+var ERROR_USER_EXISTS           = "-304";
+
+//! Some variables
 //var Cala_tplPath = "tpl/";
 
 // Where is the api?
@@ -35,6 +46,25 @@ var Cala_SESSION_KEY = '';
 
 //Where do you want me to go upon logout?
 //var Cala_goOnOut = 'index.html';
+
+//Some needed stuff
+
+// Some other constants
+//! @todo move in Cala_x
+var VAR_CURRENT_USER_NAME  = "userWirez";
+var VAR_CURRENT_SESSION_KEY = "currentSessionKey";
+
+// Parameters sent via url
+var params = false;
+
+/**
+ * Run stuff during boot up, if you want me to run stuff, let me know
+ */
+var Cala_runMe = [];
+
+/**
+ * The main Cala object/class
+ */
 var Cala = function() {
 
 	var params = {};
@@ -47,23 +77,25 @@ var Cala = function() {
 			// TMP solution, I will move all params in here
 			params = window.params;	
 			if(params[which] !== undefined && params[which] != ''){
-				say("Found param with value" + params[which]);
+				Cala.say("Found param with value" + params[which]);
 				return params[which];
 			}
 			else{
-				say("No custom path");
+				Cala.say("No custom path");
 				return def;
 			}	
 		},
 		runOnReady: function(runMe){
 			$(document).ready(runMe);
 		},
-
+		say: function(what){
+			console.log(what);
+		},
 		// Not in use at the moment
 		// Get the correct page for this path
 		loadThisPath: function(){
-			say("Loading the current path??");
-			say(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + params.x);
+			Cala.say("Loading the current path??");
+			Cala.say(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + params.x);
 			path = Cala_tplPath + Cala.paramsGet('x', 'index');
 			console.log("=////////////////////////////////This path is" + path);	
 			$("#mainContent").load(path + ".html");
@@ -74,10 +106,12 @@ var Cala = function() {
 
 }();
 
-// Register a new account
+/**
+ *  Register a new account
+ */
 function Cala_userRegister(params){
 
-	say("Register account");
+	Cala.say("Register account");
 
 	$.ajax({
 		type: 'GET',
@@ -99,10 +133,10 @@ function Cala_userRegister(params){
 		success: function (data) {
 			if(data.resp != ERROR_USER_EXISTS && data.resp != ERROR_BAD_REQUEST){
 				// Log the user in
-				say("Seems like it worked");
+				Cala.say("Seems like it worked");
 				Cala_usersLogMeInSuccess(data);
 			}else{
-				say("Something wrong happened");
+				Cala.say("Something wrong happened");
 			}
 			params.onSuccess(data);
 			/*
@@ -119,24 +153,62 @@ function Cala_userRegister(params){
 
 }
 
-/*****************************************************************************/
-/*!
- * Social 1: Implementation for Wirez
- * Part ofWirez Comunication System
- * version: 0.1.2-dev
- * @requieres Wirez v0.1.2 or later
- * @requires jQuery v1.5? or later (maybe other things too)
- *
- * Copyright (c) 2015 Twisted Head
- * License: MIT
+/**
+ *  Log users out
  */
+function wirez_userLogMeOut(callMeSuccess, callMeError){
+
+	d("Log out");
+
+	$.ajax({
+		type: 'GET',
+		url: apiUrl + 'index.php',
+		dataType: "json",
+		data: {
+			r: "users_log_me_out",
+			w: "users",
+			iam: _IAM,
+			sessionKey: _SESSION_KEY
+		},
+		success: function (data) {
+			callMeSuccess(data);
+		},
+		error: function (data){
+			callMeError(ERROR_ERROR);
+		}
+	});
+
+}
 
 /**
- * Include this AT THE BOTTOM of your pages, that is all you need to do.
+  I get a list of people in the directory
+ */
+function cala_getPeopleList(name, initHere, callMeSuccess, callMeError){
 
- <script>whereAmI();</script>
+	d("Retrieving a list of contacts");
 
-*/
+	$.ajax({
+		type: 'GET',
+		url: apiUrl + 'index.php',
+		dataType: "json",
+		data: {
+			r: "users_get_list",
+			w: "users",
+		like:  name,
+		ini: initHere,
+		iam: _IAM,
+		sessionKey: _SESSION_KEY
+		},
+		success: function (data) {
+			callMeSuccess(data);
+		},
+		error: function(data){
+			callMeError(ERROR_ERROR);
+		}
+	});
+
+}
+
 
 /*****************************************************************************/
 //
@@ -144,28 +216,10 @@ function Cala_userRegister(params){
 //
 //////////////////////////////////////////////////////////////////////////////
 
-// Version
-var version = "0.1.2-dev";
-
-//Some needed stuff
-
-// Some other constants
-//! @todo move in Cala_x
-var VAR_CURRENT_USER_NAME  = "userWirez";
-var VAR_CURRENT_SESSION_KEY = "currentSessionKey";
-
-// Parameters sent via url
-var params = false;
-
-/**
- * Run stuff during boot up, if you want me to run stuff, let me know
- * @todo rename to Cala_runme or Cala.runme
- */
-var runMe = [amILoggedIn, Cala.loadThisPath, pagesSetUp];
-
 /**
  * Say stuff, this is a very minimal debugging functionality
  * @todo rename to Cala.say
+ * @deprecated
  */
 function say(what){
 	console.log("s: " + what);
@@ -178,23 +232,23 @@ function say(what){
  */
 function initMe(){
 
-	say("Booting up the car!");
+	Cala.say("Booting up the car!");
 
 	// Get the params
 	params = getUrlVars();
 	//Cala.loadParams();
 
 	if(onApp){
-		say("Running on an app...");
+		Cala.say("Running on an app...");
 	}
 	else{
-		say("Running on a stand alone...");
+		Cala.say("Running on a stand alone...");
 	}
 
 	// Run things that people want me to run
-	for(i = 0; i < runMe.length; i++){
-		say("running...");
-		justRunThis(runMe[i]);
+	for(i = 0; i < Cala_runMe.length; i++){
+		Cala.say("running...");
+		justRunThis(Cala_runMe[i]);
 	}
 
 }
@@ -202,105 +256,35 @@ function initMe(){
 function justRunThis(what){
 	what();
 }
+
 /**
  * This is what you should call from your pages, call it at the bottom
  */
-function whereAmI(){
+function Cala_boot(){
+
+	Cala_runMe.push(amILoggedIn);
+	Cala_runMe.push(Cala.loadThisPath);
+	Cala_runMe.push(pagesSetUp);
 
 	//! This will be usefull when running on an app, but it will not go here I just
 	//! don't want to touch it because I might loose it
 	if(onApp == true){
-		say("I am on an app");
+		Cala.Cala.say("I am on an app");
 
 		$.getScript( "cordova.js", function( data, textStatus, jqxhr ) {
 			document.addEventListener("deviceready", initMe, false);
-			say(data); // Data returned
-			say(textStatus); // Success
-			say(jqxhr.status); // 200
-			say("Load was performed.");
+			Cala.say(data); // Data returned
+			Cala.say(textStatus); // Success
+			Cala.say(jqxhr.status); // 200
+			Cala.say("Load was performed.");
 		});
 
 	}else{
-		say("I am on a computer");
+		Cala.say("I am on a computer");
 		$(document).ready(initMe);
 	}
 }
 
-/*****************************************************************************/
-//
-// Tools
-//
-//////////////////////////////////////////////////////////////////////////////
-
-/**
- * Set up the page, I will call any custom functions that you may have set up
- * to configure this page
- */
-function pagesSetUp(){
-
-	// Get the current page id
-	pageId = "customize_" + $("body").attr("id");
-
-	say("This page id is: " + $("body").attr("id"));
-
-	// Customize if required
-	if (window[pageId] !== undefined) {
-		window[pageId]();
-	}
-	else{
-		say("No customization required");
-	}
-
-}
-
-// Parse a date from a UTC timestamp
-// Read more https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Text_formatting
-function dateParse(timestamp){
-
-	//var utcSeconds = 1234567890;
-	var d = new Date(0);
-	d.setUTCSeconds(timestamp);
-	timestamp = d.toString();
-
-	return timestamp;
-
-}
-
-// I will redirect somewhere
-function iGoTo(goTo){
-	say("Going to: " + basePath + goTo);
-	window.location.href = goTo;
-}
-
-// http://phpjs.org/functions/strpos/
-function strpos(haystack, needle, offset) {
-	//  discuss at: http://phpjs.org/functions/strpos/
-	// original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-	// improved by: Onno Marsman
-	// improved by: Brett Zamir (http://brett-zamir.me)
-	// bugfixed by: Daniel Esteban
-	//   example 1: strpos('Kevin van Zonneveld', 'e', 5);
-	//   returns 1: 14
-
-	var i = (haystack + '')
-		.indexOf(needle, (offset || 0));
-	return i === -1 ? false : i;
-}
-
-// Parse url parameters
-// http://jquery-howto.blogspot.com/2009/09/get-url-parameters-values-with-jquery.html
-function getUrlVars(){
-	var vars = [], hash;
-	var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-	for(var i = 0; i < hashes.length; i++)
-	{
-		hash = hashes[i].split('=');
-		vars.push(hash[0]);
-		vars[hash[0]] = hash[1];
-		say("Found param: " + hash[0] + hash[1]);
-	}
-	return vars;
-}
 
 /*****************************************************************************/
 //
@@ -308,113 +292,7 @@ function getUrlVars(){
 //
 //////////////////////////////////////////////////////////////////////////////
 
-/**
- * Change the background for pages
- * @todo Move this into a plugin
- */
-function tplBackgroundGenerateRandom(){
-	say("Generating random background");
-	return basePath + "img/bgs/bg_" + Math.floor((Math.random() * 10) + 1) + ".jpg";
-}
 
-// Helper function to handle the actual changing of the background
-function _tplSetBodyBackgroundCorrectly(path){
-
-	tmpDate = new Date();
-	path = path + "&foolCache=" + tmpDate.getTime();
-	$("body").css("background", "url(" + path + ") no-repeat center center fixed");
-	$("body").css("background-size", "cover");
-
-}
-
-// I set the correct background depending on the page type
-function tplSetCorrectBackground(){
-
-	// Get a random background
-	bg = tplBackgroundGenerateRandom();
-
-	if($("body").hasClass("custom")){
-		say("This page uses a custom background");
-		// Request the user's background
-		_tplSetBodyBackgroundCorrectly(wirez_userGetBackgroundPath(keyGet(VAR_CURRENT_USER_NAME, "---"), bg));	
-	}
-	else{
-		_tplSetBodyBackgroundCorrectly(bg);
-	}
-
-}
-
-// If there is no conversation I will handle the error
-// @todo I should really handle this things better
-// @todo Move to wirez
-function _setConvDetailsError(details){
-	say("No Conversation, or some error");
-	iGoTo("directory.html");
-}
-
-// Helper function to set the details about the conversation in the form
-function _setConvDetailsSuccess(response){
-
-	details = response.resp;
-
-	say("Setting the conversation details" + messagesFixTitle(details.subject));
-	// Restore the subject title, if it was hidden
-	$("#subjectTitle").show();
-	$("#toWire").hide();
-	$("#subject").hide();
-	$("#subjectTitle").html("(" + details.recipientWire + ") " + details.subject);
-	$("#conversationMessageTitle").html("(" + details.recipientWire + ") " + messagesFixTitle(details.subject));
-	$("#idConversation").val(details.idConversation);
-
-	// Set the background, I will put the background from the other party
-	say("Changing the background of this conversation");
-
-	if(keyGet(VAR_CURRENT_USER_NAME, "---") == details.recipientWire){
-		say("I am the eggman");
-		$("#toWire").val(details.senderWire);
-		_tplRequestNewBackground(details.senderWire);
-	}
-	else{
-		say("coo coo cu chu" + details.recipientWire);
-		$("#toWire").val(details.recipientWire);
-		_tplRequestNewBackground(details.recipientWire);
-	}
-
-	getMsgsInConversation();
-
-}
-
-// Change values to start a new conversation, this must be set before goint to the page
-// @deprecated?
-function startNewConversation(recipient){
-	say("Starting a new conversation");
-	gotoConversation("0", recipient);
-}
-
-// Add html break lines to the text
-function textAddBreakLines(text){
-	var theKey = "\n";
-	var re = new RegExp(theKey, "g");
-	text = text.replace(re, "<br />");
-	return text;
-}
-
-// I parse a tpl and replace it with some values
-function parseTpl(tpl, values, bl){
-	for (var key in values) {
-		var theKey = "{" + key + "}";
-		var re = new RegExp(theKey, "g");
-		tpl = tpl.replace(re, values[key]);
-	}
-
-	// Should I add html breakLines?
-	if(bl == true){
-		tpl = textAddBreakLines(tpl);
-	}
-
-	return tpl;
-
-}
 
 /***************************************************************************
  *
@@ -424,7 +302,7 @@ function parseTpl(tpl, values, bl){
 
 //! Store keys in local storage
 function keyStore(key, value){
-	say("Storing key: " + key);
+	Cala.say("Storing key: " + key);
 	window.localStorage.setItem(key, value);
 	return true;
 }
@@ -433,17 +311,17 @@ function keyStore(key, value){
 function keyGet(key, defaultValue){
 	var value = window.localStorage.getItem(key);
 	if(value == null){
-		say("No value found, I will use the default");
+		Cala.say("No value found, I will use the default");
 		value = defaultValue;
 	}
-	say("Gotten Key: " + key + " with value: " + value);
+	Cala.say("Gotten Key: " + key + " with value: " + value);
 	return value;
 }
 
 //! Remove key from local storage
 function removeKey(theKey){
 
-	say("Removing key: " + theKey);
+	Cala.say("Removing key: " + theKey);
 	// Remove them all
 	if(theKey == ''){
 	
@@ -463,9 +341,9 @@ function removeKey(theKey){
   */
 function getPeopleList(){
 
-	say("Retrieving a list of contacts");
+	Cala.say("Retrieving a list of contacts");
 
-	wirez_getPeopleList($("#personLike").val(), params.ini != undefined ? params.ini : 0, _getPeopleListSuccess, _getPeopleListError);
+	cala_getPeopleList($("#personLike").val(), params.ini != undefined ? params.ini : 0, _getPeopleListSuccess, _getPeopleListError);
 
 	return false;
 
@@ -474,7 +352,7 @@ function getPeopleList(){
 // Helper function to create the people list
 function _getPeopleListSuccess(data){
 
-	say("Found people apparently");
+	Cala.say("Found people apparently");
 
 	// Nothing found actually
 	if(data.resp == ERROR_DB_NO_RESULTS_FOUND){
@@ -502,7 +380,7 @@ function _getPeopleListSuccess(data){
 		$("#peopleListing").empty();
 
 		for(var contact in data.resp) {
-			say("Setting contact...");
+			Cala.say("Setting contact...");
 			var thisContact = data.resp[contact];
 
 			// Fix name
@@ -520,7 +398,7 @@ function _getPeopleListSuccess(data){
 // Error on getting people listing
 function _getPeopleListError(){
 
-	say("Error getting a list of people");
+	Cala.say("Error getting a list of people");
 
 	$("#peopleListing").empty();
 
@@ -579,7 +457,7 @@ function Cala_usersLogMeInSuccess(data){
  */
 function Cala_usersGetMyDetails(callMeSuccess, callMeError){
 
-	say("Getting my details");
+	Cala.say("Getting my details");
 
 	$.ajax({
 		type: 'GET',
@@ -605,22 +483,22 @@ function Cala_usersGetMyDetails(callMeSuccess, callMeError){
  *  Get MY details, you need to be logged in in order for this to work
  */
 function Tpl_usersGetMyDetails(){
-	say("Getting my details");
+	Cala.say("Getting my details");
 	Cala_usersGetMyDetails(
 			function(data){
 				if(typeof data.resp == 'object'){
-					say("Got user details, at least it looks like it :)");
+					Cala.say("Got user details, at least it looks like it :)");
 					$("#myFullName").val(data.resp.fullName);
 					$("#myUserName").val(data.resp.userName);
 					$("#myEmail").val(data.resp.email);
 					$("#myAccountAbout").val(data.resp.about);
 				}
 				else{
-					say("Some error with the account details");
+					Cala.say("Some error with the account details");
 				}
 			},
 			function(){
-				say("There was an error retrieving your information");
+				Cala.say("There was an error retrieving your information");
 			});
 }
 
@@ -629,7 +507,7 @@ function Tpl_usersGetMyDetails(){
  */
 function Cala_usersSetEditAccount(){
 
-	say("Customizing my account");
+	Cala.say("Customizing my account");
 
 	//! @todo restore this
 	//myAccountSetAvatar();
@@ -652,7 +530,7 @@ function Cala_usersSetEditAccount(){
  */
 function Cala_usersUpdateAccount(details){
 
-	say("Updating the user account");
+	Cala.say("Updating the user account");
 
 	$.ajax({
 		type: 'POST',
@@ -689,7 +567,7 @@ function Cala_usersUpdateAccount(details){
  */
 function Tpl_usersUpdateAccount(){
 
-	say("Updating the user account...");
+	Cala.say("Updating the user account...");
 
 	Cala_usersUpdateAccount({
 		requestData: {
@@ -702,19 +580,19 @@ function Tpl_usersUpdateAccount(){
 		onSuccess: function(data){
 			if(data.resp == ERROR_NO_REQUEST_DONE){
 				Tpl_msgWarning("Hubo un error actualizando sus datos, favor intente de nuevo más tarde");
-				say("Something happened");
+				Cala.say("Something happened");
 			}else if(data.resp == ERROR_USER_EXISTS){
 				Tpl_msgWarning("Los datos ya existen, intente con otro correo electrónico o nombre de usuario");
 			}
 			else{
-				say("Success updating profile");
+				Cala.say("Success updating profile");
 				Tpl_msgWarning("Sus datos fueron actualizados satisfactoriamente");
 				// Refresh this page
 				iGoTo("?x=myAccount");
 			}
 		},
 		onError: function(){
-			say("Error updating profile")
+			Cala.say("Error updating profile")
 				Tpl_msgWarning("Hubo un error actualizando sus datos, favor intente de nuevo más tarde");
 		}
 	});
@@ -724,7 +602,7 @@ function Tpl_usersUpdateAccount(){
 // Change the login info and put my name in it
 function amILoggedIn(){
 
-	say("Am I logged in?");
+	Cala.say("Am I logged in?");
 
 	// This should be changed to the actual name
 	myName = keyGet(VAR_CURRENT_USER_NAME, "---");
@@ -736,7 +614,7 @@ function amILoggedIn(){
 	wirez_requestData.sessionKey = keyGet(VAR_CURRENT_SESSION_KEY, "123");
 
 	if(keyGet(VAR_CURRENT_USER_NAME, "---") != "---"){
-		say("Yes I am");
+		Cala.say("Yes I am");
 		$("#logMeIn").text("");
 
 		$("#userMenuTitle").html(myName);
@@ -757,7 +635,7 @@ function amILoggedIn(){
 		//messagesSetCheckThemOut();
 	}
 	else{
-		say("No, I will have to go to the login page");
+		Cala.say("No, I will have to go to the login page");
 	}
 
 	// Set a new background
@@ -766,13 +644,18 @@ function amILoggedIn(){
 
 }
 
-// I log people out
+/**
+ * TPL
+ * I log people out
+ */
 function logMeOut(){
-
 	wirez_userLogMeOut(_logMeOutSuccess, _logMeOutError);
 	return false;
 }
 
+/**
+ * Remove keys after logout
+ */
 function _logMeOutRmKeys(){
 
 	Tpl_msgSuccess("Good bye :)");
@@ -788,19 +671,19 @@ function _logMeOutRmKeys(){
 }
 
 function _logMeOutSuccess(){
-	say("Successfully logged out");
+	Cala.say("Successfully logged out");
 	_logMeOutRmKeys();
 }
 
 function _logMeOutError(){
-	say("Error logging out with errors apparently");
+	Cala.say("Error logging out with errors apparently");
 	_logMeOutRmKeys();
 }
 
 // I log people in
 function Tpl_logMeIn(){
 
-	say("Logging in");
+	Cala.say("Logging in");
 
 	Cala_usersLogMeIn({
 		params: {
@@ -819,7 +702,7 @@ function Tpl_logMeIn(){
  */
 function _logMeInSuccess(details){
 
-	say("Able to login?");
+	Cala.say("Able to login?");
 
 	if(parseInt(details.resp.sessionKey) < 0){
 		_logMeInError();
@@ -831,14 +714,14 @@ function _logMeInSuccess(details){
 }
 
 function _logMeInError(error){
-	say("Error trying to login:" + error);
+	Cala.say("Error trying to login:" + error);
 	Tpl_msgDanger("Los datos no son correctos");
 }
 
 // Register a new user
 function Tpl_userRegister(){
 
-	say("Register a new user");
+	Cala.say("Register a new user");
 
 	if($("#myPwdR").val() != $("#myPwdAgainR").val() || $("#myPwdR").val() == ""){
 		Tpl_msgDanger("Las claves de acceso no coinciden");
@@ -854,7 +737,7 @@ function Tpl_userRegister(){
 		country: 'crc',
 		about: ''},
 		onSuccess: function(data){
-			say("Success in registration request");
+			Cala.say("Success in registration request");
 			if(data.resp == ERROR_USER_EXISTS){
 				Tpl_msgDanger("Este usuario ya existe");
 			}
@@ -866,7 +749,7 @@ function Tpl_userRegister(){
 			}
 		},
 		onError: function(){
-			say("Error in registration request");
+			Cala.say("Error in registration request");
 			Tpl_msgDanger("Sucedió un error, favor intentar nuevamente");	
 		}
 	});
@@ -876,387 +759,14 @@ function Tpl_userRegister(){
 }
 
 /*****************************************************************************/
-//
-// Messaging and conversations
-// @todo move all this to wirez
-//
-//////////////////////////////////////////////////////////////////////////////
-
-// Send messages from the form
-function sendMsg(){
-
-	say("Sending message");
-
-	wirez_sendMsg(
-			keyGet(VAR_CURRENT_USER_NAME, "---"),
-			$('#toWire').val(),
-			$('#mainTextMessages').val(),
-			$('#idConversation').val(),
-			$("#subject").val(),
-			_sendMsgSuccess,
-			_sendMsgError);
-
-	return false;
-}
-
-// Helper function to send messages, once they have been sent
-function _sendMsgSuccess(data){
-
-	say("Conversation ID: " + data.idConversation);
-
-	if(params['startNew'] == 'true'){
-		iGoTo("conversation.html?withWire=" + data.recipientWire + "&idConversation=" + data.idConversation);
-	}else{
-		$("#mainTextMessages").val("");
-		$("#mainTextMessages").focus();
-		getMsgsInConversation();
-	}
-
-}
-
-// Errors while sending messages
-function _sendMsgError(){
-	say("There was an error while sending a message");
-}
-
-// Gets a list of recent conversations with pending or new messages, this is for the general view 
-function getRecentMessages(){
-
-	// Are you looking for someone in specific?
-	params = getUrlVars();
-
-	say("Messages with:" + params.withWire);
-
-	if(params.withWire != undefined){
-		withWire = params.withWire;
-	}else{
-		withWire = "";
-	}
-
-	wirez_getRecentMessages(withWire, 0, _getRecentMessagesParse, _getRecentMessagesError);
-
-}
-
-// Parse the list of new messages
-function _getRecentMessagesParse(data){
-
-	if(data.resp == ERROR_MSGS_NOTHING_FOUND || data.rep == ERROR_DB_NO_RESULTS_FOUND){
-		_getRecentMessagesError();
-	}else{
-
-		say("Got new messages, I will parse them");
-
-		var tpl = ''
-			+ '<a href="conversation.html?idConversation={idConversation}&withWire={withWhom}">'
-			+ '<div class="panel panel-success">'
-			+ '<div class="panel-heading"><h1 class="panel-title">{subject}</h1></div>'
-			+ '<div class="panel-body"><div class="well">{text}</div>'
-			+ ' <span class="senderName label label-info">{senderName}</span> >> <span class="label label-success recieverName">{recipientName}</span>'
-			+ '  @ <span class="label label-default msgTime">{parsedDate}</span>'
-
-			+ '</div></div></a>';
-
-		// Clear the list first
-		$("#latestMessages").empty();
-
-		for(var conversation in data.resp.msgs) {
-			console.log("s-ssssssssssssssssssssssssssssssssssssssssssssssssssssss");
-			$("#msgsListingNoMessagesFoundWrapper").html("");
-			var thisConversation = data.resp.msgs[conversation];
-			thisConversation['withWhom'] = thisConversation.recipientWire == keyGet(VAR_CURRENT_USER_NAME, "---")
-				? thisConversation.senderWire
-				: thisConversation.recipientWire;
-			thisConversation['subject'] = messagesFixTitle(thisConversation['subject']);
-			thisConversation['parsedDate'] = dateParse(thisConversation['timestamp']);
-			$("#latestMessages").append(parseTpl(tpl, thisConversation, true));
-		}
-	}
-
-}
-
-/**
- * There was an error with the recent messages
- *  @todo I should be able to handle this better
- */
-function _getRecentMessagesError(){
-
-	say("Error with the messages");
-
-	$("#msgsListingNoMsgsFoundImage").attr('src', 'img/noMessagesFound.png');
-
-	params = getUrlVars();
-
-	$("#msgsListingNoMessagesFoundTitle").html("No Messages Found :(");
-
-	if(params.withWire != undefined){
-		$("#msgsListingNoMsgsFoundImage").attr("src", wirez_userGetAvatarPath(params.withWire, "250"));
-		$("#msgsListingNoMsgsFoundImgLink").attr("href", "conversation.html?withWire=" + params.withWire + "&idConversation=0&startNew=true");
-		$("#msgsListingNoMsgsFoundLink").attr("href",  "conversation.html?withWire=" + params.withWire + "&idConversation=0&startNew=true");
-		$("#msgsListingNoMsgsFoundLink").html("Talk to them...");
-	}
-	else{
-
-	}
-}
-
-/**
- * Go back in the conversations history
- */
-function conversationGoBack(){
-
-	say("Going back in time with the messages");
-
-	if($("#paginationGoBack").hasClass("disabled")){
-		return false;
-	}
-	else{
-		//return conversationGo();
-	}
-	return false;
-
-}
-
-/**
- * Each time a link is clicked I need to see if there is a search in progress
- */
-function conversationGo(){
-
-	// Update links
-	$("#paginationGoBackLink").attr('href', $("#paginationGoBackLink").attr('href') + "&like=" + searching);
-	$("#paginationGoNextLink").attr('href', $("#paginationGoNextLink").attr('href') + "&like=" + searching);
-
-	return true;
-
-}
-
-/**
- * I get messages in the conversation
- */
-function getMsgsInConversation(){
-	wirez_getMessagesInConversation(
-			{
-				idConversation: $("#idConversation").val(),
-	lastMsgId: $("#lastMsgId").val(),
-	withWire: $("#toWire").val()
-			},
-			_getMgsInConversationSuccess,
-			_getRecentMessagesError);
-}
-
-/**
- * Helper function to display the messages in a conversation
- */
-function _getMgsInConversationSuccess(data){
-
-	if(data.resp == ERROR_MSGS_NOTHING_FOUND){
-		_getMgsInConversationError();
-	}else{
-
-		say("Formating messages");
-
-		$("#messagesInConversationSearching").html("");
-
-		var tpl = '<li class="list-group-item messagesInConversationEach" id="msgId-{idMsg}">'
-			+ '<input type="hidden" value="{idMsg}" class="messagesInConversationId">'
-			+ '<div class="well messagesInConversationTextEach">'
-			+ '<div class="thumbnail messagesInConversationSenderAvatar">'
-			+ '<img src="{senderAvatar}" class="messagesInConversationSenderAvatarImage avatar-{senderWire}">'
-			+ '</div>'
-			+ '<div class="thumbnail messagesInConversationRecipientAvatar">'
-			+ '<img src="{recipientAvatar}" class="messagesInConversationRecipientAvatarImage avatar-{recipientWire}">'
-			+ '</div>'
-			+ '<div class="messagesInConversationHeaderEach">'
-			+ ' <span class="label label-default msgTime">@{date}</span>'
-			+ '</div>'
-			+ '<div class="messagesInConversationTextEachOne">{text}</div>'
-			+ '	</div>'
-			+ ''
-			+ '</li>';
-
-		var ulMsgs = "";
-
-		$("#lastMsgId").val(data.resp.lastMsgId);
-
-		var msgs = data.resp.msgs;
-
-		thisUserWire = keyGet(VAR_CURRENT_USER_NAME, "--");
-
-		for(var prop in msgs) {
-			var thisMsg = msgs[prop];
-			say("Getting message");
-
-			// Conversation subject
-			var subject = '';
-			thisMsg.subject = messagesFixTitle(thisMsg.subject);
-
-			thisMsg.date = dateParse(thisMsg.msgTime);
-
-			if(thisUserWire == thisMsg.senderWire){
-				thisMsg.senderWire
-			}
-
-			thisMsg.senderAvatar = wirez_userGetAvatarPath(thisMsg.senderWire, 50);
-			thisMsg.recipientAvatar = wirez_userGetAvatarPath(thisMsg.recipientWire, 50);
-
-			$("#allMessagesInConversation").append(parseTpl(tpl, thisMsg, true));
-			window.scrollTo(0, document.body.scrollHeight);
-		}
-	}
-}
-
-/**
- * 'Fix' titles in conversations or messages
- */
-function messagesFixTitle(subject){
-	if(subject == null || subject == "" || subject == undefined){
-		return 'Just chatting';
-	}
-	else{
-		return subject;
-	}
-
-}
-
-/**
- * Errors in messages in conversations
- */
-function _getMgsInConversationError(){
-
-	say("Error with the messages or no messages at all");
-
-	$("#messagesInConversationNotFoundImage").attr('src', 'img/noMessagesFound.png');
-	$("#messagesInConversationDetailsTitle").hide();
-
-}
-
-/**
- * Am I already checking for messages?
- */
-var messagesCheckingForNew = false;
-
-// Set the timer to check for new messages
-function messagesSetCheckThemOut(){
-
-	// If I have no idea what the last read message is, I will assume 0
-	if(keyGet(VAR_LAST_MSG_ID, -1) == -1){
-		keyStore(VAR_LAST_MSG_ID, 0);
-	}
-
-	say("Checking for new messages every: " + (parseInt(checkNewMessagesEvery) * 1000));
-
-	// Call and set the interval
-	_messagesCheckNewTopBar();
-
-	setInterval(_messagesCheckNewTopBar, (parseInt(checkNewMessagesEvery) * 1000));
-
-}
-
-// Check for new messages and place a warning in the top bar
-function _messagesCheckNewTopBar(){
-
-	if(messagesCheckingForNew == false){
-		say("Let's see if there are any new messages");
-		messagesCheckingForNew = true;
-		wirez_getRecentMessages("", keyGet(VAR_LAST_MSG_ID, 0),  _messagesCheckNewTopBarSuccess, _messagesCheckNewTopBarError);
-	}
-	else{
-		say("I am already checking for new messages");
-	}
-}
-
-// Create a standard subject for messages if none was given
-function messagesCreateSubject(conversation){
-
-	if(conversation.subject == ""){
-		conversation.subject = "Just chatting";
-	}
-
-	return conversation;
-}
-
-// If there are new messages, I will put them in the top bar
-function _messagesCheckNewTopBarSuccess(data){
-
-	say("Got information about new messages");
-
-	tpl = '<li>'
-		+ '<a href="conversation.html?withWire={wire}&idConversation={idConversation}|{idMsg}">'
-		+ '<div id="topNavBarMessagesContainer" class="topNavBarMessagesContainer">'
-		+ '<img src="{avatar}" class="topNavBarMessagesAvatar">'
-		+ '<div class="topNavBarMessagesSubject">{subject}</div>'
-		+ '<div class="topNavBarMessagesText">{text}</div>'
-		+ '<small class="topNavBarMessagesSenderName">{senderName}</small>'
-		+ '</div>'
-		+ '</a>'
-		+ '</li>';
-
-	if(data.resp.totalMessages > 0){
-
-		say("Found new pending messages");
-
-		$("#messagesRecentTopNavBarTotalNewFound").text(data.resp.totalMessages);
-
-		$("#messagesRecentTopNavBarListing").empty();
-
-		for(var prop in data.resp.msgs) {
-
-			say("Getting message");
-
-			var thisMsg = data.resp.msgs[prop];
-
-			// Conversation subject
-			thisMsg = messagesCreateSubject(thisMsg);
-			thisMsg.avatar = wirez_userGetAvatarPath(thisMsg.senderAvatar, '25');
-			thisMsg.text = thisMsg.text.substring(0, 25);
-			thisMsg.subject = messagesFixTitle(thisMsg.subject).substring(0, 20);
-			$("#messagesRecentTopNavBarListing").append(parseTpl(tpl, thisMsg, true));
-		}
-
-	}else{
-		say("No new messages apparently");
-	}
-
-	messagesCheckingForNew = false;
-
-}
-
-// If there are new messages, I will put them in the top bar
-function _messagesCheckNewTopBarError(data){
-	say("There was an error trying to get new messages");
-	messagesCheckingForNew = false;
-}
-
-
-/*****************************************************************************/
 // Custom pages
 //
 //////////////////////////////////////////////////////////////////////////////
 
-/**
- * Customize conversations
- */
-function customize_conversation(){
-	say("I am a conversation");
-	runMe.push(setPageForConversations);
-
-	// Pagination
-	// Go right
-	if(params.ini == undefined || parseInt(params.ini) <= 0){
-		say("No where to go back");
-		$("#paginationGoBack").addClass("disabled");
-		$("#paginationGoNextLink").attr('href', 'directory.html?ini=10');
-	}
-	else{
-		$("#paginationGoBackLink").removeAttr('onclick');
-		$("#paginationGoBackLink").attr('href', 'directory.html?ini=' + (parseInt(params.ini) - 10) + like);
-		$("#paginationGoNextLink").attr('href', 'directory.html?ini=' + (parseInt(params.ini) + 10) + like);
-	}
-}
-
 // Customize directory
 function customize_directory(){
 
-	runMe.push(getPeopleList);
+	Cala_runMe.push(getPeopleList);
 
 	// searching for someone?	
 	like = "";
@@ -1268,7 +778,7 @@ function customize_directory(){
 
 	// Go right
 	if(params.ini == undefined || parseInt(params.ini) <= 0){
-		say("No where to go back");
+		Cala.say("No where to go back");
 		$("#paginationGoBack").addClass("disabled");
 		$("#paginationGoNextLink").attr('href', 'directory.html?ini=10');
 	}
@@ -1277,6 +787,7 @@ function customize_directory(){
 		$("#paginationGoBackLink").attr('href', 'directory.html?ini=' + (parseInt(params.ini) - 10) + like);
 		$("#paginationGoNextLink").attr('href', 'directory.html?ini=' + (parseInt(params.ini) + 10) + like);
 	}
+
 }
 
 function directoryGoBack(){
@@ -1306,7 +817,7 @@ function directoryGo(){
 // Set the personal background on my account
 function myAccountSetBackground(){
 	tmpDate = new Date();
-	say("Changing the background");
+	Cala.say("Changing the background");
 	$("body").attr("src", "img/loader_big.gif");
 	$("#myAccountMyAvatar").attr("src", wirez_userGetAvatarPath(keyGet(VAR_CURRENT_USER_NAME, "---"), "250") + "&" + tmpDate.getTime());
 }
@@ -1314,93 +825,29 @@ function myAccountSetBackground(){
 // Set the avatar in the account page, this is for each user too see THEIR own avatar
 function myAccountSetAvatar(){
 	tmpDate = new Date();
-	say("Changing the avatar");
+	Cala.say("Changing the avatar");
 	$("#myAccountMyAvatar").attr("src", "img/loader_big.gif");
 	$("#myAccountMyAvatar").attr("src", wirez_userGetAvatarPath(keyGet(VAR_CURRENT_USER_NAME, "---"), "250") + "&" + tmpDate.getTime());
 }
 
-/**
- * Customize pages for conversations
- * @ todo leave if idConversation == 0 and withWire == undefined
- */
-function setPageForConversations(){
+/****************************************************************************
+/*!
+ * Cala Framework Template System: To make your life preetier
+ * version: 0.1.0-dev
+ * @requires jQuery v1.5? or later (maybe other things too)
+ *
+ * Copyright (c) 2015 Twisted Head
+ * License: MIT
 
-	// Do you know who you will be talking to?
-	if(params['withWire'] == undefined || params['idConversation'] == undefined){
-		iGoTo("directory.html");
-	}
+ * Include this AT THE BOTTOM of your pages, that is all you need to do.
 
-	$("#toWire").val(params['withWire']);
+ *           | |      
+ *   ___ __ _| | __ _ 
+ *  / __/ _` | |/ _` |
+ * | (_| (_| | | (_| |
+ *  \___\__,_|_|\__,_|
 
-	// Is this a new conversation
-	if(params['idConversation'] == 0){
-		say("This is the general conversation");
-		// Unless you want to start a new conversation, I will start fresh
-		if(params['startNew'] == undefined){
-			_setConvDetailsSuccess({
-				resp:{
-					recipientWire: params['withWire'],
-				subject: messagesFixTitle(""),
-				idConversation: 0,
-				senderWire: keyGet(VAR_CURRENT_USER_NAME, "--")
-				}
-			});
-		}
-		else{
-			_getMgsInConversationError();
-		}
-	}
-	else{
-		say("This is an old conversation");
-		// Hide the subject input in the form
-		$("#subject").hide();
-		// Get the details about the conversation
-		wirez_getConvDetails(params['idConversation'], _setConvDetailsSuccess, _setConvDetailsError);
-	}
-
-	$("#toWire").val(params['withWire']);
-
-	$("#mainTextMessages").focus();
-
-	$('#mainTextMessages').keypress(function(e){
-		console.log(e.which);
-		if(e.which == 13){
-			if(e.shiftKey){
-				return true;
-			}else{
-				console.log("going to send this thing!");
-				sendMsg();
-				return false;
-			}
-		}
-		console.log("going to send this thing! not");
-	});
-
-}
-
-/*****************************************************************************/
-//
-// Other tools
-//
-//////////////////////////////////////////////////////////////////////////////
-
-// Upload avatars
-function wirez_uploadSomething(_w, _r, _id, _onSuccess, _onError){
-	// I whished this used the internal api, but I have not been able to make it work
-	var wirez_settingsUploader = {
-		url: apiUrl + "index.php",
-		formData: {w: _w, r: _r, iam: Cala_IAM, sessionKey: Cala_SESSION_KEY},
-		dragDrop: true,
-		fileName: "fileToUpload",
-		returnType:"json",
-		onError: _onError,
-		onSuccess: _onSuccess,
-		showDelete: false
-	}
-
-	var wirez_uploadAvatarObj = $(_id).uploadFile(wirez_settingsUploader);
-}
-
+ *****************************************************************************/                   
 
 /*****************************************************************************/
 //
@@ -1449,4 +896,167 @@ function Tpl_msgSuccess(what){
 function _Tpl_alert(what){
 	alert(what);
 }
+
+/*****************************************************************************/
+//
+// Other tools
+//
+//////////////////////////////////////////////////////////////////////////////
+
+// Upload avatars
+function wirez_uploadSomething(_w, _r, _id, _onSuccess, _onError){
+	// I whished this used the internal api, but I have not been able to make it work
+	var wirez_settingsUploader = {
+		url: apiUrl + "index.php",
+		formData: {w: _w, r: _r, iam: Cala_IAM, sessionKey: Cala_SESSION_KEY},
+		dragDrop: true,
+		fileName: "fileToUpload",
+		returnType:"json",
+		onError: _onError,
+		onSuccess: _onSuccess,
+		showDelete: false
+	}
+
+	var wirez_uploadAvatarObj = $(_id).uploadFile(wirez_settingsUploader);
+}
+
+/**
+ * Change the background for pages
+ * @todo Move this into a plugin
+ */
+function tplBackgroundGenerateRandom(){
+	Cala.say("Generating random background");
+	return basePath + "img/bgs/bg_" + Math.floor((Math.random() * 10) + 1) + ".jpg";
+}
+
+// Helper function to handle the actual changing of the background
+function _tplSetBodyBackgroundCorrectly(path){
+
+	tmpDate = new Date();
+	path = path + "&foolCache=" + tmpDate.getTime();
+	$("body").css("background", "url(" + path + ") no-repeat center center fixed");
+	$("body").css("background-size", "cover");
+
+}
+
+// I set the correct background depending on the page type
+function tplSetCorrectBackground(){
+
+	// Get a random background
+	bg = tplBackgroundGenerateRandom();
+
+	if($("body").hasClass("custom")){
+		Cala.say("This page uses a custom background");
+		// Request the user's background
+		_tplSetBodyBackgroundCorrectly(wirez_userGetBackgroundPath(keyGet(VAR_CURRENT_USER_NAME, "---"), bg));	
+	}
+	else{
+		_tplSetBodyBackgroundCorrectly(bg);
+	}
+
+}
+
+// I parse a tpl and replace it with some values
+function parseTpl(tpl, values, bl){
+	for (var key in values) {
+		var theKey = "{" + key + "}";
+		var re = new RegExp(theKey, "g");
+		tpl = tpl.replace(re, values[key]);
+	}
+
+	// Should I add html breakLines?
+	if(bl == true){
+		tpl = textAddBreakLines(tpl);
+	}
+
+	return tpl;
+
+}
+
+/*****************************************************************************/
+//
+// Tools
+//
+//////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Set up the page, I will call any custom functions that you may have set up
+ * to configure this page
+ */
+function pagesSetUp(){
+
+	// Get the current page id
+	pageId = "customize_" + $("body").attr("id");
+
+	Cala.say("This page id is: " + $("body").attr("id"));
+
+	// Customize if required
+	if (window[pageId] !== undefined) {
+		window[pageId]();
+	}
+	else{
+		Cala.say("No customization required");
+	}
+
+}
+
+// Parse a date from a UTC timestamp
+// Read more https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Text_formatting
+function dateParse(timestamp){
+
+	//var utcSeconds = 1234567890;
+	var d = new Date(0);
+	d.setUTCSeconds(timestamp);
+	timestamp = d.toString();
+
+	return timestamp;
+
+}
+
+// I will redirect somewhere
+function iGoTo(goTo){
+	Cala.say("Going to: " + basePath + goTo);
+	window.location.href = goTo;
+}
+
+// http://phpjs.org/functions/strpos/
+function strpos(haystack, needle, offset) {
+	//  discuss at: http://phpjs.org/functions/strpos/
+	// original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+	// improved by: Onno Marsman
+	// improved by: Brett Zamir (http://brett-zamir.me)
+	// bugfixed by: Daniel Esteban
+	//   example 1: strpos('Kevin van Zonneveld', 'e', 5);
+	//   returns 1: 14
+
+	var i = (haystack + '')
+		.indexOf(needle, (offset || 0));
+	return i === -1 ? false : i;
+}
+
+// Parse url parameters
+// http://jquery-howto.blogspot.com/2009/09/get-url-parameters-values-with-jquery.html
+function getUrlVars(){
+	var vars = [], hash;
+	var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+	for(var i = 0; i < hashes.length; i++)
+	{
+		hash = hashes[i].split('=');
+		vars.push(hash[0]);
+		vars[hash[0]] = hash[1];
+		Cala.say("Found param: " + hash[0] + hash[1]);
+	}
+	return vars;
+}
+
+// If all that you need is the PATH to get the background, use this one
+function wirez_userGetBackgroundPath(_userName, fallBack){
+	return (apiUrl + "index.php?w=users&r=users_personal_bg_get&reply_type=plain&userName="+_userName+"&fallBack="+fallBack);
+}
+
+// Gets the correct path for a user avatar
+function wirez_userGetAvatarPath(wire, size){
+	return apiUrl + "index.php?w=users&r=users_avatar_get&userName=" + wire + "&size=" + size;
+}
+
 

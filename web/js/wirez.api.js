@@ -65,17 +65,7 @@ var ERROR_NO_REQUEST_DONE       = "-10";
 var SUCCESS_ALL_GOOD            = "1";
 var ERROR_BAD_REQUEST           = "-1";
 
-var ERROR_NO_VALID_USER         = "-300";
-var ERROR_USER_WRONG_LOGIN_INFO = "-301";
-var ERROR_USER_NO_VALID_SESSION = "-302";
-var ERROR_USER_ACCESS_DENIED    = "-303";
-var ERROR_USER_EXISTS           = "-304";
-
-//! @todo send to wirez
 var SUCCESS_USER_BG_EXISTS      = "301";
-
-var _IAM         = "Tux";
-var _SESSION_KEY = "123";
 
 /*****************************************************************************/
 //
@@ -289,37 +279,8 @@ function wirez_getRecentMessages(_withWire, _lastMessageId, callMeSuccess, callM
 //
 //////////////////////////////////////////////////////////////////////////////
 
-/**
-  I get a list of people in the directory
- */
-function wirez_getPeopleList(name, initHere, callMeSuccess, callMeError){
-
-	d("Retrieving a list of contacts");
-
-	$.ajax({
-		type: 'GET',
-		url: apiUrl + 'index.php',
-		dataType: "json",
-		data: {
-			r: "users_get_list",
-			w: "users",
-		like:  name,
-		ini: initHere,
-		iam: _IAM,
-		sessionKey: _SESSION_KEY
-		},
-		success: function (data) {
-			callMeSuccess(data);
-		},
-		error: function(data){
-			callMeError(ERROR_ERROR);
-		}
-	});
-
-}
-
-
 // Update profile
+//! @deprecated
 function wirez_userUpdateProfile1(options){
 
 	d("Updating profile");
@@ -349,18 +310,8 @@ function wirez_userGetBackground(options){
 
 }
 
-// If all that you need is the PATH to get the background, use this one
-function wirez_userGetBackgroundPath(_userName, fallBack){
-	return (apiUrl + "index.php?w=users&r=users_personal_bg_get&reply_type=plain&userName="+_userName+"&fallBack="+fallBack);
-}
-
-// Gets the correct path for a user avatar
-function wirez_userGetAvatarPath(wire, size){
-	return apiUrl + "index.php?w=users&r=users_avatar_get&userName=" + wire + "&size=" + size;
-}
-
 // Log users in
-// @deprecated?
+// @deprecated
 function wirez_userLogMeIn(_iam, _pwd, callMeSuccess, callMeError){
 
 	d("Loging in");
@@ -387,32 +338,504 @@ function wirez_userLogMeIn(_iam, _pwd, callMeSuccess, callMeError){
 
 }
 
-// Log users out
-function wirez_userLogMeOut(callMeSuccess, callMeError){
-
-	d("Log out");
-
-	$.ajax({
-		type: 'GET',
-		url: apiUrl + 'index.php',
-		dataType: "json",
-		data: {
-			r: "users_log_me_out",
-			w: "users",
-			iam: _IAM,
-			sessionKey: _SESSION_KEY
-		},
-		success: function (data) {
-			callMeSuccess(data);
-		},
-		error: function (data){
-			callMeError(ERROR_ERROR);
-		}
-	});
-
-}
 
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // end: User management
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+
+//////////////////////////////////////////////////////////////////////////////
+///**************************************************************************
+///**************************************************************************
+///**************************************************************************
+///**************************************************************************
+///**************************************************************************
+///**************************************************************************
+///**************************************************************************
+
+/**
+ * Customize pages for conversations
+ * @ todo leave if idConversation == 0 and withWire == undefined
+ */
+function setPageForConversations(){
+
+	// Do you know who you will be talking to?
+	if(params['withWire'] == undefined || params['idConversation'] == undefined){
+		iGoTo("directory.html");
+	}
+
+	$("#toWire").val(params['withWire']);
+
+	// Is this a new conversation
+	if(params['idConversation'] == 0){
+		Cala.say("This is the general conversation");
+		// Unless you want to start a new conversation, I will start fresh
+		if(params['startNew'] == undefined){
+			_setConvDetailsSuccess({
+				resp:{
+					recipientWire: params['withWire'],
+				subject: messagesFixTitle(""),
+				idConversation: 0,
+				senderWire: keyGet(VAR_CURRENT_USER_NAME, "--")
+				}
+			});
+		}
+		else{
+			_getMgsInConversationError();
+		}
+	}
+	else{
+		Cala.say("This is an old conversation");
+		// Hide the subject input in the form
+		$("#subject").hide();
+		// Get the details about the conversation
+		wirez_getConvDetails(params['idConversation'], _setConvDetailsSuccess, _setConvDetailsError);
+	}
+
+	$("#toWire").val(params['withWire']);
+
+	$("#mainTextMessages").focus();
+
+	$('#mainTextMessages').keypress(function(e){
+		console.log(e.which);
+		if(e.which == 13){
+			if(e.shiftKey){
+				return true;
+			}else{
+				console.log("going to send this thing!");
+				sendMsg();
+				return false;
+			}
+		}
+		console.log("going to send this thing! not");
+	});
+
+}
+
+/**
+ * Customize conversations
+ */
+function customize_conversation(){
+	Cala.say("I am a conversation");
+	Cala_runMe.push(setPageForConversations);
+
+	// Pagination
+	// Go right
+	if(params.ini == undefined || parseInt(params.ini) <= 0){
+		Cala.say("No where to go back");
+		$("#paginationGoBack").addClass("disabled");
+		$("#paginationGoNextLink").attr('href', 'directory.html?ini=10');
+	}
+	else{
+		$("#paginationGoBackLink").removeAttr('onclick');
+		$("#paginationGoBackLink").attr('href', 'directory.html?ini=' + (parseInt(params.ini) - 10) + like);
+		$("#paginationGoNextLink").attr('href', 'directory.html?ini=' + (parseInt(params.ini) + 10) + like);
+	}
+}
+
+// If there is no conversation I will handle the error
+// @todo I should really handle this things better
+// @todo Move to wirez
+function _setConvDetailsError(details){
+	Cala.say("No Conversation, or some error");
+	iGoTo("directory.html");
+}
+
+// Helper function to set the details about the conversation in the form
+function _setConvDetailsSuccess(response){
+
+	details = response.resp;
+
+	Cala.say("Setting the conversation details" + messagesFixTitle(details.subject));
+	// Restore the subject title, if it was hidden
+	$("#subjectTitle").show();
+	$("#toWire").hide();
+	$("#subject").hide();
+	$("#subjectTitle").html("(" + details.recipientWire + ") " + details.subject);
+	$("#conversationMessageTitle").html("(" + details.recipientWire + ") " + messagesFixTitle(details.subject));
+	$("#idConversation").val(details.idConversation);
+
+	// Set the background, I will put the background from the other party
+	Cala.say("Changing the background of this conversation");
+
+	if(keyGet(VAR_CURRENT_USER_NAME, "---") == details.recipientWire){
+		Cala.say("I am the eggman");
+		$("#toWire").val(details.senderWire);
+		_tplRequestNewBackground(details.senderWire);
+	}
+	else{
+		Cala.say("coo coo cu chu" + details.recipientWire);
+		$("#toWire").val(details.recipientWire);
+		_tplRequestNewBackground(details.recipientWire);
+	}
+
+	getMsgsInConversation();
+
+}
+
+// Change values to start a new conversation, this must be set before goint to the page
+// @deprecated?
+function startNewConversation(recipient){
+	Cala.say("Starting a new conversation");
+	gotoConversation("0", recipient);
+}
+
+// Add html break lines to the text
+function textAddBreakLines(text){
+	var theKey = "\n";
+	var re = new RegExp(theKey, "g");
+	text = text.replace(re, "<br />");
+	return text;
+}
+
+/*****************************************************************************/
+//
+// Messaging and conversations
+// @todo move all this to wirez
+//
+//////////////////////////////////////////////////////////////////////////////
+
+// Send messages from the form
+function sendMsg(){
+
+	Cala.say("Sending message");
+
+	wirez_sendMsg(
+			keyGet(VAR_CURRENT_USER_NAME, "---"),
+			$('#toWire').val(),
+			$('#mainTextMessages').val(),
+			$('#idConversation').val(),
+			$("#subject").val(),
+			_sendMsgSuccess,
+			_sendMsgError);
+
+	return false;
+}
+
+// Helper function to send messages, once they have been sent
+function _sendMsgSuccess(data){
+
+	Cala.say("Conversation ID: " + data.idConversation);
+
+	if(params['startNew'] == 'true'){
+		iGoTo("conversation.html?withWire=" + data.recipientWire + "&idConversation=" + data.idConversation);
+	}else{
+		$("#mainTextMessages").val("");
+		$("#mainTextMessages").focus();
+		getMsgsInConversation();
+	}
+
+}
+
+// Errors while sending messages
+function _sendMsgError(){
+	Cala.say("There was an error while sending a message");
+}
+
+// Gets a list of recent conversations with pending or new messages, this is for the general view 
+function getRecentMessages(){
+
+	// Are you looking for someone in specific?
+	params = getUrlVars();
+
+	Cala.say("Messages with:" + params.withWire);
+
+	if(params.withWire != undefined){
+		withWire = params.withWire;
+	}else{
+		withWire = "";
+	}
+
+	wirez_getRecentMessages(withWire, 0, _getRecentMessagesParse, _getRecentMessagesError);
+
+}
+
+// Parse the list of new messages
+function _getRecentMessagesParse(data){
+
+	if(data.resp == ERROR_MSGS_NOTHING_FOUND || data.rep == ERROR_DB_NO_RESULTS_FOUND){
+		_getRecentMessagesError();
+	}else{
+
+		Cala.say("Got new messages, I will parse them");
+
+		var tpl = ''
+			+ '<a href="conversation.html?idConversation={idConversation}&withWire={withWhom}">'
+			+ '<div class="panel panel-success">'
+			+ '<div class="panel-heading"><h1 class="panel-title">{subject}</h1></div>'
+			+ '<div class="panel-body"><div class="well">{text}</div>'
+			+ ' <span class="senderName label label-info">{senderName}</span> >> <span class="label label-success recieverName">{recipientName}</span>'
+			+ '  @ <span class="label label-default msgTime">{parsedDate}</span>'
+
+			+ '</div></div></a>';
+
+		// Clear the list first
+		$("#latestMessages").empty();
+
+		for(var conversation in data.resp.msgs) {
+			console.log("s-ssssssssssssssssssssssssssssssssssssssssssssssssssssss");
+			$("#msgsListingNoMessagesFoundWrapper").html("");
+			var thisConversation = data.resp.msgs[conversation];
+			thisConversation['withWhom'] = thisConversation.recipientWire == keyGet(VAR_CURRENT_USER_NAME, "---")
+				? thisConversation.senderWire
+				: thisConversation.recipientWire;
+			thisConversation['subject'] = messagesFixTitle(thisConversation['subject']);
+			thisConversation['parsedDate'] = dateParse(thisConversation['timestamp']);
+			$("#latestMessages").append(parseTpl(tpl, thisConversation, true));
+		}
+	}
+
+}
+
+/**
+ * There was an error with the recent messages
+ *  @todo I should be able to handle this better
+ */
+function _getRecentMessagesError(){
+
+	Cala.say("Error with the messages");
+
+	$("#msgsListingNoMsgsFoundImage").attr('src', 'img/noMessagesFound.png');
+
+	params = getUrlVars();
+
+	$("#msgsListingNoMessagesFoundTitle").html("No Messages Found :(");
+
+	if(params.withWire != undefined){
+		$("#msgsListingNoMsgsFoundImage").attr("src", wirez_userGetAvatarPath(params.withWire, "250"));
+		$("#msgsListingNoMsgsFoundImgLink").attr("href", "conversation.html?withWire=" + params.withWire + "&idConversation=0&startNew=true");
+		$("#msgsListingNoMsgsFoundLink").attr("href",  "conversation.html?withWire=" + params.withWire + "&idConversation=0&startNew=true");
+		$("#msgsListingNoMsgsFoundLink").html("Talk to them...");
+	}
+	else{
+
+	}
+}
+
+/**
+ * Go back in the conversations history
+ */
+function conversationGoBack(){
+
+	Cala.say("Going back in time with the messages");
+
+	if($("#paginationGoBack").hasClass("disabled")){
+		return false;
+	}
+	else{
+		//return conversationGo();
+	}
+	return false;
+
+}
+
+/**
+ * Each time a link is clicked I need to see if there is a search in progress
+ */
+function conversationGo(){
+
+	// Update links
+	$("#paginationGoBackLink").attr('href', $("#paginationGoBackLink").attr('href') + "&like=" + searching);
+	$("#paginationGoNextLink").attr('href', $("#paginationGoNextLink").attr('href') + "&like=" + searching);
+
+	return true;
+
+}
+
+/**
+ * I get messages in the conversation
+ */
+function getMsgsInConversation(){
+	wirez_getMessagesInConversation(
+			{
+				idConversation: $("#idConversation").val(),
+	lastMsgId: $("#lastMsgId").val(),
+	withWire: $("#toWire").val()
+			},
+			_getMgsInConversationSuccess,
+			_getRecentMessagesError);
+}
+
+/**
+ * Helper function to display the messages in a conversation
+ */
+function _getMgsInConversationSuccess(data){
+
+	if(data.resp == ERROR_MSGS_NOTHING_FOUND){
+		_getMgsInConversationError();
+	}else{
+
+		Cala.say("Formating messages");
+
+		$("#messagesInConversationSearching").html("");
+
+		var tpl = '<li class="list-group-item messagesInConversationEach" id="msgId-{idMsg}">'
+			+ '<input type="hidden" value="{idMsg}" class="messagesInConversationId">'
+			+ '<div class="well messagesInConversationTextEach">'
+			+ '<div class="thumbnail messagesInConversationSenderAvatar">'
+			+ '<img src="{senderAvatar}" class="messagesInConversationSenderAvatarImage avatar-{senderWire}">'
+			+ '</div>'
+			+ '<div class="thumbnail messagesInConversationRecipientAvatar">'
+			+ '<img src="{recipientAvatar}" class="messagesInConversationRecipientAvatarImage avatar-{recipientWire}">'
+			+ '</div>'
+			+ '<div class="messagesInConversationHeaderEach">'
+			+ ' <span class="label label-default msgTime">@{date}</span>'
+			+ '</div>'
+			+ '<div class="messagesInConversationTextEachOne">{text}</div>'
+			+ '	</div>'
+			+ ''
+			+ '</li>';
+
+		var ulMsgs = "";
+
+		$("#lastMsgId").val(data.resp.lastMsgId);
+
+		var msgs = data.resp.msgs;
+
+		thisUserWire = keyGet(VAR_CURRENT_USER_NAME, "--");
+
+		for(var prop in msgs) {
+			var thisMsg = msgs[prop];
+			Cala.say("Getting message");
+
+			// Conversation subject
+			var subject = '';
+			thisMsg.subject = messagesFixTitle(thisMsg.subject);
+
+			thisMsg.date = dateParse(thisMsg.msgTime);
+
+			if(thisUserWire == thisMsg.senderWire){
+				thisMsg.senderWire
+			}
+
+			thisMsg.senderAvatar = wirez_userGetAvatarPath(thisMsg.senderWire, 50);
+			thisMsg.recipientAvatar = wirez_userGetAvatarPath(thisMsg.recipientWire, 50);
+
+			$("#allMessagesInConversation").append(parseTpl(tpl, thisMsg, true));
+			window.scrollTo(0, document.body.scrollHeight);
+		}
+	}
+}
+
+/**
+ * 'Fix' titles in conversations or messages
+ */
+function messagesFixTitle(subject){
+	if(subject == null || subject == "" || subject == undefined){
+		return 'Just chatting';
+	}
+	else{
+		return subject;
+	}
+
+}
+
+/**
+ * Errors in messages in conversations
+ */
+function _getMgsInConversationError(){
+
+	Cala.say("Error with the messages or no messages at all");
+
+	$("#messagesInConversationNotFoundImage").attr('src', 'img/noMessagesFound.png');
+	$("#messagesInConversationDetailsTitle").hide();
+
+}
+
+/**
+ * Am I already checking for messages?
+ */
+var messagesCheckingForNew = false;
+
+// Set the timer to check for new messages
+function messagesSetCheckThemOut(){
+
+	// If I have no idea what the last read message is, I will assume 0
+	if(keyGet(VAR_LAST_MSG_ID, -1) == -1){
+		keyStore(VAR_LAST_MSG_ID, 0);
+	}
+
+	Cala.say("Checking for new messages every: " + (parseInt(checkNewMessagesEvery) * 1000));
+
+	// Call and set the interval
+	_messagesCheckNewTopBar();
+
+	setInterval(_messagesCheckNewTopBar, (parseInt(checkNewMessagesEvery) * 1000));
+
+}
+
+// Check for new messages and place a warning in the top bar
+function _messagesCheckNewTopBar(){
+
+	if(messagesCheckingForNew == false){
+		Cala.say("Let's see if there are any new messages");
+		messagesCheckingForNew = true;
+		wirez_getRecentMessages("", keyGet(VAR_LAST_MSG_ID, 0),  _messagesCheckNewTopBarSuccess, _messagesCheckNewTopBarError);
+	}
+	else{
+		Cala.say("I am already checking for new messages");
+	}
+}
+
+// Create a standard subject for messages if none was given
+function messagesCreateSubject(conversation){
+
+	if(conversation.subject == ""){
+		conversation.subject = "Just chatting";
+	}
+
+	return conversation;
+}
+
+// If there are new messages, I will put them in the top bar
+function _messagesCheckNewTopBarSuccess(data){
+
+	Cala.say("Got information about new messages");
+
+	tpl = '<li>'
+		+ '<a href="conversation.html?withWire={wire}&idConversation={idConversation}|{idMsg}">'
+		+ '<div id="topNavBarMessagesContainer" class="topNavBarMessagesContainer">'
+		+ '<img src="{avatar}" class="topNavBarMessagesAvatar">'
+		+ '<div class="topNavBarMessagesSubject">{subject}</div>'
+		+ '<div class="topNavBarMessagesText">{text}</div>'
+		+ '<small class="topNavBarMessagesSenderName">{senderName}</small>'
+		+ '</div>'
+		+ '</a>'
+		+ '</li>';
+
+	if(data.resp.totalMessages > 0){
+
+		Cala.say("Found new pending messages");
+
+		$("#messagesRecentTopNavBarTotalNewFound").text(data.resp.totalMessages);
+
+		$("#messagesRecentTopNavBarListing").empty();
+
+		for(var prop in data.resp.msgs) {
+
+			Cala.say("Getting message");
+
+			var thisMsg = data.resp.msgs[prop];
+
+			// Conversation subject
+			thisMsg = messagesCreateSubject(thisMsg);
+			thisMsg.avatar = wirez_userGetAvatarPath(thisMsg.senderAvatar, '25');
+			thisMsg.text = thisMsg.text.substring(0, 25);
+			thisMsg.subject = messagesFixTitle(thisMsg.subject).substring(0, 20);
+			$("#messagesRecentTopNavBarListing").append(parseTpl(tpl, thisMsg, true));
+		}
+
+	}else{
+		Cala.say("No new messages apparently");
+	}
+
+	messagesCheckingForNew = false;
+
+}
+
+// If there are new messages, I will put them in the top bar
+function _messagesCheckNewTopBarError(data){
+	Cala.say("There was an error trying to get new messages");
+	messagesCheckingForNew = false;
+}
 
