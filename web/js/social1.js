@@ -27,6 +27,12 @@ var Cala = Cala || {};
 // Where is the api?
 //var Cala_apiUrl = "";
 
+// Basic variables needed to exist
+//! Who am I? This should be sent always, ever in blank
+var Cala_IAM = '';
+//! Session key
+var Cala_SESSION_KEY = '';
+
 //Where do you want me to go upon logout?
 //var Cala_goOnOut = 'index.html';
 var Cala = function() {
@@ -69,7 +75,6 @@ var Cala = function() {
 }();
 
 /*****************************************************************************/
-
 /*!
  * Social 1: Implementation for Wirez
  * Part ofWirez Comunication System
@@ -84,11 +89,12 @@ var Cala = function() {
 /**
  * Include this AT THE BOTTOM of your pages, that is all you need to do.
 
-	<script>whereAmI();</script>
+ <script>whereAmI();</script>
 
 */
 
 /*****************************************************************************/
+//
 // Boot stuff
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -302,8 +308,8 @@ function _tplSetBodyBackgroundCorrectly(path){
 
 	// Add a random timestamp to fool the cache
 	//if(foolCache == true){
-		tmpDate = new Date();
-		path = path + "&foolCache=" + tmpDate.getTime();
+	tmpDate = new Date();
+	path = path + "&foolCache=" + tmpDate.getTime();
 	//}
 	$("body").css("background", "url(" + path + ") no-repeat center center fixed");
 	$("body").css("background-size", "cover");
@@ -371,43 +377,13 @@ function tplSetCorrectBackground(){
 		say("This page uses a custom background");
 		// Request the user's background
 		_tplSetBodyBackgroundCorrectly(wirez_userGetBackgroundPath(keyGet(VAR_CURRENT_USER_NAME, "---"), bg));	
-	//	_tplRequestNewBackground(keyGet(VAR_CURRENT_USER_NAME, "---"));
+		//	_tplRequestNewBackground(keyGet(VAR_CURRENT_USER_NAME, "---"));
 	}
 	else{
 		_tplSetBodyBackgroundCorrectly(bg);
 		//tplBackgroundChangeRandom(bg);
 	}
 
-}
-
-/**
- * Helper function to actually present messages to the user, you should never
- * call this directly
- */
-function _msgAlert(what, type){
-	alert(what);
-}
-
-// Alert messages to the user
-function msgAlert(what){
-	_msgAlert(what, 'alert');
-}
-
-// Alert warning messages to the user
-function msgWarning(what){
-	_msgAlert(what, 'warning');
-}
-
-// Alert information messages to the user
-function msgInfo(what){
-	_msgAlert(what, 'info');
-}
-
-/**
- * Alert stuff, not really very usefull to you, it is/will be used internally
- */
-function _alert(what){
-	alert(what);
 }
 
 // If there is no conversation I will handle the error
@@ -444,7 +420,7 @@ function _setConvDetailsSuccess(response){
 		$("#toWire").val(details.recipientWire);
 		_tplRequestNewBackground(details.recipientWire);
 	}
-	
+
 	getMsgsInConversation();
 
 }
@@ -508,30 +484,14 @@ function removeKey(theKey){
 }
 
 /*****************************************************************************/
+//
 // Contacts, Directory, People
 //
 //////////////////////////////////////////////////////////////////////////////
 
 /**
- * Get my details
- */
-// Successfully got user details
-function _userGetMyDetailsSucess(data){
-	say("Got user details, at least it looks like it :)");
-	//say(">>" + JSON.stringify(data.resp));
-	$("#myAccountWire").val(data.resp.wire);
-	$("#myAccountName").val(data.resp.name);
-	$("#myAccountAbout").val(data.resp.about);
-}
-
-// Error getting user details
-function _userGetMyDetailsError(data){
-	say("Error occured getting user details");
-}
-
-/**
   I get a list of people in the directory
- */
+  */
 function getPeopleList(){
 
 	say("Retrieving a list of contacts");
@@ -602,38 +562,177 @@ function _getPeopleListError(){
 }
 
 /*****************************************************************************/
+//
 // User management
 //
 //////////////////////////////////////////////////////////////////////////////
 
-function _userUpdateProfileSuccess(data){
+/**
+ *  Log users in
+ */
+function Cala_usersLogMeIn(_iam, _pwd, callMeSuccess, callMeError){
 
-	if(data !== ERROR_NO_REQUEST_DONE){
-		d("Something happened");
-	}
-	else{
-		d("Success updating profile");
-		msgAlert("All good :)");
-		iGoTo("myAccount.html");
-	}
+	d("Loging in");
+
+	$.ajax({
+		type: 'GET',
+		url: apiUrl + 'index.php',
+		dataType: "json",
+		data: {
+			w: "users",
+			r: "users_log_me_in",
+			iam: _iam,
+			pwd: _pwd
+		},
+		success: function (data) {
+			details = {sessionKey: data.resp, userName: _iam}
+			callMeSuccess(details);
+		},
+		error: function (data){
+			callMeError(ERROR_ERROR);
+		}
+	});
+
 }
-function _userUpdateProfileError(data){
-	d("Error updating profile")
+
+/**
+ * Retrieve account details
+ */
+function Cala_usersGetMyDetails(callMeSuccess, callMeError){
+
+	say("Getting my details");
+
+	$.ajax({
+		type: 'GET',
+		url: apiUrl + 'index.php',
+		dataType: "json",
+		data: {
+			w: "users",
+			r: "users_get_my_details",
+			iam: Cala_IAM,
+			sessionKey: Cala_SESSION_KEY
+		},
+		success: function (data) {
+			callMeSuccess(data);
+		},
+		error: function (data){
+			callMeError(ERROR_ERROR);
+		}
+	});
+
 }
 
-// Update my account
-function userUpdateProfile(){
+/**
+ *  Get MY details, you need to be logged in in order for this to work
+ */
+function Tpl_usersGetMyDetails(){
+	say("Getting my details");
+	Cala_usersGetMyDetails(
+			function(data){
+				if(typeof data.resp == 'object'){
+					say("Got user details, at least it looks like it :)");
+					$("#myFullName").val(data.resp.fullName);
+					$("#myUserName").val(data.resp.userName);
+					$("#myEmail").val(data.resp.email);
+					$("#myAccountAbout").val(data.resp.about);
+				}
+				else{
+					say("Some error with the account details");
+				}
+			},
+			function(){
+				say("There was an error retrieving your information");
+			});
+}
 
-	wirez_userUpdateProfile({
-		requestData:{
-				about: $("#myAccountAbout").val(),
-				wire:  $("#myAccountWire").val(),
-				name: $("#myAccountName").val(),
-				pwd: $("#myAccountPwd").val(),
-				onSuccess: _userUpdateProfileSuccess,
-				onError: _userUpdateProfileError
+/**
+ *  Customize my account
+ */
+function Cala_usersSetEditAccount(){
+
+	say("Customizing my account");
+
+	//! @todo restore this
+	//myAccountSetAvatar();
+
+	// Retrieve and set the details in the account
+	Tpl_usersGetMyDetails();
+
+	// Avatar
+	//! @todo restore this
+	//wirez_uploadSomething("users", "users_avatar_upload", "#myAccountPersonalAvatarUploader", myAccountSetAvatar, myAccountSetAvatar);
+
+	// Background
+	//! @todo send to wirez
+	//wirez_uploadSomething("users", "users_personal_bg_upload", "#myAccountPersonalBgUploader", tplSetCorrectBackground, tplSetCorrectBackground);
+
+}
+
+/**
+ * Update my account
+ */
+function Cala_usersUpdateAccount(details){
+
+	say("Updating the user account");
+
+	$.ajax({
+		type: 'POST',
+		url: Cala_apiUrl,
+		dataType: "json",
+		data: {
+			w: "users",
+		r: "users_update_profile",
+		iam: Cala_IAM,
+		sessionKey: Cala_SESSION_KEY,
+		fullName: details.requestData.fullName,
+		userName: details.requestData.userName,
+		email: details.requestData.email,
+		about: details.requestData.about,
+		country: details.requestData.country,
+		pwd: details.requestData.pwd
+		},
+		success: function (data) {
+			details.onSuccess(data);
+		},
+		error: function (data){
+			details.onError(ERROR_ERROR);
+		}
+	});
+
+}
+
+/**
+ *  Update my account
+ */
+function Tpl_usersUpdateAccount(){
+	say("Updating the user account...");
+	Cala_usersUpdateAccount({
+		requestData: {
+			fullName: $("#myFullName").val(),
+		userName: $("#myUserName").val(),
+		email: $("#myEmail").val(),
+		about: $("#myAccountAbout").val(),
+		pwd: $("#myAccountPwd").val()
+		},
+		onSuccess: function(data){
+			if(data.resp == ERROR_NO_REQUEST_DONE){
+				Tpl_msgWarning("Hubo un error actualizando sus datos, favor intente de nuevo más tarde");
+				say("Something happened");
 			}
-		});
+			else{
+				say("Success updating profile");
+				// Change the IAM just in case
+				Cala_IAM = $("#myUserName").val();
+				keyStore(VAR_CURRENT_USER_NAME, $("#myUserName").val());
+				Tpl_msgWarning("Sus datos fueron actualizados satisfactoriamente");
+				iGoTo("?x=myAccount");
+			}
+		},
+		onError: function(){
+			say("Error updating profile")
+				Tpl_msgWarning("Hubo un error actualizando sus datos, favor intente de nuevo más tarde");
+		}
+	});
 	return false;
 }
 
@@ -646,9 +745,9 @@ function amILoggedIn(){
 	myName = keyGet(VAR_CURRENT_USER_NAME, "---");
 
 	wirez_requestData.iam = keyGet(VAR_CURRENT_USER_NAME, "");
-	_IAM         = keyGet(VAR_CURRENT_USER_NAME, "");
+	Cala_IAM         = keyGet(VAR_CURRENT_USER_NAME, "");
 
-	_SESSION_KEY = keyGet(VAR_CURRENT_SESSION_KEY, "123");
+	Cala_SESSION_KEY = keyGet(VAR_CURRENT_SESSION_KEY, "123");
 	wirez_requestData.sessionKey = keyGet(VAR_CURRENT_SESSION_KEY, "123");
 
 	if(keyGet(VAR_CURRENT_USER_NAME, "---") != "---"){
@@ -658,12 +757,19 @@ function amILoggedIn(){
 		$("#userMenuTitle").html(myName);
 
 		newLink = ''
-			+ '<li><a href="myAccount.html">My Account/Settings</a></li>'
-			+ '<li><a href="#" onClick="return logMeOut();">Log Out</a></li>'
+			+ '<li>'
+			+ '<a href="?x=myAccount">'
+			+ '<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>'
+			+ ' Configuración de la Cuenta</a></li>'
+			+ '<li>'
+			+ '<a href="#" onClick="return logMeOut();">'
+			+ '<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>'
+			+ ' Salir</a></li>'
 			+ '<li class="divider"></li>';
 
 		$("#userMenu").prepend(newLink);
-		messagesSetCheckThemOut();
+		// @todo move to wirez
+		//messagesSetCheckThemOut();
 	}
 	else{
 		say("No, I will have to go to the login page");
@@ -684,7 +790,7 @@ function logMeOut(){
 
 function _logMeOutRmKeys(){
 
-	msgAlert("Good bye :)");
+	Tpl_msgSuccess("Good bye :)");
 
 	keysGone = [VAR_CURRENT_USER_NAME, VAR_CURRENT_SESSION_KEY, VAR_LAST_MSG_ID];
 
@@ -711,7 +817,7 @@ function logMeIn(){
 
 	say("Logging in");
 
-	wirez_userLogMeIn($("#userName").val(), $("#pwd").val(), _logMeInSuccess, _logMeInError);
+	Cala_usersLogMeIn($("#userName").val(), $("#pwd").val(), _logMeInSuccess, _logMeInError);
 
 	return false;
 }
@@ -729,7 +835,7 @@ function _logMeInSuccess(details){
 	else{
 		keyStore(VAR_CURRENT_USER_NAME, details.userName);
 		keyStore(VAR_CURRENT_SESSION_KEY, details.sessionKey);
-		_SESSION_KEY = details.sessionKey;
+		Calas_SESSION_KEY = details.sessionKey;
 
 		iGoTo($('#goToAfterLogin').val());
 	}
@@ -1153,32 +1259,6 @@ function customize_conversation(){
 	}
 }
 
-/**
- *  Customize my account
- */
-function customize_myAccount(){
-
-	say("Customizing my account");
-
-	myAccountSetAvatar();
-
-	options = {
-		options: {
-			onSuccess: _userGetMyDetailsSucess,
-			onError: _userGetMyDetailsError
-		}
-	};
-
-	wirez_userGetMyDetails(options);
-
-	// Avatar
-	wirez_uploadSomething("users", "users_avatar_upload", "#myAccountPersonalAvatarUploader", myAccountSetAvatar, myAccountSetAvatar);
-
-	// Background
-	wirez_uploadSomething("users", "users_personal_bg_upload", "#myAccountPersonalBgUploader", tplSetCorrectBackground, tplSetCorrectBackground);
-
-}
-
 // Customize directory
 function customize_directory(){
 
@@ -1319,7 +1399,7 @@ function wirez_uploadSomething(_w, _r, _id, _onSuccess, _onError){
 	// I whished this used the internal api, but I have not been able to make it work
 	var wirez_settingsUploader = {
 		url: apiUrl + "index.php",
-		formData: {w: _w, r: _r, iam: _IAM, sessionKey: _SESSION_KEY},
+		formData: {w: _w, r: _r, iam: Cala_IAM, sessionKey: Cala_SESSION_KEY},
 		dragDrop: true,
 		fileName: "fileToUpload",
 		returnType:"json",
@@ -1332,4 +1412,51 @@ function wirez_uploadSomething(_w, _r, _id, _onSuccess, _onError){
 }
 
 
+/*****************************************************************************/
+//
+// Messaging and alerts
+//
+//////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Helper function to actually present messages to the user, you should never
+ * call this directly
+ */
+function _Tpl_msgAlert(what, goWhere, type){
+
+	$("#Cala_alertMessages").html(''
+			+ '<div class="alert alert-'+type+' alert-dismissible" role="alert">'
+			+ '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+			+ what
+			+'</div>'
+			);
+
+}
+
+//! Alert messages to the user
+function Tpl_msgDanger(what){
+	_Tpl_msgAlert(what, 'danger');
+}
+
+// Alert warning messages to the user
+function Tpl_msgWarning(what){
+	_Tpl_msgAlert(what, 'warning');
+}
+
+// Alert information messages to the user
+function Tpl_msgInfo(what){
+	_Tpl_msgAlert(what, 'info');
+}
+
+//! Success messages
+function Tpl_msgSuccess(what){
+	_Tpl_msgAlert(what, 'success');
+}
+
+/**
+ * Alert stuff, not really very usefull to you, it is/will be used internally
+ */
+function _Tpl_alert(what){
+	alert(what);
+}
 

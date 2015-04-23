@@ -316,17 +316,6 @@ function wirez_getPeopleList(name, initHere, callMeSuccess, callMeError){
 }
 
 
-// Get MY details, you need to be logged in in order for this to work
-function wirez_userGetMyDetails(options){
-
-	d("Getting my details");
-
-	wirez_requestData.w = "users";
-	wirez_requestData.r = "users_get_my_details";
-
-	wirez_requests(options);
-}
-
 // Update profile
 function wirez_userUpdateProfile(options){
 
@@ -368,6 +357,7 @@ function wirez_userGetAvatarPath(wire, size){
 }
 
 // Log users in
+// @deprecated?
 function wirez_userLogMeIn(_iam, _pwd, callMeSuccess, callMeError){
 
 	d("Loging in");
