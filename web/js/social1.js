@@ -104,39 +104,23 @@ var version = "0.1.2-dev";
 
 //Some needed stuff
 
-// Which is the current conversation
-var VAR_CURRENT_CONVERSATION_ID              = "currentConversationId"; // Deprecated
-var VAR_CURRENT_CONVERSATION_RECIEVER_ID     = "currentConversationRecieverId"; //Deprecated
-var VAR_CURRENT_CONVERSATION_RECIPIENT_WIREZ = "currentConversationRecipientWirez"; // Deprecated
-
 // Some other constants
+//! @todo move in Cala_x
 var VAR_CURRENT_USER_NAME  = "userWirez";
 var VAR_CURRENT_SESSION_KEY = "currentSessionKey";
-
-// Last message read
-// @deprecated ??
-var VAR_LAST_MSG_ID = "lastMsgId";
 
 // Parameters sent via url
 var params = false;
 
-// When you click to see a conversation, this should be set
-// If the idConversation is 0, this is a new conversation
-// @deprecated
-function gotoConversation(idConversation, recipient){
-	say("Going to see a conversation");
-	keyStore(VAR_CURRENT_CONVERSATION_ID, idConversation);
-	keyStore(VAR_CURRENT_CONVERSATION_RECIPIENT_WIREZ, recipient);
-	return true;
-}
-
 /**
  * Run stuff during boot up, if you want me to run stuff, let me know
+ * @todo rename to Cala_runme or Cala.runme
  */
 var runMe = [amILoggedIn, Cala.loadThisPath, pagesSetUp];
 
 /**
  * Say stuff, this is a very minimal debugging functionality
+ * @todo rename to Cala.say
  */
 function say(what){
 	console.log("s: " + what);
@@ -178,6 +162,8 @@ function justRunThis(what){
  */
 function whereAmI(){
 
+	//! This will be usefull when running on an app, but it will not go here I just
+	//! don't want to touch it because I might loose it
 	if(onApp == true){
 		say("I am on an app");
 
@@ -195,11 +181,8 @@ function whereAmI(){
 	}
 }
 
-//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-// end: Boot stuff
-//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
 /*****************************************************************************/
+//
 // Tools
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -274,96 +257,28 @@ function getUrlVars(){
 	return vars;
 }
 
-//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-// end: Tools
-//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
 /*****************************************************************************/
+//
 // Template and messaging
 //
 //////////////////////////////////////////////////////////////////////////////
 
 /**
  * Change the background for pages
+ * @todo Move this into a plugin
  */
-// Global variable to know for whom the background was requested for, this is here because I can't really tell the api to 
-// send this information to the function that makes the actual change, if you know better, please let me know :)
-// @deprecated ?
-var tplBackgroundRequestedForWire = keyGet(VAR_CURRENT_USER_NAME, "---");
-
 function tplBackgroundGenerateRandom(){
 	say("Generating random background");
 	return basePath + "img/bgs/bg_" + Math.floor((Math.random() * 10) + 1) + ".jpg";
 }
 
-// @deprecated
-function tplBackgroundChangeRandom(){
-	bg = tplBackgroundGenerateRandom();
-	say("Changing the bg to: " + "bg_" + bg + ".jpg");
-	_tplSetBodyBackgroundCorrectly("img/bgs/bg_" + bg + ".jpg", false);
-}
-
 // Helper function to handle the actual changing of the background
 function _tplSetBodyBackgroundCorrectly(path){
 
-	// Add a random timestamp to fool the cache
-	//if(foolCache == true){
 	tmpDate = new Date();
 	path = path + "&foolCache=" + tmpDate.getTime();
-	//}
 	$("body").css("background", "url(" + path + ") no-repeat center center fixed");
 	$("body").css("background-size", "cover");
-
-}
-
-// Success requesting a new background from the server
-// @deprecated
-function _tplSetCorrectBackgroundSuccess(data){
-
-	say("Good response about that background :)" + data);
-
-	if(data.resp == SUCCESS_ALL_GOOD){
-		say("I was able to at least request the information for my personal background");
-		tplBackgroundChangeRandom();
-	}
-	else if(data.resp == SUCCESS_USER_BG_EXISTS){
-		// I shall set a custom bg
-		say("There seems to be a new background");
-		newBgPath = wirez_userGetBackgroundPath(tplBackgroundRequestedForWire);
-		say("The new path is: " + newBgPath);
-		_tplSetBodyBackgroundCorrectly(newBgPath, true);
-	}
-	else{
-		tplBackgroundChangeRandom();
-	}
-}
-
-// Errors requesting a new background from the server
-// @deprecated
-function _tplSetCorrectBackGroundError(){
-	say("Good response about that background :)");
-	say("Error getting the background");
-	tplBackgroundChangeRandom();
-}
-
-// Helper function to request the new background and put it accordingly
-// @deprecated
-function _tplRequestNewBackground(wire){
-
-	tplBackgroundRequestedForWire = wire;
-
-	var options = {
-		options: {
-			onSuccess: _tplSetCorrectBackgroundSuccess,
-			onError: _tplSetCorrectBackGroundError
-		},
-		requestData: {
-			userName: wire,
-			justChecking: true
-		}
-	};
-
-	wirez_userGetBackground(options);
 
 }
 
@@ -377,17 +292,16 @@ function tplSetCorrectBackground(){
 		say("This page uses a custom background");
 		// Request the user's background
 		_tplSetBodyBackgroundCorrectly(wirez_userGetBackgroundPath(keyGet(VAR_CURRENT_USER_NAME, "---"), bg));	
-		//	_tplRequestNewBackground(keyGet(VAR_CURRENT_USER_NAME, "---"));
 	}
 	else{
 		_tplSetBodyBackgroundCorrectly(bg);
-		//tplBackgroundChangeRandom(bg);
 	}
 
 }
 
 // If there is no conversation I will handle the error
 // @todo I should really handle this things better
+// @todo Move to wirez
 function _setConvDetailsError(details){
 	say("No Conversation, or some error");
 	iGoTo("directory.html");
@@ -457,15 +371,20 @@ function parseTpl(tpl, values, bl){
 
 }
 
-// Local storage
+/***************************************************************************
+ *
+ * Local storage
+ *
+ */
 
-// Keys
+//! Store keys in local storage
 function keyStore(key, value){
 	say("Storing key: " + key);
 	window.localStorage.setItem(key, value);
 	return true;
 }
 
+//! Get key from local storage
 function keyGet(key, defaultValue){
 	var value = window.localStorage.getItem(key);
 	if(value == null){
@@ -476,11 +395,16 @@ function keyGet(key, defaultValue){
 	return value;
 }
 
-// keyname is now equal to "key"
-// value is now equal to "value"
+//! Remove key from local storage
 function removeKey(theKey){
+
 	say("Removing key: " + theKey);
-	window.localStorage.removeItem(theKey);
+	// Remove them all
+	if(theKey == ''){
+	
+	}else{
+		window.localStorage.removeItem(theKey);
+	}
 }
 
 /*****************************************************************************/
@@ -885,6 +809,7 @@ function _userRegisterError(data){
 /*****************************************************************************/
 //
 // Messaging and conversations
+// @todo move all this to wirez
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1383,10 +1308,6 @@ function setPageForConversations(){
 	});
 
 }
-
-//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-// end: Custom pages
-//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 /*****************************************************************************/
 //
