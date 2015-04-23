@@ -671,6 +671,10 @@ function Cala_usersUpdateAccount(details){
 		pwd: details.requestData.pwd
 		},
 		success: function (data) {
+			// Update the user name if that changed
+				Cala_IAM = details.requestData.userName;
+			keyStore(VAR_CURRENT_USER_NAME, details.requestData.userName);
+
 			details.onSuccess(data);
 		},
 		error: function (data){
@@ -684,7 +688,9 @@ function Cala_usersUpdateAccount(details){
  *  Update my account
  */
 function Tpl_usersUpdateAccount(){
+
 	say("Updating the user account...");
+
 	Cala_usersUpdateAccount({
 		requestData: {
 			fullName: $("#myFullName").val(),
@@ -697,13 +703,13 @@ function Tpl_usersUpdateAccount(){
 			if(data.resp == ERROR_NO_REQUEST_DONE){
 				Tpl_msgWarning("Hubo un error actualizando sus datos, favor intente de nuevo más tarde");
 				say("Something happened");
+			}else if(data.resp == ERROR_USER_EXISTS){
+				Tpl_msgWarning("Los datos ya existen, intente con otro correo electrónico o nombre de usuario");
 			}
 			else{
 				say("Success updating profile");
-				// Change the IAM just in case
-				Cala_IAM = $("#myUserName").val();
-				keyStore(VAR_CURRENT_USER_NAME, $("#myUserName").val());
 				Tpl_msgWarning("Sus datos fueron actualizados satisfactoriamente");
+				// Refresh this page
 				iGoTo("?x=myAccount");
 			}
 		},

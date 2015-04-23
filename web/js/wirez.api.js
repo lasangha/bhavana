@@ -65,11 +65,14 @@ var ERROR_NO_REQUEST_DONE       = "-10";
 var SUCCESS_ALL_GOOD            = "1";
 var ERROR_BAD_REQUEST           = "-1";
 
-var SUCCESS_USER_BG_EXISTS      = "301";
 var ERROR_NO_VALID_USER         = "-300";
 var ERROR_USER_WRONG_LOGIN_INFO = "-301";
 var ERROR_USER_NO_VALID_SESSION = "-302";
-var ERROR_USER_EXISTS           = "-303";
+var ERROR_USER_ACCESS_DENIED    = "-303";
+var ERROR_USER_EXISTS           = "-304";
+
+//! @todo send to wirez
+var SUCCESS_USER_BG_EXISTS      = "301";
 
 var _IAM         = "Tux";
 var _SESSION_KEY = "123";
