@@ -7,7 +7,7 @@ var Bhavana_Categories = {
 	},
 	vipassana: {
 		title: "Vipassana",
-		desc: "Introspección",
+		desc: "Introspección y descubrimiento de la mente.",
 		sessions: ['_rRoD28-WgU', '2FS6AsNCy3I', 'Yy8nWIiP4_M']
 	}};
 
@@ -55,6 +55,7 @@ var Bhavana_Session = {
 		if(this.dets.id > 0){
 			console.log("Setting session");
 			$("#sessionTitle").html(this.dets.title);
+			$("#sessionNumber").html("# " + this.dets.id);
 			$("#sessionDesc").html(this.dets.desc);
 			$("#sessionsPlayer").html(this.playerCreate(this.dets.sessions[this.dets.id - 1]));
 			return this;
@@ -74,18 +75,18 @@ var Bhavana_Session = {
 		// Next?
 		if(this.dets.id >= this.dets.sessions.length){
 			say("This is the last of this series");
-			$("#goNext").attr("href", "?x=sessions&sessionId=1&cat="+sessions[parseInt(sessionsPos) + 1]);
+			$("#goNext").attr("href", "?x=bhavana/sessions&sessionId=1&cat="+sessions[parseInt(sessionsPos) + 1]);
 		}
 		else{
 			say("There are more sessions to go...");
-			$("#goNext").attr("href", "?x=sessions&sessionId=" +(parseInt(this.dets.id) + 1 )+"&cat="+this.dets.cat);
+			$("#goNext").attr("href", "?x=bhavana/sessions&sessionId=" +(parseInt(this.dets.id) + 1 )+"&cat="+this.dets.cat);
 		}
 
 		// Back
 		// There are places to go back
 		if(this.dets.id > 1){
 			say("There are more sessions to go back to in this category");
-			$("#goBack").attr("href", "?x=sessions&sessionId=" +(parseInt(this.dets.id) - 1 )+"&cat="+this.dets.cat);
+			$("#goBack").attr("href", "?x=bhavana/sessions&sessionId=" +(parseInt(this.dets.id) - 1 )+"&cat="+this.dets.cat);
 		}
 		else{
 			// Is this the first of the sessions?
@@ -96,7 +97,7 @@ var Bhavana_Session = {
 			// Lets find out go goes before
 			else{
 				say("Which is the previews category?");
-				backPath = "?x=sessions&sessionId=" + categories[this.dets.cat].sessions.length + "&cat="+sessions[parseInt(sessionsPos) -1]
+				backPath = "?x=bhavana/sessions&sessionId=" + categories[this.dets.cat].sessions.length + "&cat="+sessions[parseInt(sessionsPos) -1]
 			}
 			$("#goBack").attr("href", backPath);
 		}

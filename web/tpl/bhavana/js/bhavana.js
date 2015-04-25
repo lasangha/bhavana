@@ -64,7 +64,7 @@ function Bhavana_storeThisPage(){
 	console.log("Storing this page: >>>>> " + thisPage);
 
 	// Is this an storable page?
-	if(Cala.paramsGet("x", "") != "sessions"){
+	if(Cala.paramsGet("x", "") != "bhavana/sessions"){
 		console.log("I shall not store this page!");
 		return false;
 	}
@@ -93,8 +93,8 @@ function getMeditationMaxCauseTime(){
 		data: {
 			r: "causes_get_max_time",
 			w: "bhavana",
-			iam: _IAM,
-		   	sessionKey: _SESSION_KEY
+			iam: Cala_IAM,
+		   	sessionKey: Cala_SESSION_KEY
 		},
 		success: function (data){
 			if(typeof data.resp == 'object'){
@@ -128,7 +128,7 @@ function Bhavana_gotoLastSessionPage(){
 	// If there is a last location, I'll go there
 	if(lastValue == null){
 		say("Nothing set");
-		iGoTo("?x=c_intro");
+		iGoTo("?x=bhavana/c_intro");
 	}
 	else{
 		say("Going to: " + lastValue);
@@ -218,8 +218,8 @@ function Bhavana_addToCause(_totalTime, _causeCode){
 		url: Cala_apiUrl,
 		dataType: "json",
 		data: {
-			iam: _IAM,
-			sessionKey: _SESSION_KEY,
+			iam: Cala_IAM,
+			sessionKey: Cala_SESSION_KEY,
 			w: "bhavana",
 			r: "causes_add_to",
 			causeCode: _causeCode,

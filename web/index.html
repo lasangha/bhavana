@@ -21,33 +21,7 @@
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 		-->
 <link rel="stylesheet" type="text/css" href="tpl/css/index.css" />
-<link rel="stylesheet" type="text/css" href="bhavana/css/bhavana.css" />
-
-<!-- Wirez and me -->
-<script>
-//
-// DO CHANGE THIS SETTINGS
-//
-// Api URl
-var apiUrl = 'http://192.168.43.164/cala/api/';
-var Cala_apiUrl = apiUrl;
-// Base path where I am installed, the www version
-var basePath = 'http://192.168.43.164/cala/bhavana/';
-// Where are the templates? Use trailling slash
-var Cala_tplPath = 'bhavana/';
-var Cala_goOnOut = 'index.html';
-// Wirez
-// How often do you want to check for new messages? In seconds.
-// The more often, the bigger load your system will have
-var checkNewMessagesEvery = 100000;
-// Is this loaded on an app?
-// Not used at the moment, it will be important when Social 1 is embeded in a web app
-var onApp = false;
-</script>
-
-<script src="js/wirez.api.js"></script>
-<script src="js/social1.js"></script>
-<script src="bhavana/js/bhavana.js"></script>
+<link rel="stylesheet" type="text/css" href="tpl/bhavana/css/bhavana.css" />
 
 <title>Bhavana | Retiro Personal De Meditación</title>
 </head> <!-- end of head -->
@@ -63,8 +37,8 @@ var onApp = false;
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<a class="navbar-brand" href="#">
-						<img alt="Bhavana" src="bhavana/img/logo_20.png">
+					<a class="navbar-brand" href="index.html">
+						<img alt="Bhavana" src="tpl/bhavana/img/logo_20.png">
 					</a>
 				</div><!-- //navbar-header -->
 
@@ -107,7 +81,13 @@ var onApp = false;
 	</footer><!-- //footer -->
 </div><!-- //content -->
 
+<script>
+var Cala_apiUrl = 'http://192.168.43.164/cala/api/';
+</script>
+<script src="js/cala.js"></script>
+<script src="tpl/bhavana/js/bhavana.js"></script>
 <script>Cala_boot();</script>
+
 </body>
 </html>
 

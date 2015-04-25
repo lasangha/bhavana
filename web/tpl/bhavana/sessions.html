@@ -1,14 +1,18 @@
 <div class="panel panel-default">
 	<div class="panel-heading">
-		<h1 id="sessionTitle">Esta Sesión</h1>
+		<h1> <span id="sessionTitle">
+			Esta sesión
+			</span>
+			<span class="label label-default" id="sessionNumber">#</span>
+		</h1>
 	</div>
 	<div class="panel-body">
 		<div class="row">
 			<div class="col-md-6">
-				<p id="sessionDesc">Vamos a meditar...</p>
+				<h3 id="sessionDesc">Vamos a meditar...</h3>
 				<div align="center">
 					<div class="btn-group" role="group" id="bhavana_selectMeditationIntention">
-						<button type="button" class="btn btn-default btn-lg dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+						<button type="button" class="btn btn-info btn-lg dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 							Hoy voy a meditar por...
 							<span class="caret"></span>
 						</button>
@@ -20,7 +24,9 @@
 					</div>
 					<div id="bhavana_meditationInstrucctions">
 						<div class="alert alert-info" role="alert">
-							Cierre los ojos, inicie el video y comience su meditación....
+							<h1>
+							Inicie el video, cierre los ojos y comience su meditación....
+						</h1>
 						</div>
 					</div>
 				</div>
@@ -35,13 +41,13 @@
 
 <nav>
 	<ul class="pager">
-		<li>
+		<li class="previous">
 		<a href="?x=sessions" id="goBack">Anterior</a>
 		</li>
-		<li>
+		<li class="next">
 		<a href="?x=sessions" id="goNext">Siguiente</a>
 		</li>
 	</ul>
 </nav>
 
-<script src="bhavana/js/sessions.js"></script>
+<script src="tpl/bhavana/js/sessions.js"></script>

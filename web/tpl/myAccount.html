@@ -1,45 +1,89 @@
----
-layout: default
-title: My Account
-id: myAccount
-addClass: custom
----
+<div class="panel panel-info">
+	<div class="panel-heading">
+		<h1>Editar mi cuenta</h1>
+	</div>
+	<div class="panel-body">
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				<h3>Datos Generales</h3>
+			</div>
+			<div class="panel-body">
+				<div class="input-group input-group-lg">
+					<span class="input-group-addon" id="myFullName-addon" data-toggle="tooltip" data-placement="right" title="Su nombre completo">
+						<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+					</span>
+					<input type="text" id="myFullName" value="" class="form-control" aria-describedby="myFullName-addon" placeholder="Mi Nombre">
+				</div>
 
-<div class="well myAccountEditWrapper">
-	<form method="POST" enctype="multipart/form-data" id="myAccountForm">
+				<div class="input-group input-group-lg">
+					<span class="input-group-addon" id="myUserName-addon" data-toggle="tooltip" data-placement="right" title="Un identificador único para accesar a su cuenta.">
+						<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+					</span>
+					<input type="text" id="myUserName" value="" class="form-control" aria-describedby="myUserName-addon" placeholder="Nombre de Usuario">
+				</div>
 
-		<div class="thumbnail" id="myAccountMyAvatarWrapper">
+				<div class="input-group input-group-lg">
+					<span class="input-group-addon" id="myEmail-addon" data-toggle="tooltip" data-placement="right" title="Para recuperar su clave en caso de que la extravíe">
+						<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+					</span>
+					<input type="email" id="myEmail" value="" class="form-control" aria-describedby="myEmail-addon" placeholder="Correo electrónico">
+				</div>
+
+				<div class="input-group input-group-lg">
+					<span class="input-group-addon" id="myAbout-addon" data-toggle="tooltip" data-placement="right" title="Algo acerca de usted">
+						<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+					</span>
+					<input type="text" id="myAccountAbout" value="" class="form-control" aria-describedby="myAbout-addon" placeholder="Acerca de mi" title="Acerca de usted">
+				</div>
+			</div>
+		</div><!-- //General details -->
+
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				<h3>Clave de acceso</h3>
+			</div>
+			<div class="panel-body">
+				<div class="input-group input-group-lg">
+					<span class="input-group-addon" id="myAccountPwd-addon" data-toggle="tooltip" data-placement="right" title="Ingrese su clave de acceso nueva">
+						<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+					</span>
+					<input type="password" id="myAccountPwd" value="" class="form-control" aria-describedby="myAccountPwd-addon" placeholder="Nueva clave de accesso">
+				</div>
+				<div class="input-group input-group-lg">
+					<span class="input-group-addon" id="myPwdAgain-addon" data-toggle="tooltip" data-placement="right" title="Repita la clave para confirmar">
+						<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+					</span>
+					<input type="password" id="myAccountPwdAgain" value="" class="form-control" aria-describedby="myPwdAgain-addon" placeholder="Clave de acceso nuevamente">
+				</div>
+			</div>
+		</div><!-- //Password -->
+		<button type="submit" class="btn btn-info myAccountSubmit" onClick="return Tpl_usersUpdateAccount();">Actualizar Cuenta</button>
+	</div>
+</div>
+
+<!--div class="thumbnail" id="myAccountMyAvatarWrapper">
 			<img src="avatars/loader_big.gif" alt="My Avatar" title="My Avatar" id="myAccountMyAvatar">
-		</div>
-		<div class="form-group">
-			<div id="myAccountPersonalAvatarUploader">
-				My Avatar
-				<div class="formInfo">Can be your picture, or your dog's, what ever you like.</div>
+		</div-->
+<!--div id="myAccountPersonalAvatarUploader">
+				Mi Foto
+				<div class="formInfo">Una foto de usted o cualquier cosa.</div>
 			</div>
 			<div id="myAccountPersonalBgUploader">
-				My Personal Background
+
 				<div class="formInfo">
 					Other people will see it when they are talking to you.
 					If you have one setup now, you should see it in the background of this page.
 				</div>
-			</div>
-			<input type="text" id="myAccountAbout" value="" placeholder="About Me" title="Something about your self">
-			<div class="formInfo">Something about you</div>
-			<input type="text" id="myAccountName" value="" placeholder="My Name">
-			<div class="formInfo">What is your name?</div>
-			<input type="text" id="myAccountWire" value="" placeholder="My Wire">
-			<div class="formInfo">This is your unique identifier, this is how people will reach you, sometimes your name can be complicated.</div>
-			<div class="myAccountPasswordFields well">
-				<h4>Change your password if you want to</h4>
-				<input type="password" id="myAccountPwd" value="" placeholder="My Password">
-				<input type="password" id="myAccountPwdAgain" value="" placeholder="My Password Again">
-			</div>
-		</div>
-		<button type="submit" class="btn btn-default myAccountSubmit" onClick="return userUpdateProfile();">Update Account</button>
+			</div-->
 
-	</form>
-</div>
+<!--script type="text/javascript" src="tools/uploader/jquery.form.js"></script>
+<script src="tools/uploader/jquery.uploadfile.min.js"></script-->
 
-<script type="text/javascript" src="tools/uploader/jquery.form.js"></script>
-<script src="tools/uploader/jquery.uploadfile.min.js"></script>
+<script>
+Cala.runOnReady(Cala_usersSetEditAccount);
 
+$(function () {
+		// Set the forms
+		$('[data-toggle="tooltip"]').tooltip();
+		})
+</script>

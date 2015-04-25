@@ -9,33 +9,149 @@
 	<!-- Tab panes -->
 	<div class="tab-content">
 		<div role="tabpanel" class="tab-pane active" id="login">
-			<div class="jumbotron emptyWell">
-				<h1>Ingresar</h1>
-				<form class="navbar-form navbar-left" role="search">
-					<div class="form-group">
-						<input type="text" class="form-control" name="myWire" id="myWire" value="" placeholder="Nombre de Usuario">
-						<input type="password" class="form-control" name="myPwd" id="myPwd" value="" placeholder="Contraseña">
-					</div>
-					<button type="submit" class="btn btn-default" onClick="return logMeIn();">Ingresar</button>
-				</form>
+
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					<h3>Ingresar</h3>
+				</div>
+				<div class="panel-body">
+
+					<form class="form-horizontal">
+						<div class="form-group">
+
+							<div class="input-group input-group-lg">
+								<span class="input-group-addon" id="myUserName-addon" data-toggle="tooltip" data-placement="right" title="Su nombre de usuario">
+									<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+								</span>
+
+								<input
+								type="text"
+								class="form-control"
+								name="myUserName"
+								id="myUserName"
+								value=""
+								aria-describedby="myUserName-addon"
+								placeholder="Nombre de Usuario o Correo"
+								required>
+							</div>
+
+							<div class="input-group input-group-lg">
+								<span class="input-group-addon" id="myPwd-addon" data-toggle="tooltip" data-placement="right" title="Su nombre de usuario">
+									<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+								</span>
+
+								<input type="password"
+								class="form-control"
+								name="myPwd"
+								id="myPwd"
+								value=""
+								aria-describedby="myPwd-addon"
+								placeholder="Contraseña"
+								required>
+						</div>
+
+						</div>
+						<button type="submit" class="btn btn-default" onClick="return Tpl_logMeIn();">Ingresar</button>
+					</form>
+
+				</div>
 			</div>
 		</div>
+		<div role="tabpanel" class="tab-pane" id="register">
 
-		<div role="tabpanel" class="tab-pane active" id="register">
-			<div class="jumbotron emptyWell">
-				<h1>Crear Nueva Cuenta</h1>
-				<div class="form-group">
-					<form class="navbar-form navbar-left" role="search">
-						<input type="text" class="form-control" name="myNameRegister" id="myNameRegister" value="" placeholder="User Name">
-						<input type="text" class="form-control" name="myUserNameRegister" id="myWireRegister" value="" placeholder="Nombre de Usuario">
-						<input type="password" class="form-control" name="myPwdRegister" id="myPwdRegister" value="" placeholder="Contraseña">
-						<input type="password" class="form-control" name="myPwdAgainRegister" id="myPwdAgainRegister" value="" placeholder="Contraseña de Nuevo">
-						<input type="text" class="form-control" name="myEmailRegister" id="myEmailRegister" value="" placeholder="Correo Electrónico">
-						<input type="hidden" id="goToAfterLogin" value="?x=msgListing">
-						<button type="submit" class="btn btn-default" onClick="return userRegister();">Registrarse</button>
-					</div>
-				</form>
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					<h3>Crear Nueva Cuenta</h3>
+				</div>
+				<div class="panel-body">
+
+					<form class="form-horizontal">
+						<div class="form-group">
+
+							<div class="input-group input-group-lg">
+								<span class="input-group-addon" id="myUserNameR-addon" data-toggle="tooltip" data-placement="right" title="Su nombre de usuario">
+									<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+								</span>
+								<input type="text"
+								class="form-control"
+								name="myUserNameR"
+								id="myUserNameR"
+								value=""
+								aria-describedby="myUserNameR-addon"
+								placeholder="Nombre de Usuario"
+								required>
+							</div>
+
+							<div class="input-group input-group-lg">
+								<span class="input-group-addon" id="myFullNameR-addon" data-toggle="tooltip" data-placement="right" title="Su nombre completo">
+									<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+								</span>
+								<input
+								type="text"
+								class="form-control"
+								name="myNameR"
+								id="myFullNameR"
+								value=""
+								aria-describedby="myFullNameR-addon"
+								placeholder="Su nombre"
+								required>
+							</div>
+
+							<div class="input-group input-group-lg">
+								<span class="input-group-addon" id="myPwdR-addon" data-toggle="tooltip" data-placement="right" title="Su clave de acceso">
+									<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+								</span>
+								<input type="password"
+								class="form-control"
+								name="myPwdR"
+								id="myPwdR"
+								value=""
+								aria-describedby="myPwdR-addon"
+								placeholder="Clave de acceso"
+								required>
+							</div>
+
+							<div class="input-group input-group-lg">
+								<span class="input-group-addon" id="myPwdAgainR-addon" data-toggle="tooltip" data-placement="right" title="Su clave de acceso">
+									<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+								</span>
+								<input type="password"
+								class="form-control"
+								name="myPwdAgainR"
+								id="myPwdAgainR"
+								value=""
+								aria-describedby="myPwdAgainR-addon"
+								placeholder="Clave de acceso de nuevo"
+								required>
+							</div>
+
+							<div class="input-group input-group-lg">
+								<span class="input-group-addon" id="myEmailR-addon" data-toggle="tooltip" data-placement="right" title="Su correo electrónico">
+									<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+								</span>
+								<input type="text"
+								class="form-control"
+								name="myEmailR"
+								id="myEmailR"
+								value=""
+								aria-describedby="myEmailR-addon"
+								placeholder="Correo Electrónico"
+								required>
+							</div>
+
+							<input type="hidden" id="goToAfterLogin" value="index.html">
+							<button type="submit" class="btn btn-default" onClick="return Tpl_userRegister();">Registrarse</button>
+						</div>
+					</form>
+
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
+<script>
+$(function () {
+		// Set the forms
+		$('[data-toggle="tooltip"]').tooltip();
+		})
+</script>

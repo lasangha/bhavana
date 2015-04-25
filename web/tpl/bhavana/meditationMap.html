@@ -7,13 +7,13 @@
 	</div>
 </div>
 
-<script src="bhavana/js/ol.js"></script>
+<script src="tpl/bhavana/js/ol.js"></script>
 
 <script>
 say("creating the map");
 // I need the css loaded
 $.ajax({
-url:"bhavana/css/ol.css",
+url:"tpl/bhavana/css/ol.css",
 success:function(data){
 $("<style></style>").appendTo("head").html(data);
 var map = new ol.Map({

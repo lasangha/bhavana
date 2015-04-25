@@ -51,11 +51,14 @@ var Cala_SESSION_KEY = '';
 
 // Some other constants
 //! @todo move in Cala_x
-var VAR_CURRENT_USER_NAME  = "userWirez";
+var VAR_CURRENT_USER_NAME  = "userName";
 var VAR_CURRENT_SESSION_KEY = "currentSessionKey";
 
 // Parameters sent via url
 var params = false;
+
+//! Running on app
+var onApp = false;
 
 /**
  * Run stuff during boot up, if you want me to run stuff, let me know
@@ -158,17 +161,17 @@ function Cala_userRegister(params){
  */
 function wirez_userLogMeOut(callMeSuccess, callMeError){
 
-	d("Log out");
+	Cala.say("Log out");
 
 	$.ajax({
 		type: 'GET',
-		url: apiUrl + 'index.php',
+		url: Cala_apiUrl + 'index.php',
 		dataType: "json",
 		data: {
 			r: "users_log_me_out",
 			w: "users",
-			iam: _IAM,
-			sessionKey: _SESSION_KEY
+			iam: Cala_IAM,
+			sessionKey: Cala_SESSION_KEY
 		},
 		success: function (data) {
 			callMeSuccess(data);
@@ -185,19 +188,19 @@ function wirez_userLogMeOut(callMeSuccess, callMeError){
  */
 function cala_getPeopleList(name, initHere, callMeSuccess, callMeError){
 
-	d("Retrieving a list of contacts");
+	Cala.say("Retrieving a list of contacts");
 
 	$.ajax({
 		type: 'GET',
-		url: apiUrl + 'index.php',
+		url: Cala_apiUrl + 'index.php',
 		dataType: "json",
 		data: {
 			r: "users_get_list",
 			w: "users",
 		like:  name,
 		ini: initHere,
-		iam: _IAM,
-		sessionKey: _SESSION_KEY
+		iam: Cala_IAM,
+		sessionKey: Cala_SESSION_KEY
 		},
 		success: function (data) {
 			callMeSuccess(data);
@@ -285,15 +288,6 @@ function Cala_boot(){
 	}
 }
 
-
-/*****************************************************************************/
-//
-// Template and messaging
-//
-//////////////////////////////////////////////////////////////////////////////
-
-
-
 /***************************************************************************
  *
  * Local storage
@@ -341,7 +335,7 @@ function removeKey(theKey){
   */
 function getPeopleList(){
 
-	Cala.say("Retrieving a list of contacts");
+	Cala.say("Retrieving a list of people in the directory");
 
 	cala_getPeopleList($("#personLike").val(), params.ini != undefined ? params.ini : 0, _getPeopleListSuccess, _getPeopleListError);
 
@@ -419,11 +413,11 @@ function _getPeopleListError(){
  */
 function Cala_usersLogMeIn(details){
 
-	d("Loging in");
+	Cala.say("Loging in");
 
 	$.ajax({
 		type: 'GET',
-		url: apiUrl + 'index.php',
+		url: Cala_apiUrl,
 		dataType: "json",
 		data: {
 			w: "users",
@@ -461,7 +455,7 @@ function Cala_usersGetMyDetails(callMeSuccess, callMeError){
 
 	$.ajax({
 		type: 'GET',
-		url: apiUrl + 'index.php',
+		url: Cala_apiUrl + 'index.php',
 		dataType: "json",
 		data: {
 			w: "users",
@@ -607,13 +601,13 @@ function amILoggedIn(){
 	// This should be changed to the actual name
 	myName = keyGet(VAR_CURRENT_USER_NAME, "---");
 
-	wirez_requestData.iam = keyGet(VAR_CURRENT_USER_NAME, "");
-	Cala_IAM         = keyGet(VAR_CURRENT_USER_NAME, "");
+	//wirez_requestData.iam = keyGet(VAR_CURRENT_USER_NAME, "");
+	Cala_IAM = myName; //keyGet(VAR_CURRENT_USER_NAME, "");
 
 	Cala_SESSION_KEY = keyGet(VAR_CURRENT_SESSION_KEY, "123");
-	wirez_requestData.sessionKey = keyGet(VAR_CURRENT_SESSION_KEY, "123");
+	//wirez_requestData.sessionKey = keyGet(VAR_CURRENT_SESSION_KEY, "123");
 
-	if(keyGet(VAR_CURRENT_USER_NAME, "---") != "---"){
+	if(myName != "---"){
 		Cala.say("Yes I am");
 		$("#logMeIn").text("");
 
@@ -649,7 +643,17 @@ function amILoggedIn(){
  * I log people out
  */
 function logMeOut(){
-	wirez_userLogMeOut(_logMeOutSuccess, _logMeOutError);
+
+	wirez_userLogMeOut(
+			function (){
+				Cala.say("Successfully logged out");
+				_logMeOutRmKeys();
+			},
+			function (){
+				Cala.say("Error logging out with errors apparently");
+				_logMeOutRmKeys();
+			});
+
 	return false;
 }
 
@@ -658,26 +662,17 @@ function logMeOut(){
  */
 function _logMeOutRmKeys(){
 
-	Tpl_msgSuccess("Good bye :)");
+	Tpl_msgSuccess("Hasta luego :)");
 
 	keysGone = [VAR_CURRENT_USER_NAME, VAR_CURRENT_SESSION_KEY];
 
+	// If I don't do it like this, it won't be able to remove them all
 	for(i = 0; i < keysGone.length; i++){
 		removeKey(keysGone[i]);
 	}
 
-	iGoTo(Cala_goOnOut);
+	iGoTo('index.html');
 
-}
-
-function _logMeOutSuccess(){
-	Cala.say("Successfully logged out");
-	_logMeOutRmKeys();
-}
-
-function _logMeOutError(){
-	Cala.say("Error logging out with errors apparently");
-	_logMeOutRmKeys();
 }
 
 // I log people in
@@ -708,9 +703,11 @@ function _logMeInSuccess(details){
 		_logMeInError();
 	}
 	else{
-		//! @todo This should be done by the Cala api
 		iGoTo($('#goToAfterLogin').val());
 	}
+
+	return false;
+
 }
 
 function _logMeInError(error){
@@ -905,9 +902,9 @@ function _Tpl_alert(what){
 
 // Upload avatars
 function wirez_uploadSomething(_w, _r, _id, _onSuccess, _onError){
-	// I whished this used the internal api, but I have not been able to make it work
+	// I whished this was part of the core api, but I have not been able to make it work
 	var wirez_settingsUploader = {
-		url: apiUrl + "index.php",
+		url: Cala_apiUrl + "index.php",
 		formData: {w: _w, r: _r, iam: Cala_IAM, sessionKey: Cala_SESSION_KEY},
 		dragDrop: true,
 		fileName: "fileToUpload",
@@ -1051,12 +1048,12 @@ function getUrlVars(){
 
 // If all that you need is the PATH to get the background, use this one
 function wirez_userGetBackgroundPath(_userName, fallBack){
-	return (apiUrl + "index.php?w=users&r=users_personal_bg_get&reply_type=plain&userName="+_userName+"&fallBack="+fallBack);
+	return (Cala_apiUrl + "index.php?w=users&r=users_personal_bg_get&reply_type=plain&userName="+_userName+"&fallBack="+fallBack);
 }
 
 // Gets the correct path for a user avatar
 function wirez_userGetAvatarPath(wire, size){
-	return apiUrl + "index.php?w=users&r=users_avatar_get&userName=" + wire + "&size=" + size;
+	return Cala_apiUrl + "index.php?w=users&r=users_avatar_get&userName=" + wire + "&size=" + size;
 }
 
 

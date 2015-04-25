@@ -3,7 +3,6 @@
 	<ul class="nav nav-tabs" role="tablist">
 		<li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Va a Necesitar</a></li>
 		<li role="presentation"><a href="#faq" aria-controls="profile" role="tab" data-toggle="tab">Preguntas Frecuentes</a></li>
-		<li role="presentation"><a href="#tips" aria-controls="messages" role="tab" data-toggle="tab">Consejos</a></li>
 	</ul>
 
 	<!-- Tab panes -->
@@ -131,52 +130,6 @@
 				</div>
 			</div>
 		</div>
-		<div role="tabpanel" class="tab-pane" id="tips">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h2>Consejos de meditación</h2>
-				</div>
-				<div class="panel-body">
-					<div class="row">
-						<div class="col-md-6">
-							<p>En esta serie de videos usted aprenderá las bases de la meditación,
-							son bastantes, tome su tiempo, estúdielos. Si tiene preguntas, nos las puede hacer saber.</p>
-							<div align="center">
-								<div class="btn-group" role="group" id="Bhavana_selectTips">
-									<button type="button" class="btn btn-default btn-lg dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-										Escoja un tema
-										<span class="caret"></span>
-									</button>
-									<ul class="dropdown-menu" role="menu">
-										<li><a href="#" onSelect="return Bhavana_setTip('79_sSc-BGF0');">Que es la meditación</a></li>
-										<li><a href="#" onClick="return Bhavana_setTip('PboEFQ1xAtg');">Dejar Fluir</a></li>
-										<li><a href="#" onClick="return Bhavana_setTip('vBy8NW5jrHk');">Humildad</a></li>
-									</ul>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-6">
-							<div class="Cala_videosResponsiveWrapper">
-								<iframe id="Bhavana_videoTips" class="Cala_videosResponsive"
-									src="https://www.youtube.com/embed/videoseries?list=PLTgEM1UTivW2RQvzrwmFbaO6V5JwrG9Xh&autoplay=1"
-									frameborder="0" allowfullscreen>
-								</iframe>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
 	</div>
 </div>
-<script>
-function Bhavana_setTip(which){
-	say("Changing the video to " + which);
-	var videosPath = 'https://www.youtube.com/embed/' + which + '?list=PLTgEM1UTivW2RQvzrwmFbaO6V5JwrG9Xh&autoplay=1';
-	//var videosPath = 'https://www.youtube.com/embed/' + which +;
-	$("#Bhavana_videoTips").slideUp('slow', function(){
-			$("#Bhavana_videoTips").attr('src', videosPath);
-			$("#Bhavana_videoTips").slideDown('slow', function(){});
-			});
-}
-</script>
+
