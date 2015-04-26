@@ -1,0 +1,10 @@
+body{
+}
+
+#causesTotalMinutes, #causesCause{
+	font-weight: bold;
+}
+
+#bhavana_meditationInstrucctions{
+	display: none;
+}

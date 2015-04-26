@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="org.lasangha.bhavana" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <preference name="loglevel" value="DEBUG" />
+    <name>Bhavana</name>
+    <description>
+        Su retiro personal de meditación
+    </description>
+    <author email="lasanghacr@yahoo.com" href="http://lasangha.org">
+        La Sangha, Organización Para El Crecimiento y Desarrollo Humano
+    </author>
+    <content src="index.html" />
+    <access origin="*" />
+</widget>
