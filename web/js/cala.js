@@ -59,9 +59,6 @@ var VAR_CURRENT_SESSION_KEY = "currentSessionKey";
 // Parameters sent via url
 var params = false;
 
-//! Running on app
-var onApp = false;
-
 /**
  * Run stuff during boot up, if you want me to run stuff, let me know
  */
@@ -241,14 +238,6 @@ function initMe(){
 
 	// Get the params
 	params = getUrlVars();
-	//Cala.loadParams();
-
-	if(onApp){
-		Cala.say("Running on an app...");
-	}
-	else{
-		Cala.say("Running on a stand alone...");
-	}
 
 	// Run things that people want me to run
 	for(i = 0; i < Cala_runMe.length; i++){
@@ -271,23 +260,9 @@ function Cala_boot(){
 	Cala_runMe.push(Cala.loadThisPath);
 	Cala_runMe.push(pagesSetUp);
 
-	//! This will be usefull when running on an app, but it will not go here I just
-	//! don't want to touch it because I might loose it
-	if(onApp == true){
-		Cala.Cala.say("I am on an app");
+	Cala.say("I am on a computer");
+	$(document).ready(initMe);
 
-		$.getScript( "cordova.js", function( data, textStatus, jqxhr ) {
-			document.addEventListener("deviceready", initMe, false);
-			Cala.say(data); // Data returned
-			Cala.say(textStatus); // Success
-			Cala.say(jqxhr.status); // 200
-			Cala.say("Load was performed.");
-		});
-
-	}else{
-		Cala.say("I am on a computer");
-		$(document).ready(initMe);
-	}
 }
 
 /***************************************************************************
