@@ -1,0 +1,41 @@
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h1>¿Dónde está meditando la gente?</h1>
+	</div>
+	<div class="panel-body">
+		<div id="myMap"></div>
+	</div>
+</div>
+
+<script src="tpl/bhavana/js/ol.js"></script>
+
+<script>
+say("creating the map");
+// I need the css loaded
+$.ajax({
+url:"tpl/bhavana/css/ol.css",
+success:function(data){
+$("<style></style>").appendTo("head").html(data);
+var map = new ol.Map({
+target: 'myMap',
+layers: [
+new ol.layer.Tile({
+source: new ol.source.OSM()
+}),
+new ol.layer.Vector({
+source: new ol.source.GeoJSON({
+projection: 'EPSG:3857',
+url: Cala_apiUrl + '?w=bhavana&r=bhavana_meditations_get_locations&replyType=plain'
+})
+})
+],
+view: new ol.View({
+center: [0, 0],
+zoom: 1
+}),
+});
+}
+})
+
+</script>
+
