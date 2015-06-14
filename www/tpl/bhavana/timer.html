@@ -1,0 +1,137 @@
+<div id="bhavana_timerNumbers" style="align: center;" align="center">
+    <div class="btn-group" role="group" aria-label="...">
+        <button type="button" class="btn btn-default btn-lg" onClick="return bhavana_timerSetTime(45);">45</button>
+        <button type="button" class="btn btn-default btn-lg" onClick="return bhavana_timerSetTime(30);">30</button>
+        <button type="button" class="btn btn-default btn-lg" onClick="return bhavana_timerSetTime(25);">25</button>
+        <button type="button" class="btn btn-default btn-lg" onClick="return bhavana_timerSetTime(15);">15</button>
+        <button type="button" class="btn btn-default btn-lg" onClick="return bhavana_timerSetTime(5);">5</button>
+    </div>
+</div>
+
+<br />
+<div class="input-group input-group-lg">
+    <span class="input-group-addon" id="bhavana_timerMinutesIndicator">Minutos</span>
+    <input type="numbers" id="bhavana_timerTime" class="form-control"
+    placeholder="Tiempo a meditar" aria-describedby="bhavana_timerMinutesIndicator"
+    onKeyup="this.value=this.value.replace(/[^\d]/,'')">
+</div>
+
+<br />
+<br />
+<button type="button" id="bhavana_timerStartButton" class="btn btn-success btn-lg" style="width: 100%;" onClick="return bhavana_timeMyMeditation();">
+    <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+    Iniciar
+</button>
+<button type="button" id="bhavana_timerStopButton" class="btn btn-success btn-lg" style="width: 100%;" onClick="return bhavana_timeMyMeditation();">
+    <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+    Detener
+</button>
+
+<br />
+<br />
+<div class="progress">
+    <div id="bhavana_timerProgressBar" class="progress-bar progress-bar-info" style="width: 0%;"
+        role="progressbar"
+        aria-valuenow="0"
+        aria-valuemin="0"
+        aria-valuemax="100"></div>
+</div>
+
+
+<script type="text/javascript">
+
+function bhavana_timerSetTime(time){
+    $("#bhavana_timerTime").val(time);
+}
+
+// Total time to meditate
+var bhavana_totalTime = 0;
+var bhavana_internalTimer = 0;
+
+// I do the actual timing for the meditation
+function bhavana_timeMyMeditationTimer(){
+
+    Cala.say("Timing the timer...");
+
+    // Should I stop now? Was it premature?
+    if(bhavana_internalTimer < 0){
+        bhavana_timerStop();
+        return false;
+    }
+
+    if(bhavana_totalTime >= bhavana_internalTimer){
+
+        valueNow = Math.round((bhavana_internalTimer/bhavana_totalTime)*100);
+        $("#bhavana_timerProgressBar").css('width', valueNow+"%");
+        $("#bhavana_timerProgressBar").attr('aria-valuenow', valueNow);
+
+        setTimeout(function(){
+                bhavana_timeMyMeditationTimer();
+                }, 1000);
+
+        // Increase the timer
+        bhavana_internalTimer++;
+        Cala.say("Timing: " + bhavana_internalTimer + " -> " + valueNow + " / " + bhavana_totalTime);
+    }else{
+        var audio = new Audio('tpl/bhavana/bell_1.mp3');
+        audio.play();
+        bhavana_timerStop();
+		Bhavana_addToCause(time, code);
+    }
+
+}
+
+// Stop the timer and go back to square one
+function bhavana_timerStop(){
+
+    Cala.say("Stoping the timer and going back to square one");
+    bhavana_internalTimer = -1;
+    bhavana_totalTime = 0;
+
+    $("#bhavana_timerStartButton").show();
+    $("#bhavana_timerStopButton").hide();
+
+}
+
+// I start the meditation process
+function bhavana_timeMyMeditation(){
+
+    // if it is running, I will stop it
+    if(bhavana_internalTimer > 0){
+        Cala.say("I will stop now");
+        bhavana_timerStop();
+    }else{
+
+        // Get the total time to meditate
+        bhavana_totalTime = parseInt($("#bhavana_timerTime").val());
+        Cala.say("About to start with: " + bhavana_totalTime);
+
+        if(bhavana_totalTime > 0){
+
+            Cala.say("And I begin...");
+
+            // Clear messages, just in case
+            Tpl_msgClearAll();
+
+            $("#bhavana_timerStartButton").hide();
+            $("#bhavana_timerStopButton").show();
+            // Convert to seconds
+            bhavana_totalTime = bhavana_totalTime * 1;
+            bhavana_internalTimer = 0;
+            bhavana_timeMyMeditationTimer();
+
+        }
+        else{
+            Tpl_msgDanger("Favor indicar un tiempo a meditar");
+            return false;
+        }
+    }
+    return false;
+}
+
+$("#bhavana_timerStopButton").hide();
+$("#bhavana_timerTime").focus();
+
+</script>
+
+

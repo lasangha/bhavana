@@ -1,61 +1,55 @@
-<div align="center">
-	<div class="alert alert-info" role="alert">
-		Hemos meditado <span id="causesTotalMinutes">#</span> minutos por <span id="causesCause">#</span>
-	</div>	
+<div class="list-group">
+    <div align="center">
+        <a class="list-group-item list-group-item-info" href="#" onClick="return false;">
+            <h2>Meditación Para La Vida Diaria</h2>
+        </a>
+    </div>
+    <a href="#" class="list-group-item list-group-item-success" onClick="return Bhavana_gotoLastSessionPage();">
+        <span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>
+        Vamos a Meditar
+    </a>
+    <a href="?x=bhavana/intro" class="list-group-item">
+        <span class="glyphicon glyphicon-expand" aria-hidden="true"></span>
+        Aprenda a meditar
+    </a>
+    <a href="?x=bhavana/tips" class="list-group-item">
+        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+        Consejos de meditación
+    </a>
 </div>
-
-<div class="row">
-	<div class="col-md-6">
-		<div class="list-group">
-			<div align="center">
-				<a class="list-group-item list-group-item-info" href="#" onClick="return false;">
-					<strong>El Curso</strong>
-				</a>
-			</div>
-			<a href="#" class="list-group-item" onClick="return Bhavana_gotoLastSessionPage();">
-				<span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>
-				Volver al curso
-			</a>
-			<a href="?x=bhavana/intro" class="list-group-item">
-				<span class="glyphicon glyphicon-expand" aria-hidden="true"></span>
-				Introducción
-			</a>
-			<a href="?x=bhavana/tips" class="list-group-item">
-				<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-				Consejos de meditación
-			</a>
-		</div>
-		<div class="list-group">
-			<div align="center">
-				<a class="list-group-item list-group-item-info" href="#" onClick="return false;">
-					<strong>Datos</strong>
-				</a>
-			</div>
-			<a class="list-group-item" href="?x=bhavana/myStats">
-				<span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
-				Mis estadísticas de meditación
-			</a>
-			<a class="list-group-item" href="?x=bhavana/groupStats">
-				<span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span>
-				Estadísticas grupales de meditación
-			</a>
-			<a class="list-group-item" href="?x=bhavana/meditationMap">
-				<span class="glyphicon glyphicon-globe" aria-hidden="true"></span>
-				Mapa de meditaciones
-			</a>
-		</div>
-	</div>
-	<div class="col-md-6">
-		<div align="center" id="companyLogo">
-			<p><img src="img/logo_sangha.png" style="width: 250px"></p>
-		</div>
-	</div>
+<div class="list-group">
+    <div align="center">
+        <a class="list-group-item list-group-item-info" href="#" onClick="return false;">
+            <h2>Datos</h2>
+        </a>
+    </div>
+    <a class="list-group-item" href="?x=bhavana/myStats">
+        <span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
+        Mis estadísticas
+    </a>
+    <a class="list-group-item" href="?x=bhavana/groupStats">
+        <span class="glyphicon glyphicon-record" aria-hidden="true"></span>
+        Estadísticas grupales
+    </a>
+    <a class="list-group-item" href="?x=bhavana/meditationMap">
+        <span class="glyphicon glyphicon-globe" aria-hidden="true"></span>
+        Mapa
+    </a>
 </div>
+    </div>
 
-<div id="meditationCausesTimes"></div>
+    <div align="center">
+<div class="alert alert-warning" role="alert">
+    <h3>
+        Hemos meditado <span id="causesTotalMinutes" class="label label-default">#</span> minutos por <span id="causesCause" class="label label-default">#</span>
+    </h3>
+</div>	
+    </div>
 
-<script>
+    <div id="meditationCausesTimes"></div>
+
+    <script>
 Cala.runOnReady(getMeditationMaxCauseTime);
-</script>
+    </script>
 
 

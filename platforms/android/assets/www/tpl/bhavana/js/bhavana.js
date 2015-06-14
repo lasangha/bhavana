@@ -6,9 +6,11 @@ var audioFilePath = "";
 
 // Shows the player
 function Bhavana_startMeditation(code, time){
-	say("I am showing the player");
-	$("#bhavana_selectMeditationIntention").fadeOut('slow', function(){
-		$("#bhavana_meditationInstrucctions").fadeIn('slow', function(){
+
+    say("I am showing the player");
+
+    $("#bhavana_selectMeditationIntention").fadeOut('slow', function(){
+		$("#bhavana_meditationInstructions").fadeIn('slow', function(){
 			$("#sessionsPlayer").fadeIn('slow');
 		});
 	});
@@ -40,7 +42,7 @@ function sendMail(){
 		msg: $('#text').val(),
 		},
 		success: function (data) {
-			console.log(data)
+			console.log(data);
 		}
 	});
 	return false;
@@ -83,7 +85,7 @@ function getMeditationMaxCauseTime(){
 
 	//if(checkConnection() == true){
 
-	console.log("Getting times" + Cala_apiUrl);
+	console.log("Getting times");
 
 	//Lets make the connection
 	$.ajax({
@@ -101,11 +103,11 @@ function getMeditationMaxCauseTime(){
 				console.log("Got information about the times");
 				$("#causesTotalMinutes").html(data.resp.totalTime);
 				$("#causesCause").html(data.resp.name);
-				console.log(data.resp.totalTime)
+				console.log(data.resp.totalTime);
 			}
 		},
-		error: function(data){
-			console.log("Something wrong?" + JSON.stringify(data));
+		error: function(){
+			console.log("Something wrong?");
 		}
 	});
 }
@@ -123,10 +125,10 @@ function Bhavana_gotoLastSessionPage(){
 	console.log("I am in page: " + thisPage);
 
 	// Where was I?
-	var lastValue = keyGet("var_bhavana_lastPage");
+	var lastValue = keyGet("var_bhavana_lastPage", "startMeOver");
 
 	// If there is a last location, I'll go there
-	if(lastValue == null){
+	if(lastValue === undefined || lastValue == "startMeOver"){
 		say("Nothing set");
 		iGoTo("?x=bhavana/c_intro");
 	}
@@ -146,7 +148,7 @@ function getSessionId(){
 
 	sessionId = getKey("sessionId");
 
-	if(sessionId == null || sessionId < 0){
+	if(sessionId === null || sessionId < 0){
 		sessionId = '0';
 		storeKey("sessionId", sessionId);
 	}
@@ -180,7 +182,7 @@ function setSessionDetails(subjects, subjectsDets){
 
 	$("#sessionId").text(parseInt(sessionId) + 1);
 	$("#sessionDesc").text(subjects[sessionId].desc);
-	$("#meditationSource").attr("src", audioFilePath).detach().appendTo("#meditationPlayer");;
+	$("#meditationSource").attr("src", audioFilePath).detach().appendTo("#meditationPlayer");
 
 	// Next and back
 	// If this is the end, I will use the next section
@@ -195,7 +197,7 @@ function setSessionDetails(subjects, subjectsDets){
 		$("#nextSession").attr("onClick", "setId(" + (1 + parseInt(sessionId)) + ");");
 	}
 	// If this is the first id I will link to the previews section
-	if(sessionId == 0){
+	if(sessionId === 0){
 		console.log("I am at the beggining, I will link to the previews section");
 		$("#prevSession").attr("href", subjectsDets.prev);
 		$("#prevSession").attr("onClick", "setId(-1);");
@@ -226,7 +228,7 @@ function Bhavana_addToCause(_totalTime, _causeCode){
 			totalTime: _totalTime,
 		},
 		success: function (data) {
-			say(data)
+			say(data);
 		}
 	});
 }
@@ -243,11 +245,12 @@ function createChart(chartTitle, canvasId, chartLabels, chartData, type){
 
 	console.log("Creating chart");
 
-	console.log("hello >>>> " + chartLabels.length);
 
-	if(chartLabels.length == 0){
+	if(chartLabels.length === 0){
 		$("#myCharts").html("No hay datos en este momento");
 	}else{
+
+        console.log("hello >>>> " + chartLabels.length);
 
 		var lineChartData = {
 			labels : chartLabels,
@@ -263,14 +266,14 @@ function createChart(chartTitle, canvasId, chartLabels, chartData, type){
 				data : chartData
 			}
 			]
-		}
+		};
 
 		var ctx = document.getElementById(canvasId).getContext("2d");
 		window.myLine = new Chart(ctx).Line(lineChartData, {responsive: true});
 	}
 }
 
-// Get all meditation times per day
+// Get all meditation times per day, for me?
 function getAllMeditationTimesPerDay(){
 
 	say("There is connexion, lets get the times");
@@ -296,7 +299,7 @@ function getAllMeditationTimesPerDay(){
 		pointStrokeColor: "#fff",
 		pointHighlightFill: "#fff",
 		pointHighlightStroke: "rgba(255,255,153,1)",
-		data: allDetails.resp.details['Paz']
+		data: allDetails.resp.details.Paz
 	},
 	{
 		label: "Humildad",
@@ -306,7 +309,7 @@ function getAllMeditationTimesPerDay(){
 		pointStrokeColor: "#fff",
 		pointHighlightFill: "#fff",
 		pointHighlightStroke: "rgba(51,255,153,1)",
-		data: allDetails.resp.details['Humildad']
+		data: allDetails.resp.details.Humildad
 	},
 	{
 		label: "Compasión",
@@ -320,15 +323,14 @@ function getAllMeditationTimesPerDay(){
 	}
 	]
 			};
-			//createChart("Meditaciones grupales por día", "myChart", details.labels, details.times, 'lines');
 			var ctx = document.getElementById("myChart").getContext("2d");
 			var options = {
 				responsive: true,
 				multiTooltipTemplate: "<%= datasetLabel %> - <%= value %>",
-				legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
-			}
-			window.myLine = new Chart(ctx).Line(newData, options);
-
+				legendTemplate : "<ul class=\"list-group <%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li class=\"list-group-item\"><span style=\"background-color:<%=datasets[i].strokeColor%>\">&nbsp;&nbsp;</span>&nbsp;<%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+			};
+			window.myGroupTimesChart = new Chart(ctx).Line(newData, options);
+            document.getElementById("groupTimesChart").innerHTML = myGroupTimesChart.generateLegend();
 		}
 	});
 
@@ -344,55 +346,102 @@ function getMyMeditationTimesPerDay(){
 		url: Cala_apiUrl,
 		dataType: "json",
 		data: {
+            iam: Cala_IAM,
+            sessionKey: Cala_SESSION_KEY,
 			r: "bhavana_meditations_get_my_times",
 			w: "bhavana",
 			goBack: 7 //Start 7 days ago
 		},
-		success: function (details) {
-			createChart("Meditación por día", "myChart", details.resp.labels, details.resp.times, 'lines');
-		}
+		success: function (response) {
+            if(response.resp != ERROR_DB_NO_RESULTS_FOUND){
+			    createChart("Meditación por día", "myChart", response.resp.labels, response.resp.times, 'lines');
+            }
+            else{
+                Cala.say("Nothing found");
+            }
+        },
+        error: function(){
+            Cala.say("Error");
+        }
 	});
+
+}
+
+// Get my meditation times per cause
+function getMyMeditationTimesPerCause(){
+
+    say("Lets get the meditation chart per cause");
+
+    $.ajax({
+        type: 'GET',
+        url: Cala_apiUrl,
+        dataType: "json",
+        data: {
+            iam: Cala_IAM,
+        sessionKey: Cala_SESSION_KEY,
+        r: "bhavana_meditations_get_my_times_per_cause",
+        w: "bhavana"
+        },
+        success: function (response) {
+            if(response.resp != ERROR_DB_NO_RESULTS_FOUND){
+
+                Cala.say("Got good information for the pie" + response.resp);
+
+                var options = {legendTemplate: "<ul class=\"list-group <%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li class=\"list-group-item\"><span style=\"background-color:<%=segments[i].fillColor%>\">&nbsp;<%=segments[i].value%>&nbsp;</span>&nbsp;<%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"};
+                var ctx = document.getElementById('chartPiePerCause').getContext('2d');
+                var perCausePieChart = new Chart(ctx).Pie(response.resp, options);
+                document.getElementById("Bhavana_meditationTimesPerCauseLegend").innerHTML = perCausePieChart.generateLegend();
+
+            }
+            else{
+                Cala.say("Nothing found");
+            }
+        },
+        error: function(){
+            Cala.say("Error");
+        }
+    });
 
 }
 
 function createMap(){
 
-	console.log("creating the map");
+    console.log("creating the map");
 
-	var styleFunction = function(feature, resolution) {
-		style = [new ol.style.Style({
-			image: new ol.style.Circle({
-				radius: 25,
-				fill: new ol.style.Fill({
-					color: 'rgba(255, 153, 0, 0.4)'
-				}),
-				stroke: new ol.style.Stroke({
-					color: 'rgba(255, 204, 0, 0.2)',
-				width: 1
-				})
-			})
-		})];
-		return style;
-	};
+    var styleFunction = function(feature, resolution) {
+        style = [new ol.style.Style({
+            image: new ol.style.Circle({
+                radius: 25,
+                fill: new ol.style.Fill({
+                    color: 'rgba(255, 153, 0, 0.4)'
+                }),
+                stroke: new ol.style.Stroke({
+                    color: 'rgba(255, 204, 0, 0.2)',
+                width: 1
+                })
+            })
+        })];
+        return style;
+    };
 
-	var map = new ol.Map({
-		target: 'myMap',
-		layers: [
-		new ol.layer.Tile({
-			source: new ol.source.OSM()
-		}),
-			new ol.layer.Vector({
-				source: new ol.source.GeoJSON({
-					projection: 'EPSG:3857',
-				url: apiPath + '?what=getMeditationLocations'
-				})
-			})
-	],
-		view: new ol.View({
-			center: [0, 0],
-		zoom: 1
-		}),
-	});
+    var map = new ol.Map({
+        target: 'myMap',
+        layers: [
+        new ol.layer.Tile({
+            source: new ol.source.OSM()
+        }),
+            new ol.layer.Vector({
+                source: new ol.source.GeoJSON({
+                    projection: 'EPSG:3857',
+                url: apiPath + '?what=getMeditationLocations'
+                })
+            })
+    ],
+        view: new ol.View({
+            center: [0, 0],
+        zoom: 1
+        }),
+    });
 }
 
 // End of reports/charts

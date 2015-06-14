@@ -1,8 +1,26 @@
-<h2>Mi meditación diaria</h2>
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h2>Meditación total diaria</h2>
+    </div>
+    <div class="panel-body">
+        <canvas id="myChart" height="100%"></canvas>
+    </div>
+</div>
 
-<canvas id="myChart" height="100%"></canvas>
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h2>Por causa</h2>
+    </div>
+    <div class="panel-body">
+        <canvas id="chartPiePerCause"></canvas>
+        <div id="Bhavana_meditationTimesPerCauseLegend"></div>
+    </div>
+</div>
+
 
 <script src="tpl/bhavana/js/Chart.min.js"></script>
 <script>
-	Cala.runOnReady(getMyMeditationTimesPerDay);
+Cala.userPerms('logedIn', '');
+Cala.runOnReady(getMyMeditationTimesPerDay);
+Cala.runOnReady(getMyMeditationTimesPerCause);
 </script>

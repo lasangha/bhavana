@@ -1,49 +1,72 @@
-<div class="panel panel-default">
-	<div class="panel-heading">
-		<h2>Consejos de meditación</h2>
-	</div>
-	<div class="panel-body">
-		<div class="row">
-			<div class="col-md-6">
-				<div class="alert alert-info" role="alert">
-					<h1>
-						En esta serie de videos usted aprenderá las bases de la meditación,
-						son bastantes, tome su tiempo, estúdielos. Si tiene preguntas, nos las puede hacer saber.
-					</h1>
-				</div>
-				<div align="center">
-					<div class="btn-group" role="group" id="Bhavana_selectTips">
-						<button type="button" class="btn btn-default btn-lg dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-							Escoja un tema
-							<span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu" role="menu">
-							<li><a href="#" onSelect="return Bhavana_setTip('79_sSc-BGF0');">Que es la meditación</a></li>
-							<li><a href="#" onClick="return Bhavana_setTip('PboEFQ1xAtg');">Dejar Fluir</a></li>
-							<li><a href="#" onClick="return Bhavana_setTip('vBy8NW5jrHk');">Humildad</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-6">
-				<div class="Cala_videosResponsiveWrapper">
-					<iframe id="Bhavana_videoTips" class="Cala_videosResponsive"
-						src="https://www.youtube.com/embed/videoseries?list=PLTgEM1UTivW2RQvzrwmFbaO6V5JwrG9Xh"
-						frameborder="0" allowfullscreen>
-					</iframe>
-				</div>
-			</div>
-		</div>
-	</div>
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h2>Consejos de meditación</h2>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="well">
+                    <h3>
+                        <p>En esta serie de videos usted aprenderá las bases de la meditación.</p>
+                        <p>Si tiene preguntas, nos las puede hacer saber.</p>
+                    </h3>
+                </div>
+                <button class="btn btn-success btn-lg" onClick="$('#Bhavana_tipsListing').toggle();" style="width: 100%; margin-bottom: 10px;">Escoja un Tema</button>
+                <ul class="list-group" id="Bhavana_tipsListing" style="display: none;">
+                    <a class="list-group-item Bhavana_tipsListing" href="#Bhavana_tipsVideo" 
+                        onClick="return Bhavana_setTip('79_sSc-BGF0');">¿Qué es la meditación?</a>
+                    <a class="list-group-item Bhavana_tipsListing" href="#Bhavana_tipsVideo" 
+                        onClick="return Bhavana_setTip('CWe3BBTk7U4');">¿Por qué meditar?</a>
+                    <a class="list-group-item Bhavana_tipsListing" href="#Bhavana_tipsVideo" 
+                        onClick="return Bhavana_setTip('mBwb3fUrbuA');">¿Cómo funciona la meditación?</a>
+                    <a class="list-group-item Bhavana_tipsListing" href="#Bhavana_tipsVideo" 
+                        onClick="return Bhavana_setTip('2o3_W2VxrUA');">Posturas de meditación</a>
+                    <a class="list-group-item Bhavana_tipsListing" href="#Bhavana_tipsVideo" 
+                        onClick="return Bhavana_setTip('X6nxKGIPrY0');">Relajación antes de iniciar</a>
+                    <a class="list-group-item Bhavana_tipsListing" href="#Bhavana_tipsVideo" 
+                        onClick="return Bhavana_setTip('L0FpMj37zdc');">Meditación caminando</a>
+                    <a class="list-group-item Bhavana_tipsListing" href="#Bhavana_tipsVideo" 
+                        onClick="return Bhavana_setTip('r2UB4cCGKcs');">Inicio y fin de la sesión</a>
+                    <a class="list-group-item Bhavana_tipsListing" href="#Bhavana_tipsVideo" 
+                        onClick="return Bhavana_setTip('vBy8NW5jrHk');">Iniciar la sesión con Samatha</a>
+                    <a class="list-group-item Bhavana_tipsListing" href="#Bhavana_tipsVideo" 
+                        onClick="return Bhavana_setTip('06Z02Vni-Ec');">Ayudas durante la meditación</a>
+                    <a class="list-group-item Bhavana_tipsListing" href="#Bhavana_tipsVideo" 
+                        onClick="return Bhavana_setTip('gJQSYws-8Wo');">Intoxicantes</a>
+                    <a class="list-group-item Bhavana_tipsListing" href="#Bhavana_tipsVideo" 
+                        onClick="return Bhavana_setTip('PboEFQ1xAtg');">Dejar fluir</a>
+                    <a class="list-group-item Bhavana_tipsListing" href="#Bhavana_tipsVideo" 
+                        onClick="return Bhavana_setTip('yWmTdEuHWaU');">El agradecimiento</a>
+                    <a class="list-group-item Bhavana_tipsListing" href="#Bhavana_tipsVideo" 
+                        onClick="return Bhavana_setTip('VlJjp8I4nR4');">Momentos de claridad</a>
+                    <a class="list-group-item Bhavana_tipsListing" href="#Bhavana_tipsVideo" 
+                        onClick="return Bhavana_setTip('2bEN2El9SIY');">Propósito durante la práctica</a>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <a name="Bhavana_tipsVideo">
+                <div class="Cala_videosResponsiveWrapper">
+                    <iframe id="Bhavana_videoTips" class="Cala_videosResponsive"
+                        src="https://www.youtube.com/embed/videoseries?list=PLTgEM1UTivW2RQvzrwmFbaO6V5JwrG9Xh"
+                        frameborder="0" allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
 function Bhavana_setTip(which){
-	say("Changing the video to " + which);
-	var videosPath = 'https://www.youtube.com/embed/' + which + '?list=PLTgEM1UTivW2RQvzrwmFbaO6V5JwrG9Xh&autoplay=1';
-	$("#Bhavana_videoTips").slideUp('slow', function(){
-			$("#Bhavana_videoTips").attr('src', videosPath);
-			$("#Bhavana_videoTips").slideDown('slow', function(){});
-			});
+
+    $('#Bhavana_tipsListing').hide();
+
+    say("Changing the video to " + which);
+    var videosPath = 'https://www.youtube.com/embed/' + which + '?list=PLTgEM1UTivW2RQvzrwmFbaO6V5JwrG9Xh&autoplay=1';
+    $("#Bhavana_videoTips").slideUp('slow', function(){
+            $("#Bhavana_videoTips").attr('src', videosPath);
+            $("#Bhavana_videoTips").slideDown('slow', function(){});
+            });
 }
+
 </script>

@@ -3,13 +3,16 @@ var Bhavana_Categories = {
 	samatha: {
 		title: "Samatha",
 		desc: "Tranquilidad, volviendo al cuerpo.",
-		sessions: ['_rRoD28-WgU', '2FS6AsNCy3I', 'Yy8nWIiP4_M']
-	},
+		sessions: ['SKejPyKEugI', 'gVp5UJ-AlGQ', 'MzXxa5j3aSo', '1FFeB-zXerc', '3ucVT8Vcp-s', 'i1UsmfBfCwE', 'eOCDcu29lLQ', 'TVBaruAy42c', 'CX_S6ODW7FM']
+	}
+    /*
+    ,
 	vipassana: {
 		title: "Vipassana",
 		desc: "Introspección y descubrimiento de la mente.",
 		sessions: ['_rRoD28-WgU', '2FS6AsNCy3I', 'Yy8nWIiP4_M']
-	}};
+	}*/
+    };
 
 var Bhavana_Session = {
 
@@ -63,7 +66,6 @@ var Bhavana_Session = {
 	},
 	playerCreate: function(id){
 		return '<iframe class="Cala_videosResponsive" src="https://www.youtube.com/embed/'+id+'" frameborder="0" allowfullscreen></iframe>';
-
 	},
 	setPager: function(categories){
 		// Get the possition in the array of key of this category
@@ -75,7 +77,15 @@ var Bhavana_Session = {
 		// Next?
 		if(this.dets.id >= this.dets.sessions.length){
 			say("This is the last of this series");
+
+            /* Temporary solution, when I add more series this should be fixed too, 
+             * use sessionsPos > lenght of the categories to find out if the end has been reached
+
+            // Are there more series?
+            if(this.Bhavana_Categories.lenght)
 			$("#goNext").attr("href", "?x=bhavana/sessions&sessionId=1&cat="+sessions[parseInt(sessionsPos) + 1]);
+            */
+			$("#goNext").attr("href", "?x=bhavana/c_vidaDiariaEnd");
 		}
 		else{
 			say("There are more sessions to go...");
@@ -90,14 +100,14 @@ var Bhavana_Session = {
 		}
 		else{
 			// Is this the first of the sessions?
-			if(sessionsPos == 0){
+			if(sessionsPos === 0){
 				say("This is the first of the series, going back to the main page");
 				backPath = "?x=index";
 			}
 			// Lets find out go goes before
 			else{
 				say("Which is the previews category?");
-				backPath = "?x=bhavana/sessions&sessionId=" + categories[this.dets.cat].sessions.length + "&cat="+sessions[parseInt(sessionsPos) -1]
+				backPath = "?x=bhavana/sessions&sessionId=" + categories[this.dets.cat].sessions.length + "&cat="+sessions[parseInt(sessionsPos) -1];
 			}
 			$("#goBack").attr("href", backPath);
 		}
@@ -109,7 +119,7 @@ var Bhavana_Session = {
 	boot: function(categories){
 		this.hidePlayer().getCategory(categories).getSessionId().loadSession().setPager(categories);
 	}
-}
+};
 
 Bhavana_Session.boot(Bhavana_Categories);
 Bhavana_storeThisPage();

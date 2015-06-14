@@ -1,10 +1,17 @@
 body{
 }
 
-#causesTotalMinutes, #causesCause{
-	font-weight: bold;
+#Bhavana_selectTips{
+    margin-bottom: 15px;
 }
 
-#bhavana_meditationInstrucctions{
+#causesTotalMinutes, #causesCause{
+}
+
+#bhavana_meditationInstructions{
 	display: none;
+}
+
+.list-group-item{
+    font-size: 180%;
 }

@@ -1,53 +1,82 @@
-<div class="panel panel-default">
-	<div class="panel-heading">
-		<h1> <span id="sessionTitle">
-			Esta sesión
-			</span>
-			<span class="label label-default" id="sessionNumber">#</span>
-		</h1>
-	</div>
-	<div class="panel-body">
-		<div class="row">
-			<div class="col-md-6">
-				<h3 id="sessionDesc">Vamos a meditar...</h3>
-				<div align="center">
-					<div class="btn-group" role="group" id="bhavana_selectMeditationIntention">
-						<button type="button" class="btn btn-info btn-lg dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-							Hoy voy a meditar por...
-							<span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu" role="menu">
-							<li><a href="#" onClick="return Bhavana_startMeditation('paz', '9');">La Paz</a></li>
-							<li><a href="#" onClick="return Bhavana_startMeditation('com', '9');">Compasión</a></li>
-							<li><a href="#" onClick="return Bhavana_startMeditation('hum', '9');">Humildad</a></li>
-						</ul>
-					</div>
-					<div id="bhavana_meditationInstrucctions">
-						<div class="alert alert-info" role="alert">
-							<h1>
-							Inicie el video, cierre los ojos y comience su meditación....
-						</h1>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-6">
-				<div align="center"	id="sessionsPlayer" class="Cala_videosResponsiveWrapper"></div>
-			</div>
-		</div>
+<!--script>
+function Bhavana_startPlayer(){
 
-	</div>
+    var vid = document.getElementById("bhavana_meditations");
+
+    console.log("about to meditate");
+    vid.play();
+
+    return false;
+
+}
+
+function Bhavana_pausePlayer(){
+
+    var vid = document.getElementById("bhavana_meditations");
+
+    console.log("about to pause meditation");
+    vid.pause();
+
+    return false;
+
+}
+</script-->
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h1> <span id="sessionTitle">
+                Esta sesión
+            </span>
+            <span class="label label-default" id="sessionNumber">#</span>
+        </h1>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h3 id="sessionDesc">Vamos a meditar...</h3>
+                <div align="center">
+                    <div class="btn-group" role="group" id="bhavana_selectMeditationIntention">
+                        <button type="button" class="btn btn-info btn-lg dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                            Hoy voy a meditar por...
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li class="list-group-item"><a href="#" onClick="return Bhavana_startMeditation('paz', '9');">La Paz</a></li>
+                            <li class="list-group-item"><a href="#" onClick="return Bhavana_startMeditation('com', '9');">Compasión</a></li>
+                            <li class="list-group-item"><a href="#" onClick="return Bhavana_startMeditation('hum', '9');">Humildad</a></li>
+                        </ul>
+                    </div>
+                    <div id="bhavana_meditationInstructions">
+                        <div class="alert alert-info" role="alert">
+                            <h1>
+                                Inicie el video, cierre los ojos y comience su meditación....
+                            </h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+
+<!--a href="" onClick="return Bhavana_startPlayer();" id="bhavana_playerPlay"><img src="http://192.168.43.164/tests/player/Play-Icon.svg" width="200"></a>
+<a href="" onClick="return Bhavana_pausePlayer();" id="bhavana_playerPause"><img src="http://192.168.43.164/tests/player/Pause.svg" width="200"></a>
+<audio controls id="bhavana_meditations" src="http://files.lasangha.org/app/samatha/s_s1.mp3" preload="auto"></audio-->
+
+<div align="center"	id="sessionsPlayer" class="Cala_videosResponsiveWrapper"></div>
+</div>
+</div>
+
+</div>
 </div>
 
 <nav>
-	<ul class="pager">
-		<li class="previous">
-		<a href="?x=sessions" id="goBack">Anterior</a>
-		</li>
-		<li class="next">
-		<a href="?x=sessions" id="goNext">Siguiente</a>
-		</li>
-	</ul>
+<ul class="pager">
+<li class="previous">
+<a href="?x=sessions" id="goBack">Anterior</a>
+</li>
+<li class="next">
+<a href="?x=sessions" id="goNext">Siguiente</a>
+</li>
+</ul>
 </nav>
 
 <script src="tpl/bhavana/js/sessions.js"></script>
