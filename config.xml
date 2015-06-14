@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="org.lasangha.bhavana" version="0.2.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Bhavana</name>
+    <name>Retiro de Meditación</name>
     <description>
         Su retiro personal de meditación
     </description>
@@ -11,6 +11,8 @@
     <access origin="*" />
     <icon src="res/icon.png" />
 	<platform name="android">
+		<preference name="permissions" value="none" />
+		<preference name="ShowTitle" value="true"/>
 		<icon src="res/android/mdpi.png" density="mdpi" />
 		<icon src="res/android/hdpi.png" density="hdpi" />
 		<icon src="res/android/xhdpi.png" density="xhdpi" />
