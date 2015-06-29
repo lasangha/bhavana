@@ -18,4 +18,9 @@ body{
 
 #bhavana_selectMeditationIntention{
     margin-bottom: 25px;
+    //display: none;
+}
+
+#bhavana_waitingForVideo{
+    display: none;
 }

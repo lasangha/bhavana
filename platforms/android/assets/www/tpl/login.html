@@ -1,157 +1,193 @@
+<!-- Tabs -->
 <div role="tabpanel">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#login" aria-controls="home" role="tab" data-toggle="tab">Ingresar</a></li>
+        <li role="presentation"><a href="#register" aria-controls="profile" role="tab" data-toggle="tab">Registrarse</a></li>
+        <li role="presentation"><a href="#recoverPwd" aria-controls="profile" role="tab" data-toggle="tab">Recuperar Clave</a></li>
+    </ul>
 
-	<!-- Nav tabs -->
-	<ul class="nav nav-tabs" role="tablist">
-		<li role="presentation" class="active"><a href="#login" aria-controls="home" role="tab" data-toggle="tab">Ingresar</a></li>
-		<li role="presentation"><a href="#register" aria-controls="profile" role="tab" data-toggle="tab">Registrarse</a></li>
-	</ul>
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <!-- Log In -->
+        <div role="tabpanel" class="tab-pane active" id="login">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3>Ingresar</h3>
+                </div>
+                <div class="panel-body">
 
-	<!-- Tab panes -->
-	<div class="tab-content">
-		<div role="tabpanel" class="tab-pane active" id="login">
+                    <form class="form-horizontal">
+                        <div class="form-group">
 
-			<div class="panel panel-info">
-				<div class="panel-heading">
-					<h3>Ingresar</h3>
-				</div>
-				<div class="panel-body">
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-addon" id="myUserName-addon" data-toggle="tooltip" data-placement="right" title="Su nombre de usuario">
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                                </span>
 
-					<form class="form-horizontal">
-						<div class="form-group">
+                                <input
+                                type="text"
+                                class="form-control"
+                                name="myUserName"
+                                id="myUserName"
+                                value=""
+                                aria-describedby="myUserName-addon"
+                                placeholder="Nombre de Usuario o Correo"
+                                required>
+                            </div>
 
-							<div class="input-group input-group-lg">
-								<span class="input-group-addon" id="myUserName-addon" data-toggle="tooltip" data-placement="right" title="Su nombre de usuario">
-									<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-								</span>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-addon" id="myPwd-addon" data-toggle="tooltip" data-placement="right" title="Su nombre de usuario">
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                                </span>
 
-								<input
-								type="text"
-								class="form-control"
-								name="myUserName"
-								id="myUserName"
-								value=""
-								aria-describedby="myUserName-addon"
-								placeholder="Nombre de Usuario o Correo"
-								required>
-							</div>
+                                <input type="password"
+                                class="form-control"
+                                name="myPwd"
+                                id="myPwd"
+                                value=""
+                                aria-describedby="myPwd-addon"
+                                placeholder="Contraseña"
+                                required>
+                            </div>
 
-							<div class="input-group input-group-lg">
-								<span class="input-group-addon" id="myPwd-addon" data-toggle="tooltip" data-placement="right" title="Su nombre de usuario">
-									<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-								</span>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-lg" onClick="return Tpl_logMeIn();" style="width: 100%;">Ingresar</button>
+                    </form>
 
-								<input type="password"
-								class="form-control"
-								name="myPwd"
-								id="myPwd"
-								value=""
-								aria-describedby="myPwd-addon"
-								placeholder="Contraseña"
-								required>
-						</div>
+                </div>
+            </div>
+        </div><!-- //login -->
 
-						</div>
-						<button type="submit" class="btn btn-default" onClick="return Tpl_logMeIn();">Ingresar</button>
-					</form>
+        <!-- Register -->
+        <div role="tabpanel" class="tab-pane" id="register">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3>Crear Nueva Cuenta</h3>
+                </div>
+                <div class="panel-body">
 
-				</div>
-			</div>
-		</div>
-		<div role="tabpanel" class="tab-pane" id="register">
+                    <form class="form-horizontal">
+                        <div class="form-group">
 
-			<div class="panel panel-info">
-				<div class="panel-heading">
-					<h3>Crear Nueva Cuenta</h3>
-				</div>
-				<div class="panel-body">
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-addon" id="myEmailR-addon" data-toggle="tooltip" data-placement="right" title="Su correo electrónico">
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                                </span>
+                                <input type="text"
+                                class="form-control"
+                                name="myEmailR"
+                                id="myEmailR"
+                                value=""
+                                aria-describedby="myEmailR-addon"
+                                placeholder="Correo Electrónico"
+                                required>
+                            </div>
 
-					<form class="form-horizontal">
-						<div class="form-group">
+                            <!--div class="input-group input-group-lg">
+                                <span class="input-group-addon" id="myUserNameR-addon" data-toggle="tooltip" data-placement="right" title="Su nombre de usuario">
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                                </span>
+                                <input type="text"
+                                class="form-control"
+                                name="myUserNameR"
+                                id="myUserNameR"
+                                value=""
+                                aria-describedby="myUserNameR-addon"
+                                placeholder="Nombre de Usuario"
+                                required>
+                            </div-->
 
-							<div class="input-group input-group-lg">
-								<span class="input-group-addon" id="myUserNameR-addon" data-toggle="tooltip" data-placement="right" title="Su nombre de usuario">
-									<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-								</span>
-								<input type="text"
-								class="form-control"
-								name="myUserNameR"
-								id="myUserNameR"
-								value=""
-								aria-describedby="myUserNameR-addon"
-								placeholder="Nombre de Usuario"
-								required>
-							</div>
+                            <!--div class="input-group input-group-lg">
+                                <span class="input-group-addon" id="myFullNameR-addon" data-toggle="tooltip" data-placement="right" title="Su nombre completo">
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                                </span>
+                                <input
+                                type="text"
+                                class="form-control"
+                                name="myNameR"
+                                id="myFullNameR"
+                                value=""
+                                aria-describedby="myFullNameR-addon"
+                                placeholder="Su nombre"
+                                required>
+                            </div-->
 
-							<div class="input-group input-group-lg">
-								<span class="input-group-addon" id="myFullNameR-addon" data-toggle="tooltip" data-placement="right" title="Su nombre completo">
-									<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-								</span>
-								<input
-								type="text"
-								class="form-control"
-								name="myNameR"
-								id="myFullNameR"
-								value=""
-								aria-describedby="myFullNameR-addon"
-								placeholder="Su nombre"
-								required>
-							</div>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-addon" id="myPwdR-addon" data-toggle="tooltip" data-placement="right" title="Su clave de acceso">
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                                </span>
+                                <input type="password"
+                                class="form-control"
+                                name="myPwdR"
+                                id="myPwdR"
+                                value=""
+                                aria-describedby="myPwdR-addon"
+                                placeholder="Clave de acceso"
+                                required>
+                            </div>
 
-							<div class="input-group input-group-lg">
-								<span class="input-group-addon" id="myPwdR-addon" data-toggle="tooltip" data-placement="right" title="Su clave de acceso">
-									<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-								</span>
-								<input type="password"
-								class="form-control"
-								name="myPwdR"
-								id="myPwdR"
-								value=""
-								aria-describedby="myPwdR-addon"
-								placeholder="Clave de acceso"
-								required>
-							</div>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-addon" id="myPwdAgainR-addon" data-toggle="tooltip" data-placement="right" title="Su clave de acceso">
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                                </span>
+                                <input type="password"
+                                class="form-control"
+                                name="myPwdAgainR"
+                                id="myPwdAgainR"
+                                value=""
+                                aria-describedby="myPwdAgainR-addon"
+                                placeholder="Clave de acceso de nuevo"
+                                required>
+                            </div>
+                        </div>
+                        <input type="hidden" id="goToAfterLogin" value="index.html">
+                        <button type="submit" class="btn btn-success btn-lg" onClick="return Tpl_userRegister();" style="width: 100%;">Registrarse</button>
+                    </form>
+                </div>
+            </div>
+        </div> <!-- //register-->
 
-							<div class="input-group input-group-lg">
-								<span class="input-group-addon" id="myPwdAgainR-addon" data-toggle="tooltip" data-placement="right" title="Su clave de acceso">
-									<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-								</span>
-								<input type="password"
-								class="form-control"
-								name="myPwdAgainR"
-								id="myPwdAgainR"
-								value=""
-								aria-describedby="myPwdAgainR-addon"
-								placeholder="Clave de acceso de nuevo"
-								required>
-							</div>
+        <!-- Recover Password -->
+        <div role="tabpanel" class="tab-pane" id="recoverPwd">
 
-							<div class="input-group input-group-lg">
-								<span class="input-group-addon" id="myEmailR-addon" data-toggle="tooltip" data-placement="right" title="Su correo electrónico">
-									<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-								</span>
-								<input type="text"
-								class="form-control"
-								name="myEmailR"
-								id="myEmailR"
-								value=""
-								aria-describedby="myEmailR-addon"
-								placeholder="Correo Electrónico"
-								required>
-							</div>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3>Recuperar Clave</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="alert alert-warning" role="alert">
+                        Usted recibirá un correo electrónico con la información necesaria para recuperar su clave.
+                    </div>
 
-							<input type="hidden" id="goToAfterLogin" value="index.html">
-							<button type="submit" class="btn btn-default" onClick="return Tpl_userRegister();">Registrarse</button>
-						</div>
-					</form>
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-addon" id="myRecoverEmail-addon" data-toggle="tooltip" data-placement="right" title="Correo electrónico">
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                                </span>
+                                <input
+                                type="text"
+                                class="form-control"
+                                name="myRecoverEmail"
+                                id="myRecoverEmail"
+                                value=""
+                                aria-describedby="myRecoverEmail-addon"
+                                placeholder="Correo electrónico"
+                                required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-lg" onClick="return Cala_usersPasswordReset();" style="width: 100%;">Enviar Nueva Clave</button>
+                    </form>
+                </div>
+            </div>
+        </div><!-- //recover password -->
+    </div><!-- //tab panes -->
+</div><!-- //tabs -->
 
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
 <script>
 $(function () {
-		// Set the forms
-		$('[data-toggle="tooltip"]').tooltip();
-		})
+        // Set the forms
+        $('[data-toggle="tooltip"]').tooltip();
+        })
 </script>

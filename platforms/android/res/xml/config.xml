@@ -1,11 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="org.lasangha.bhavana" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="org.lasangha.bhavana" version="0.2.8" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="loglevel" value="DEBUG" />
+    <feature name="Device">
+        <param name="android-package" value="org.apache.cordova.device.Device" />
+    </feature>
+    <feature name="LocalNotification">
+        <param name="android-package" value="de.appplant.cordova.plugin.localnotification.LocalNotification" />
+    </feature>
+    <preference name="permissions" value="none" />
+    <preference name="ShowTitle" value="true" />
     <icon density="mdpi" src="res/android/mdpi.png" />
     <icon density="hdpi" src="res/android/hdpi.png" />
     <icon density="xhdpi" src="res/android/xhdpi.png" />
     <icon density="xxhdpi" src="res/android/xxhdpi.png" />
-    <name>Bhavana</name>
+    <name>Retiro de Meditación</name>
     <description>
         Su retiro personal de meditación
     </description>
@@ -14,5 +22,6 @@
     </author>
     <content src="index.html" />
     <access origin="*" />
+    <access browserOnly="true" origin="*.facebook.com" />
     <icon src="res/icon.png" />
 </widget>

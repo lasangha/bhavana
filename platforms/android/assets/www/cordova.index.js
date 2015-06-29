@@ -9,7 +9,6 @@ var app = {
     // 'load', 'deviceready', 'offline', and 'online'.
     bindEvents: function() {
         document.addEventListener('deviceready', this.onDeviceReady, false);
-        document.addEventListener('deviceready', Cordova_boot, false);
     },
     // deviceready Event Handler
     //
@@ -17,24 +16,28 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
+				Cordova_boot();
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
         console.log('Received Event: ' + id);
+    },
     }
 };
-
-app.initialize();
 
 /**
  * This is what you should call from your pages, call it at the bottom
  */
 function Cordova_boot(){
+	console.log("Booting cordova...");
+
     Cala.say("Booting from cordova");
     Cala_runMe.push(amILoggedIn);
     Cala_runMe.push(Cala.loadThisPath);
     Cala_runMe.push(pagesSetUp);
     Cala.say("Running from cordova");
     initMe();
+
 }
 
+app.initialize();

@@ -1,7 +1,7 @@
 /****************************************************************************
 /*!
  * Cala Framework: To make your life simpler
- * version: 0.1.0-dev
+ * version: 0.1.1-dev
  * @requires jQuery v1.5? or later (maybe other things too)
  *
  * Copyright (c) 2015 Twisted Head
@@ -20,7 +20,7 @@
 
  *****************************************************************************/                   
 // Version
-var version = "0.1.2-dev";
+var version = "0.1.3-dev";
 
 //! The main instance of Cala
 var Cala = Cala || {};
@@ -31,7 +31,8 @@ var ERROR_USER_WRONG_LOGIN_INFO = "-301";
 var ERROR_USER_NO_VALID_SESSION = "-302";
 var ERROR_USER_ACCESS_DENIED    = "-303";
 var ERROR_USER_EXISTS           = "-304";
-var ERROR_BAD_REQUEST =         "-1";
+var ERROR_BAD_REQUEST           = "-1";
+var ERROR_NO_REQUEST_DONE       = "-900000";
 //Database
 var ERROR_DB_NO_RESULTS_FOUND   = "-200";
 
@@ -50,6 +51,9 @@ var Cala_IAM = '';
 //! Session key
 var Cala_SESSION_KEY = '';
 
+//! The main front page
+var Cala_frontPage = 'index.html';
+
 //Where do you want me to go upon logout?
 //var Cala_goOnOut = 'index.html';
 
@@ -62,6 +66,9 @@ var VAR_CURRENT_SESSION_KEY = "currentSessionKey";
 
 // Parameters sent via url
 var params = false;
+
+//! Running on app
+var onApp = false;
 
 /**
  * Run stuff during boot up, if you want me to run stuff, let me know
@@ -76,11 +83,12 @@ var Cala = function() {
 	var params = {};
 
 	return {
+        //! Loads all params from the url
 		loadParams: function(){
 			params = getUrlVars();
 		},
+        //! Gets parameters that where sent from the url
 		paramsGet: function(which, def){
-            Cala.say("getting a param: " + which);
 			// TMP solution, I will move all params in here
 			params = window.params;	
 			if(params[which] !== undefined && params[which] !== ''){
@@ -90,14 +98,27 @@ var Cala = function() {
 			else{
 				Cala.say("No custom path");
 				return def;
-			}
+			}	
 		},
+        //! Sets code to be run when the page is ready
 		runOnReady: function(runMe){
 			$(document).ready(runMe);
 		},
+        //! Say something
 		say: function(what){
 			console.log(what);
 		},
+        // Check if the user is logged in
+        userLogedIn: function(){
+            Cala.say("I'm I logged in?");
+            if(keyGet(VAR_CURRENT_USER_NAME, "") === ""){
+                Cala.say("I am not logged in");
+                return false;
+            }else{
+                Cala.say("I am logged in");
+                return true;
+            }
+        },
         userPerms: function(perm, goHere){
 
             Cala.say("Checking perms: " + perm);
@@ -113,15 +134,29 @@ var Cala = function() {
                 iGoTo(goHere);
             }
         },
-		// Not in use at the moment
-		// Get the correct page for this path
-		loadThisPath: function(){
-			Cala.say("Loading the current path:" + params.x);
-			path = Cala.paramsGet('x', 'index');
-			$("#mainContent").load("tpl/" + path + ".html?ppp=" + Math.floor(Math.random() * 1000));
-		}
 
-	};
+        //! Get the correct page for this path
+        loadThisPath: function(){
+            Cala.say("Loading the current path: " + params.x);
+            path = Cala.paramsGet('x', 'index');
+            //$("#mainContent").load("tpl/" + path + ".html");
+            $("#mainContent").load("tpl/" + path + ".html?ppp=" + Math.floor(Math.random() * 1000));
+        },
+        /**
+         * Check to see if the user is logged in
+         * @param redirect If you want to send the person somewhere, let me know
+         */ 
+        users_loggedInRequired: function(redirect){
+            if(keyGet(VAR_CURRENT_USER_NAME, '') === ''){
+                if(redirect !== ''){
+                    iGoTo(redirect);
+                }else{
+                    return false;
+                }
+            }
+            return true;
+        }
+    };
 
 }();
 
@@ -130,45 +165,45 @@ var Cala = function() {
  */
 function Cala_userRegister(params){
 
-	Cala.say("Register account");
+    Cala.say("Register account");
 
-	$.ajax({
-		type: 'GET',
-		url: Cala_apiUrl,
-		dataType: "json",
-		data: {
-			r: "users_register",
-			w: "users",
-			fullName: params.options.fullName,
-			userName: params.options.userName,
-			email: params.options.email,
-			pwd: params.options.pwd,
-			about: params.options.about,
-			country: params.options.country,
-			iam: '', // During registration this is not important
-			sessionKey: ''
-		},
-		//! @todo This is not very standard procedure, I should also log the person in
-		success: function (data) {
-			if(data.resp != ERROR_USER_EXISTS && data.resp != ERROR_BAD_REQUEST){
-				// Log the user in
-				Cala.say("Seems like it worked");
-				Cala_usersLogMeInSuccess(data);
-			}else{
-				Cala.say("Something wrong happened");
-			}
-			params.onSuccess(data);
-			/*
-				//details = {sessionKey: data.resp, userName: params.options.userName, success: 1};
-			}else{
-				details = {success: data.resp};
-			}
-			*/
-		},
-		error: function (data){
-			params.onError(data);
-		}
-	});
+    $.ajax({
+        type: 'GET',
+        url: Cala_apiUrl,
+        dataType: "json",
+        data: {
+            r: "users_register",
+        w: "users",
+        fullName: params.options.fullName,
+        userName: params.options.userName,
+        email: params.options.email,
+        pwd: params.options.pwd,
+        about: params.options.about,
+        country: params.options.country,
+        iam: '', // During registration this is not important
+        sessionKey: ''
+        },
+        //! @todo This is not very standard procedure, I should also log the person in
+        success: function (data) {
+            if(data.resp != ERROR_USER_EXISTS && data.resp != ERROR_BAD_REQUEST){
+                // Log the user in
+                Cala.say("Seems like it worked");
+                Cala_usersLogMeInSuccess(data);
+            }else{
+                Cala.say("Something wrong happened");
+            }
+            params.onSuccess(data);
+            /*
+            //details = {sessionKey: data.resp, userName: params.options.userName, success: 1};
+            }else{
+            details = {success: data.resp};
+            }
+            */
+    },
+        error: function (data){
+            params.onError(data);
+        }
+});
 
 }
 
@@ -177,54 +212,54 @@ function Cala_userRegister(params){
  */
 function wirez_userLogMeOut(callMeSuccess, callMeError){
 
-	Cala.say("Log out");
+    Cala.say("Log out");
 
-	$.ajax({
-		type: 'GET',
-		url: Cala_apiUrl + 'index.php',
-		dataType: "json",
-		data: {
-			r: "users_log_me_out",
-			w: "users",
-			iam: Cala_IAM,
-			sessionKey: Cala_SESSION_KEY
-		},
-		success: function (data) {
-			callMeSuccess(data);
-		},
-		error: function (data){
-			callMeError(ERROR_ERROR);
-		}
-	});
+    $.ajax({
+        type: 'GET',
+        url: Cala_apiUrl,
+        dataType: "json",
+        data: {
+            r: "users_log_me_out",
+        w: "users",
+        iam: Cala_IAM,
+        sessionKey: Cala_SESSION_KEY
+        },
+        success: function (data) {
+            callMeSuccess(data);
+        },
+        error: function (data){
+            callMeError(ERROR_ERROR);
+        }
+    });
 
 }
 
 /**
   I get a list of people in the directory
- */
+  */
 function cala_getPeopleList(name, initHere, callMeSuccess, callMeError){
 
-	Cala.say("Retrieving a list of contacts");
+    Cala.say("Retrieving a list of contacts");
 
-	$.ajax({
-		type: 'GET',
-		url: Cala_apiUrl + 'index.php',
-		dataType: "json",
-		data: {
-			r: "users_get_list",
-			w: "users",
-		like:  name,
-		ini: initHere,
-		iam: Cala_IAM,
-		sessionKey: Cala_SESSION_KEY
-		},
-		success: function (data) {
-			callMeSuccess(data);
-		},
-		error: function(data){
-			callMeError(ERROR_ERROR);
-		}
-	});
+    $.ajax({
+        type: 'GET',
+        url: Cala_apiUrl,
+        dataType: "json",
+        data: {
+            r: "users_get_list",
+        w: "users",
+        like:  name,
+        ini: initHere,
+        iam: Cala_IAM,
+        sessionKey: Cala_SESSION_KEY
+        },
+        success: function (data) {
+            callMeSuccess(data);
+        },
+        error: function(data){
+            callMeError(ERROR_ERROR);
+        }
+    });
 
 }
 
@@ -241,7 +276,7 @@ function cala_getPeopleList(name, initHere, callMeSuccess, callMeError){
  * @deprecated
  */
 function say(what){
-	console.log("s: " + what);
+    console.log("s: " + what);
 }
 
 /**
@@ -251,21 +286,29 @@ function say(what){
  */
 function initMe(){
 
-	Cala.say("Booting up the car!");
+    Cala.say("Booting up the car!");
 
-	// Get the params
-	params = getUrlVars();
+    // Get the params
+    params = getUrlVars();
+    //Cala.loadParams();
 
-	// Run things that people want me to run
-	for(i = 0; i < Cala_runMe.length; i++){
-		Cala.say("running...");
-		justRunThis(Cala_runMe[i]);
-	}
+    if(onApp){
+        Cala.say("Running on an app...");
+    }
+    else{
+        Cala.say("Running on a stand alone...");
+    }
+
+    // Run things that people want me to run
+    for(i = 0; i < Cala_runMe.length; i++){
+        Cala.say("running...");
+        justRunThis(Cala_runMe[i]);
+    }
 
 }
 
 function justRunThis(what){
-	what();
+    what();
 }
 
 /**
@@ -273,13 +316,27 @@ function justRunThis(what){
  */
 function Cala_boot(){
 
-	Cala_runMe.push(amILoggedIn);
-	Cala_runMe.push(Cala.loadThisPath);
-	Cala_runMe.push(pagesSetUp);
+    Cala_runMe.push(amILoggedIn);
+    Cala_runMe.push(Cala.loadThisPath);
+    Cala_runMe.push(pagesSetUp);
 
-	Cala.say("I am on a computer");
-	$(document).ready(initMe);
+    //! This will be usefull when running on an app, but it will not go here I just
+    //! don't want to touch it because I might loose it
+    if(onApp === true){
+        Cala.Cala.say("I am on an app");
 
+        $.getScript( "cordova.js", function( data, textStatus, jqxhr ) {
+            document.addEventListener("deviceready", initMe, false);
+            Cala.say(data); // Data returned
+            Cala.say(textStatus); // Success
+            Cala.say(jqxhr.status); // 200
+            Cala.say("Load was performed.");
+        });
+
+    }else{
+        Cala.say("I am on a computer");
+        $(document).ready(initMe);
+    }
 }
 
 /***************************************************************************
@@ -290,32 +347,32 @@ function Cala_boot(){
 
 //! Store keys in local storage
 function keyStore(key, value){
-	Cala.say("Storing key: " + key);
-	window.localStorage.setItem(key, value);
-	return true;
+    Cala.say("Storing key: " + key);
+    window.localStorage.setItem(key, value);
+    return true;
 }
 
 //! Get key from local storage
 function keyGet(key, defaultValue){
-	var value = window.localStorage.getItem(key);
-	if(value === null){
-		Cala.say("No value found, I will use the default");
-		value = defaultValue;
-	}
-	Cala.say("Gotten Key: " + key + " with value: " + value);
-	return value;
+    var value = window.localStorage.getItem(key);
+    if(value === null){
+        Cala.say("No value found, I will use the default");
+        value = defaultValue;
+    }
+    Cala.say("Gotten Key: " + key + " with value: " + value);
+    return value;
 }
 
 //! Remove key from local storage
 function removeKey(theKey){
 
-	Cala.say("Removing key: " + theKey);
-	// Remove them all
-	if(theKey === ''){
-	
-	}else{
-		window.localStorage.removeItem(theKey);
-	}
+    Cala.say("Removing key: " + theKey);
+    // Remove them all
+    if(theKey === ''){
+
+    }else{
+        window.localStorage.removeItem(theKey);
+    }
 }
 
 /*****************************************************************************/
@@ -329,40 +386,39 @@ function removeKey(theKey){
   */
 function getPeopleList(){
 
-	Cala.say("Retrieving a list of people in the directory");
+    Cala.say("Retrieving a list of people in the directory");
 
-	cala_getPeopleList($("#personLike").val(), params.ini !== undefined ? params.ini : 0, _getPeopleListSuccess, _getPeopleListError);
+    cala_getPeopleList($("#personLike").val(), params.ini !== undefined ? params.ini : 0, _getPeopleListSuccess, _getPeopleListError);
 
-	return false;
+    return false;
 
 }
 
 // Helper function to create the people list
 function _getPeopleListSuccess(data){
 
-	Cala.say("Found people apparently");
+    Cala.say("Found people apparently");
 
-	// Nothing found actually
-	if(data.resp == ERROR_DB_NO_RESULTS_FOUND){
-		_getPeopleListError();
-	}
-	else{
+    // Nothing found actually
+    if(data.resp == ERROR_DB_NO_RESULTS_FOUND){
+        _getPeopleListError();
+    }
+    else{
 
-		$("#directorySearching").hide();
+        $("#directorySearching").hide();
 
         var tpl = '' +
             '<div class="well peopleListingEach emptyWell">' +
             '<div class="thumbnail peopleListingAvatarThumb"><img src="{avatar}" class="peopleListingAvatar" /></div>' +
-            '<div class="peopleListingName"> <span class="peopleListingNameEach">{name}</span> ~ {about}' +
-            '<br /> <span class="peopleListingWire">::{wire}</span> ' +
+            '<div class="peopleListingName"> <span class="peopleListingNameEach">{fullName}</span> ~ {about}' +
+            '<br /> <span class="peopleListingWire">::{userName}</span> ' +
             '</div>' +
-            '<a class="btn btn-primary btn-sm" href="conversation.html?withWire={wire}&idConversation=0&startNew=true">' +
+            '<a class="btn btn-primary btn-sm" href="?x=wirez/conversation&withWire={userName}&idConversation=0&startNew=true">' +
             ' <span class="glyphicon glyphicon-pencil" aria-hidden="true"> New</span>' +
             '</a>' +
-            ' <a class="btn btn-success btn-sm" href="msgListing.html?withWire={wire}">' +
+            ' <a class="btn btn-success btn-sm" href="?x=wirez/msgListing&withWire={userName}">' +
             ' <span class="glyphicon glyphicon-list" aria-hidden="true"> View All</span>' +
-            '</a>' +
-            '</div>';
+            '</a> </div>';
 
         // Clear the list first
         $("#peopleListing").empty();
@@ -376,7 +432,7 @@ function _getPeopleListSuccess(data){
                 thisContact.name = "I am the egg man";
             }
 
-            thisContact.avatar = wirez_userGetAvatarPath(thisContact.wire, '100');
+            thisContact.avatar = Tpl_userGetAvatarPath(thisContact.wire, '100');
 
             $("#peopleListing").append(parseTpl(tpl, thisContact, true));
         }
@@ -449,7 +505,7 @@ function Cala_usersGetMyDetails(callMeSuccess, callMeError){
 
     $.ajax({
         type: 'GET',
-        url: Cala_apiUrl + 'index.php',
+        url: Cala_apiUrl,
         dataType: "json",
         data: {
             w: "users",
@@ -498,18 +554,18 @@ function Cala_usersSetEditAccount(){
     Cala.say("Customizing my account");
 
     //! @todo restore this
-    //myAccountSetAvatar();
+    //Tpl_myAccountSetAvatar();
 
     // Retrieve and set the details in the account
     Tpl_usersGetMyDetails();
 
     // Avatar
     //! @todo restore this
-    //wirez_uploadSomething("users", "users_avatar_upload", "#myAccountPersonalAvatarUploader", myAccountSetAvatar, myAccountSetAvatar);
+    //Tpl_uploadSomething("users", "users_avatar_upload", "#myAccountPersonalAvatarUploader", Tpl_myAccountSetAvatar, Tpl_myAccountSetAvatar);
 
     // Background
     //! @todo send to wirez
-    //wirez_uploadSomething("users", "users_personal_bg_upload", "#myAccountPersonalBgUploader", tplSetCorrectBackground, tplSetCorrectBackground);
+    //Tpl_uploadSomething("users", "users_personal_bg_upload", "#myAccountPersonalBgUploader", tplSetCorrectBackground, tplSetCorrectBackground);
 
 }
 
@@ -566,6 +622,7 @@ function Tpl_usersUpdateAccount(){
         pwd: $("#myAccountPwd").val()
         },
         onSuccess: function(data){
+            /// @bug This error does not appear in cala api, is this correct?
             if(data.resp == ERROR_NO_REQUEST_DONE){
                 Tpl_msgWarning("Hubo un error actualizando sus datos, favor intente de nuevo más tarde");
                 Cala.say("Something happened");
@@ -621,13 +678,55 @@ function amILoggedIn(){
         //messagesSetCheckThemOut();
     }
     else{
-        Cala.say("No, I will have to go to the login page maybe.");
+        Cala.say("No, I will have to go to the login page");
     }
 
     // Set a new background
     // This should be set by Wirez, not general Cala
     //tplSetCorrectBackground();
 
+}
+
+/**
+ *  Recover password
+ */
+function Cala_usersPasswordReset(){
+
+    Cala.say("Recovering password");
+
+	if($("#myRecoverEmail").val() === ""){
+		return true;
+	}
+
+    $.ajax({
+        type: 'GET',
+        url: Cala_apiUrl,
+        dataType: "json",
+        data: {
+            w: "users",
+        r: "users_recover_pwd",
+        iam: '',
+        userName: $("#myRecoverEmail").val()
+        },
+        success: function (data){
+						// I will always say that it went fine to avoid giving information
+						Cala.say("New password sent apparently");
+						Cala_usersPasswordResetMessage();
+        },
+        error: function (data){
+						Cala.say("Error recovering password");
+						Cala_usersPasswordResetMessage();
+        }
+    });
+
+	return false;
+}
+
+/**
+ * Helper function to show a message on screen about the password recovery process
+ */
+function Cala_usersPasswordResetMessage(){
+	Tpl_msgSuccess("Se ha enviado un correo con la información para reiniciar su clave de accesso.");
 }
 
 /**
@@ -724,7 +823,7 @@ function Tpl_userRegister(){
         email: $("#myEmailR").val(),
         pwd: $("#myPwdR").val(),
         country: 'crc',
-        about: 'Meditating'},
+        about: ''},
         onSuccess: function(data){
             Cala.say("Success in registration request");
             if(data.resp == ERROR_USER_EXISTS){
@@ -734,7 +833,7 @@ function Tpl_userRegister(){
                 _logMeInSuccess(data);
             }
             else{
-                msgAlert("Sucedio un error, quizá hay campos pendientes");
+                Tpl_msgDanger("Sucedio un error, quizá hay campos pendientes");
             }
         },
         onError: function(){
@@ -807,16 +906,16 @@ function directoryGo(){
 function myAccountSetBackground(){
     tmpDate = new Date();
     Cala.say("Changing the background");
-    $("body").attr("src", "img/loader_big.gif");
-    $("#myAccountMyAvatar").attr("src", wirez_userGetAvatarPath(keyGet(VAR_CURRENT_USER_NAME, "---"), "250") + "&" + tmpDate.getTime());
+    $("body").attr("src", "tpl/img/loader_100.gif");
+    $("#myAccountMyAvatar").attr("src", Tpl_userGetAvatarPath(keyGet(VAR_CURRENT_USER_NAME, "---"), "250") + "&" + tmpDate.getTime());
 }
 
 // Set the avatar in the account page, this is for each user too see THEIR own avatar
-function myAccountSetAvatar(){
+function Tpl_myAccountSetAvatar(){
     tmpDate = new Date();
     Cala.say("Changing the avatar");
-    $("#myAccountMyAvatar").attr("src", "img/loader_big.gif");
-    $("#myAccountMyAvatar").attr("src", wirez_userGetAvatarPath(keyGet(VAR_CURRENT_USER_NAME, "---"), "250") + "&" + tmpDate.getTime());
+    $("#myAccountMyAvatar").attr("src", "tpl/img/loader_100.gif");
+    $("#myAccountMyAvatar").attr("src", Tpl_userGetAvatarPath(keyGet(VAR_CURRENT_USER_NAME, "---"), "250") + "&" + tmpDate.getTime());
 }
 
 /****************************************************************************
@@ -844,6 +943,13 @@ function myAccountSetAvatar(){
 //
 //////////////////////////////////////////////////////////////////////////////
 
+//! Clear the alert messages
+function Tpl_msgClearAll(){
+
+    $("#Cala_alertMessages").html('');
+
+}	
+
 /**
  * Helper function to actually present messages to the user, you should never
  * call this directly
@@ -854,16 +960,10 @@ function _Tpl_msgAlert(what, type){
             '<div class="alert alert-'+type+' alert-dismissible fade in" role="alert">' +
             '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>' +
             what +
-            '</div>');
+            '</div>'
+            );
 
 }
-
-//! Clear the alert messages
-function Tpl_msgClearAll(){
-
-    $("#Cala_alertMessages").html('');
-
-}	
 
 //! Alert messages to the user
 function Tpl_msgDanger(what){
@@ -900,12 +1000,22 @@ function _Tpl_alert(what){
 
 //! Add a css
 function Tpl_addCss(which){
+
+    // Is this an external css
+    if(strpos(which, 'http', 0) === false){
+        Cala.say("Adding an internal css file");
+        which = "tpl/" + which;
+    }
+
     Cala.say("Adding a css" + which);
-    $('head').append( $('<link rel="stylesheet" type="text/css" />').attr('href', 'tpl/' + which) );
+    $('head').append( $('<link rel="stylesheet" type="text/css" />').attr('href', which) );
 }
 
 //! Upload avatars
-function wirez_uploadSomething(_w, _r, _id, _onSuccess, _onError){
+function Tpl_uploadSomething(_w, _r, _id, _onSuccess, _onError){
+
+    Tpl_addCss(Cala_basePath + 'tools/uploader/uploadfile.css');
+
     // I whished this was part of the core api, but I have not been able to make it work
     var wirez_settingsUploader = {
         url: Cala_apiUrl,
@@ -915,7 +1025,16 @@ function wirez_uploadSomething(_w, _r, _id, _onSuccess, _onError){
         returnType:"json",
         onError: _onError,
         onSuccess: _onSuccess,
-        showDelete: false
+        showDelete: false,
+        dragDropStr: "<span><b>Arrastre una imagen aquí</b></span>",
+        showStatusAfterSuccess: true,
+        showStatusAfterError: true,
+        showFileCounter:false,
+        allowedTypes: "jpg,jpeg,png",
+        multiDragErrorStr: "Multiples archivos no son permitidos.",
+        extErrorStr: "no es permitido, extensiones permitidas: ",
+        sizeErrorStr: "no está permitido. Tamáño máximo: ",
+        uploadErrorStr: "No tiene permiso de subir archivos" 
     };
 
     var wirez_uploadAvatarObj = $(_id).uploadFile(wirez_settingsUploader);
@@ -927,7 +1046,7 @@ function wirez_uploadSomething(_w, _r, _id, _onSuccess, _onError){
  */
 function tplBackgroundGenerateRandom(){
     Cala.say("Generating random background");
-    return "img/bgs/bg_" + Math.floor((Math.random() * 10) + 1) + ".jpg";
+    return Cala_basePath + "img/bgs/bg_" + Math.floor((Math.random() * 10) + 1) + ".jpg";
 }
 
 // Helper function to handle the actual changing of the background
@@ -957,8 +1076,15 @@ function tplSetCorrectBackground(){
 
 }
 
-// I parse a tpl and replace it with some values
+/**
+ *  I parse a tpl and replace it with some values
+ *  @param tpl The template
+ *  @param values An object with the values to replace
+ *  @param bl Do you want me to replace the breaklines (\n) with <br />
+ */
 function parseTpl(tpl, values, bl){
+
+    // Loop each value
     for (var key in values) {
         var theKey = "{" + key + "}";
         var re = new RegExp(theKey, "g");
@@ -1014,13 +1140,22 @@ function dateParse(timestamp){
 
 }
 
-// I will redirect somewhere
+/**
+ * I will redirect somewhere
+ * @deprecated use Cala.iGoTo(goTo);
+ */
 function iGoTo(goTo){
     Cala.say("Going to: " + goTo);
     window.location.href = goTo;
 }
 
-// http://phpjs.org/functions/strpos/
+/**
+ * String poss of a word/string in a string
+ * http://phpjs.org/functions/strpos/
+ * @param haystack where are you looking in?
+ * @param needle what are you looking for?
+ * @param offset where do you want to start the search?
+ */
 function strpos(haystack, needle, offset) {
     //  discuss at: http://phpjs.org/functions/strpos/
     // original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
@@ -1035,8 +1170,10 @@ function strpos(haystack, needle, offset) {
     return i === -1 ? false : i;
 }
 
-// Parse url parameters
-// http://jquery-howto.blogspot.com/2009/09/get-url-parameters-values-with-jquery.html
+/**
+ * Parse url parameters
+ * http://jquery-howto.blogspot.com/2009/09/get-url-parameters-values-with-jquery.html
+ */
 function getUrlVars(){
     var vars = [], hash;
     var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
@@ -1050,14 +1187,29 @@ function getUrlVars(){
     return vars;
 }
 
-// If all that you need is the PATH to get the background, use this one
+/**
+ * Gets the correct path for a user background, adds a fallback image in case there is no one found
+ * @todo Add a hidden alternative path for bgs, a CDN maybe
+ */
 function wirez_userGetBackgroundPath(_userName, fallBack){
-    return (Cala_apiUrl + "index.php?w=users&r=users_personal_bg_get&reply_type=plain&userName="+_userName+"&fallBack="+fallBack);
+    return (Cala_apiUrl + "?w=users&r=users_personal_bg_get&reply_type=plain&userName="+_userName+"&fall_back="+fallBack);
 }
 
-// Gets the correct path for a user avatar
-function wirez_userGetAvatarPath(wire, size){
-    return Cala_apiUrl + "index.php?w=users&r=users_avatar_get&userName=" + wire + "&size=" + size;
+/**
+ * Gets the correct path for a user avatar, adds a fallback image in case there is no avatar
+ * @todo Add a hidden alternative path for avatars, a CDN maybe
+ */
+function Tpl_userGetAvatarPath(wire, size){
+    return Cala_apiUrl + "?w=users&r=users_avatar_get&userName=" + wire +
+        "&size=" + size +
+        "&fall_back=" + Cala_basePath + "tpl/img/avatars/defaultAvatar_" + size + ".png";
 }
 
+// Add html break lines to the text
+function textAddBreakLines(text){
+    var theKey = "\n";
+    var re = new RegExp(theKey, "g");
+    text = text.replace(re, "<br />");
+    return text;
+}
 

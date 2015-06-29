@@ -17,9 +17,10 @@
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu">
-                            <li class="list-group-item"><a href="#" onClick="return Bhavana_startMeditation('paz', '9');">La Paz</a></li>
-                            <li class="list-group-item"><a href="#" onClick="return Bhavana_startMeditation('com', '9');">Compasión</a></li>
-                            <li class="list-group-item"><a href="#" onClick="return Bhavana_startMeditation('hum', '9');">Humildad</a></li>
+                            <li class="list-group-item"><a href="" onClick="return Bhavana_Session.startMeditation('non');">Solo quiero meditar</a></li>
+                            <li class="list-group-item"><a href="" onClick="return Bhavana_Session.startMeditation('paz');">La Paz</a></li>
+                            <li class="list-group-item"><a href="" onClick="return Bhavana_Session.startMeditation('com');">Compasión</a></li>
+                            <li class="list-group-item"><a href="" onClick="return Bhavana_Session.startMeditation('hum');">Humildad</a></li>
                         </ul>
                     </div>
                     <div id="bhavana_meditationInstructions">
@@ -32,23 +33,30 @@
                 </div>
             </div>
             <div class="col-md-6">
+                <div align="center" id="bhavana_waitingForVideo">
+                    <img src="tpl/img/loader_100.gif"> Cargando meditación...
+                </div>
 
-<div align="center"	id="sessionsPlayer" class="Cala_videosResponsiveWrapper"></div>
-</div>
+                <div align="center"	class="embed-responsive embed-responsive-16by9">
+                    <div align="center"	id="sessionsPlayer"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
 
-</div>
-</div>
+<div class="row">
 
-<nav>
-<ul class="pager">
-<li class="previous">
-<a href="?x=sessions" id="goBack">Anterior</a>
-</li>
-<li class="next">
-<a href="?x=sessions" id="goNext">Siguiente</a>
-</li>
-</ul>
+</div>
+    <ul class="pager">
+        <li class="previous">
+        <a href="?x=sessions" id="goBack">Anterior</a>
+        </li>
+        <li class="next">
+        <a href="?x=sessions" id="goNext">Siguiente</a>
+        </li>
+    </ul>
 </nav>
 
 <script src="tpl/bhavana/js/sessions.js"></script>

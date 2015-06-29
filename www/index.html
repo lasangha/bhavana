@@ -11,16 +11,13 @@
 <script type="text/javascript" src="tools/jquery/jquery.min.js"></script>
 <link type="text/css" rel="stylesheet" media="all" href="tools/bootstrap/css/bootstrap.min.css" />
 <script src="tools/bootstrap/js/bootstrap.min.js"></script>
-<!--
-        <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-        -->
 <link rel="stylesheet" type="text/css" href="tpl/css/index.css" />
 <link rel="stylesheet" type="text/css" href="tpl/bhavana/css/bhavana.css" />
 
 <title>Bhavana | Retiro Personal De Meditación</title>
 </head> <!-- end of head -->
+<body>
+
 <div id="container">
 
     <nav class="navbar navbar-default navbar-fixed-top">
@@ -32,57 +29,9 @@
 
                 <ul class="nav navbar-nav">
                     <li>
-                        <a href="" type="button" class="btn btn-default btn-sm" onClick="return Cala_displayTopMenu();">
+                        <a href="#userMenu" type="button" class="btn btn-default btn-sm" onClick="return Cala_displayTopMenu();">
                             Menu
                         </a>
-                    </li>
-                    <li>
-                    </li>
-                    <!--li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                        Menu
-                    </a>
-                    <ul class="dropdown-menu" role="menu" id="userMenu">
-                        <li class="list-group-item">
-                        <a href="index.html" id='goHome'>
-                            <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
-                            Inicio
-                        </a>
-                        </li>
-                        <li class="list-group-item">
-                        <a href="?x=login" id='logMeIn'>
-                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-                            Ingresar
-                        </a>
-                        </li>
-                        <li class="list-group-item">
-                        <a href="?x=bhavana/help">
-                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                            Guía y Uso
-                        </a>
-                        </li>
-                        <li class="list-group-item"><a href="?x=bhavana/share">
-                            <span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>
-                            Compartir
-                        </a>
-                        </li>
-                        <li class="list-group-item"><a href="?x=bhavana/feedback">
-                            <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
-                            Su opinión
-                        </a>
-                        </li>
-                        <li class="list-group-item"><a href="?x=bhavana/donate">
-                            <span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
-                            Donar
-                        </a>
-                        </li>
-                        <li class="list-group-item">
-                        <a href="?x=about">
-                            <span class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></span>
-                            Acerca de
-                        </a>
-                        </li>
-                    </ul-->
                     </li>
                 </ul>
             </div>
@@ -100,10 +49,6 @@
                     <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
                     Ingresar/Registrarse
                 </a>
-                <a href="?x=bhavana/help" class="list-group-item">
-                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                    Guía y Uso
-                </a>
                 <a href="?x=bhavana/share" class="list-group-item">
                     <span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>
                     Compartir
@@ -112,7 +57,8 @@
                     <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
                     Su opinión
                 </a>
-                <a href="?x=bhavana/donate" class="list-group-item">
+                <a href="?x=bhavana/donate" class="list-group-item"
+                    onClick="return Cala_externalLink('donate');" id="donate">
                     <span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
                     Donar
                 </a>
@@ -122,7 +68,6 @@
                 </a>
             </ul>
 
-
         </div>
         <div id="Cala_alertMessages"></div>
         <div id="mainContent">
@@ -130,7 +75,7 @@
     </div><!-- //body -->
 
     <footer style="text-align: center;">
-        <div class="row">
+        <div class="row" align="center">
             <div class="col-md-4">
                 <a href="?x=about">
                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
@@ -140,33 +85,57 @@
                     <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                     Términos de Uso
                 </a>
+                <span style="color: grey; font-size: 10px;">v 0.2.8</span>
             </div>
             <div class="col-md-4">
 
-            </div>
-            <div class="col-md-4">
-                <a href="http://lasangha.org?ref=app_bottom" class="btn btn-default">LaSangha.org</a> 
-                <a href="http://facebook.com/lasanghacr" class="btn btn-default">Facebook</a>
-                <a href="http://elblog.lasangha.org?ref=app_bottom" class="btn btn-default">Blog</a>
-                <a href="http://youtube.com/c/lasangha" class="btn btn-default">Videos</a>
             </div>
         </div>
     </footer><!-- //footer -->
 </div><!-- //content -->
 
 <script>
+
+//*****************************************************************************
+//
+// Stuff for the app
+//
+//*****************************************************************************
 var Cala_apiUrl = 'http://meditacion.lasangha.org/api/';
+
+// Is this in an app?
+function Cala_externalLink(linkId){
+
+    // I will only act if I am running on an app
+
+    // Get the path
+    var whereTo = $("#" + linkId).attr("href");
+    console.log("Clicked me: " + whereTo);
+    navigator.app.loadUrl(whereTo, { openExternal:true });
+    return false;
+
+}
+
+// ./Stuff for the app
+//*****************************************************************************/
+
+// Display/hide the top menu
 $('#Cala_topMenu').toggle();
 function Cala_displayTopMenu(){
     Cala.say("Showing/hidding top menu");
     $('#Cala_topMenu').toggle('slow');
+    window.scrollTo(0,0);
     return false;
 }
+
 </script>
 <script type="text/javascript" src="js/cala.js"></script>
 <script type="text/javascript" src="tpl/bhavana/js/bhavana.js"></script>
+
+<!-- Add this ONLY in the app -->
 <script type="text/javascript" src="cordova.js"></script>
 <script type="text/javascript" src="cordova.index.js"></script>
+<!-- ./add this ONLY in the app -->
 
 </body>
 </html>
