@@ -140,7 +140,7 @@ var Bhavana_Session = {
             $("#sessionTitle").html(this.dets.title);
             $("#sessionNumber").html("# " + this.dets.id);
             $("#sessionDesc").html(this.dets.desc);
-            //bhavana_thisVideoId = this.dets.sessions[this.dets.id - 1];
+            bhavana_thisVideoId = this.dets.sessions[this.dets.id - 1];
         }
         return this;
     },
