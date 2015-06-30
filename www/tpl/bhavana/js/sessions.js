@@ -1,5 +1,6 @@
 // Youtube, This is all here because I could not put it inside the Bhavana object
-var bhavana_thisVideoId    = 'M7lc1UVf-VE';
+var bhavana_thisVideoId    = 'UD-iWHfq-hY';
+var bhavana_meditationTotalTime = 0;
 
 //2. This code loads the IFrame Player API code asynchronously.
 var tag = document.createElement('script');
@@ -12,7 +13,7 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 //    after the API code downloads.
 var player;
 function onYouTubeIframeAPIReady() {
-    Cala.say("Creating the player");
+    console.log("Creating the player");
     player = new YT.Player('sessionsPlayer', {
         height: '390',
            width: '640',
@@ -26,7 +27,7 @@ function onYouTubeIframeAPIReady() {
 
 // 4. The API will call this function when the video player is ready.
 function onPlayerReady(event) {
-    Cala.say("Player is done and ready");
+    console.log("Player is done and ready");
     player.cueVideoById({'videoId': bhavana_thisVideoId, 'suggestedQuality': 'small'});
     //event.target.playVideo();
     $("#bhavana_waitingForVideo").hide('slow');
@@ -36,15 +37,41 @@ function onPlayerReady(event) {
 //    The function indicates that when playing a video (state=1),
 //    the player should play for six seconds and then stop.
 function onPlayerStateChange(event) {
-    Cala.say("Player state" + player.getPlayerState());
-    if (event.data == YT.PlayerState.ENDED) {
-        Bhavana_Session.registerTime();
-        Cala.say("Video is finished");
+
+    console.log("Player state" + player.getPlayerState());
+
+    // Count only on pauses or end
+    if (event.data == YT.PlayerState.ENDED || event.data == YT.PlayerState.PAUSED) {
+        console.log("Adding time");
+
+        // Time in the video in minutes
+        currentTime = (Math.floor(player.getCurrentTime() / 60));
+
+        // Only if this is more than 1 minute
+        if(currentTime >= 1){
+            totalTime = currentTime - bhavana_meditationTotalTime;
+            console.log("Time is: " + currentTime + " last: " + bhavana_meditationTotalTime + " total: " + totalTime);
+
+            // This should be given in minutes, I wil only do it if it is more than 1
+            if(totalTime < 1){
+                console.log("Not enought time");
+                return false;
+            }
+
+            // Register the time in the system
+            Bhavana_Session.registerTime(totalTime);
+            // Bring time up to speed
+            bhavana_meditationTotalTime = currentTime;
+
+        }else{
+            console.log("Less than a minute");
+        }
     }
+
 }
 
 function stopVideo() {
-    Cala.say("Video stoped");
+    console.log("Video stoped");
     player.stopVideo();
 }
 
@@ -55,7 +82,6 @@ var Bhavana_Categories = {
     samatha: {
         title: "Samatha",
         desc: "Tranquilidad, volviendo al cuerpo.",
-        duration: 9,
         sessions: ['SKejPyKEugI', 'gVp5UJ-AlGQ', 'MzXxa5j3aSo', '1FFeB-zXerc', '3ucVT8Vcp-s', 'i1UsmfBfCwE', 'eOCDcu29lLQ', 'TVBaruAy42c', 'CX_S6ODW7FM', 'WvjRjzdVpOw']
     },
     vipassana: {
@@ -85,14 +111,14 @@ var Bhavana_Session = {
     getCategory: function(categories){
         // The requested category
         cat = Cala.paramsGet("cat", 'samatha');
-        say("Looking for cat: " + cat);
+        console.log("Looking for cat: " + cat);
         if(categories.hasOwnProperty(cat)){
             //Do nothing really
-            say("Got category:" + cat);
+            console.log("Got category:" + cat);
             this.setSessionStuff(categories[cat]);
             this.dets.cat = cat;
         }else{
-            say("Category does not exist :(");
+            console.log("Category does not exist :(");
             this.dets.cat = false;
         }
         return this;
@@ -102,7 +128,7 @@ var Bhavana_Session = {
             this.dets.id = Cala.paramsGet("sessionId", "1");
             console.log("Got session id: " + this.dets.id);
             if(this.dets.id > this.dets.sessions.length){
-                say("This is not a valid session");
+                console.log("This is not a valid session");
                 this.dets.id = 0;
             }
         }
@@ -114,9 +140,9 @@ var Bhavana_Session = {
             $("#sessionTitle").html(this.dets.title);
             $("#sessionNumber").html("# " + this.dets.id);
             $("#sessionDesc").html(this.dets.desc);
-            bhavana_thisVideoId = this.dets.sessions[this.dets.id - 1];
-            return this;
+            //bhavana_thisVideoId = this.dets.sessions[this.dets.id - 1];
         }
+        return this;
     },
     setPager: function(categories){
         // Get the possition in the array of key of this category
@@ -126,11 +152,7 @@ var Bhavana_Session = {
 
         // Next?
         if(this.dets.id >= this.dets.sessions.length){
-            say("This is the last of this series");
-
-            /* Temporary solution, when I add more series this should be fixed too, 
-             * use sessionsPos > lenght of the categories to find out if the end has been reached
-             */
+            console.log("This is the last of this series");
 
             // Are there more series?
             if(sessionsPos >= (sessions.length - 1)){
@@ -140,43 +162,45 @@ var Bhavana_Session = {
             }
         }
         else{
-            say("There are more sessions to go...");
+            console.log("There are more sessions to go...");
             $("#goNext").attr("href", "?x=bhavana/sessions&sessionId=" +(parseInt(this.dets.id) + 1 )+"&cat="+this.dets.cat);
         }
 
         // Back
         // There are places to go back
         if(this.dets.id > 1){
-            say("There are more sessions to go back to in this category");
+            console.log("There are more sessions to go back to in this category");
             $("#goBack").attr("href", "?x=bhavana/sessions&sessionId=" +(parseInt(this.dets.id) - 1 )+"&cat="+this.dets.cat);
         }
         else{
             // Is this the first of the sessions?
             if(sessionsPos === 0){
-                say("This is the first of the series, going back to the main page");
+                console.log("This is the first of the series, going back to the main page");
                 backPath = "?x=index";
             }
             // Lets find out go goes before
             else{
-                say("Which is the previews category?");
+                console.log("Which is the previews category?");
                 backPath = "?x=bhavana/sessions&sessionId=" + categories[this.dets.cat].sessions.length + "&cat="+sessions[parseInt(sessionsPos) -1];
             }
             $("#goBack").attr("href", backPath);
         }
+        return this;
     },
     hidePlayer: function(){
         //$("#sessionsPlayer").hide();
         //$("#bhavana_selectMeditationIntention").hide();
         return this;
     },
-    registerTime: function(){
-        Cala.say("Registering times");
-        Bhavana_addToCause(this.dets.duration, this.dets.code);
+    registerTime: function(time){
+        console.log("Registering times");
+        Bhavana_addToCause(time, this.dets.code, bhavana_thisVideoId);
+        return this;
     },
     // Starts the meditation, it actually loads the video and registers the code
     startMeditation: function(code){
 
-        say("Creating the player and loading the video");
+        console.log("Creating the player and loading the video");
 
         // Store the code
         this.dets.code = code;
@@ -185,7 +209,7 @@ var Bhavana_Session = {
         $("#bhavana_selectMeditationIntention").fadeOut('slow', function(){
             $("#bhavana_meditationInstructions").fadeIn('slow', function(){
                 $("#bhavana_waitingForVideo").show('slow');
-                Cala.say("--------------------------------->>>> Running youtube api");
+                console.log("Running youtube api");
                 tag.src = "https://www.youtube.com/iframe_api";
             });
         });
@@ -199,13 +223,4 @@ var Bhavana_Session = {
 
 Bhavana_Session.boot(Bhavana_Categories);
 Bhavana_storeThisPage();
-
-// I'm I logged in?
-if(Cala.userLogedIn() === false){
-    Tpl_msgInfo("Ingrese si desea que estas meditaciones queden grabadas en su historial.");
-}else{
-    Cala.say(2);
-}
-
-
 

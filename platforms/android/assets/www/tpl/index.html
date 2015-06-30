@@ -1,6 +1,6 @@
 <div class="list-group">
     <div align="center">
-        <a class="list-group-item list-group-item-info" href="" onClick="return false;">
+        <a class="list-group-item list-group-item-info" href="#" onClick="return false;">
             <h2>Meditación Para La Vida Diaria</h2>
         </a>
     </div>
@@ -19,7 +19,7 @@
 </div>
 <div class="list-group">
     <div align="center">
-        <a class="list-group-item list-group-item-info" href="" onClick="return false;">
+        <a class="list-group-item list-group-item-info" href="#" onClick="return false;">
             <h2>Datos</h2>
         </a>
     </div>
@@ -36,62 +36,20 @@
         Mapa
     </a>
 </div>
-
-<div align="center">
-    <div class="alert alert-warning" role="alert">
-        <h3>
-            Hemos meditado <span id="causesTotalMinutes" class="label label-default">#</span> minutos por <span id="causesCause" class="label label-default">#</span>
-        </h3>
-    </div>	
-</div>
-
-<div class="list-group">
-    <div align="center">
-        <a class="list-group-item list-group-item-info" href="" onClick="return false;">
-            <h2>La Sangha</h2>
-        </a>
     </div>
-    <a class="list-group-item" href="?x=bhavana/donate"
-        onClick="return Cala_externalLink('donate');" id="donate">
-        <span class="glyphicon glyphicon-gift" aria-hidden="true"></span>
-        Donar
-    </a>
-    <li class="list-group-item">
-    <a href="https://play.google.com/store/apps/details?id=org.lasangha.bhavana" onClick="return Cala_externalLink('playApp');" id="playApp">
-        <img alt="Get it on Google Play"
-        src="https://developer.android.com/images/brand/es-419_generic_rgb_wo_45.png" />
-    </a>
-    </li>
-</div>
-<!--div class="page-header">
-      <h1>Lo último en nuestro blog</h1>
-  </div>
-<div id="bhavana_tumblr">
-    <a href="" id="tumblr_url" onClick="return Cala_externalLink('tumblr_url');"><h1 id="tumblr_title"></h1></a>
-    <div id="tumblr_body"></div>
-</div-->
 
-<script>
+    <div align="center">
+<div class="alert alert-warning" role="alert">
+    <h3>
+        Hemos meditado <span id="causesTotalMinutes" class="label label-default">#</span> minutos por <span id="causesCause" class="label label-default">#</span>
+    </h3>
+</div>	
+    </div>
+
+    <div id="meditationCausesTimes"></div>
+
+    <script>
 Cala.runOnReady(getMeditationMaxCauseTime);
-
-/* Working on this, but not ready yet
-// Load tumblrs/blog latest post
-$.ajax({
-url: 'http://api.tumblr.com/v2/blog/lasangha.tumblr.com/posts',
-data: {api_key: 'hyczoeopE5fyecpjrL18otgByoC94xZTAWfGtLkzorNfTzVJ2', limit: 1},
-success: function(data){
-console.log(JSON.stringify(data.response.posts[0]));
-console.log("Name: " + data.response.blog_name);
-$("#tumblr_url").attr("href", data.response.posts[0].post_url);
-$("#tumblr_title").html(data.response.posts[0].title);
-
-// Make images responsive
-
-$("#tumblr_body").html(data.response.posts[0].body);
-},
-dataType: 'jsonp'
-});
- */
-</script>
+    </script>
 
 

@@ -1,8 +1,24 @@
-// Path to the sounds, NOT in use
-//var soundsPath = "http://app.lasangha.org/www/audio/meditations/";
+// Path to the sounds
+var soundsPath = "http://app.lasangha.org/www/audio/meditations/";
 
 // The current audio file to be played
 var audioFilePath = "";
+
+// Shows the player
+function Bhavana_startMeditation(code, time){
+
+    say("I am showing the player");
+
+    $("#bhavana_selectMeditationIntention").fadeOut('slow', function(){
+		$("#bhavana_meditationInstructions").fadeIn('slow', function(){
+			$("#sessionsPlayer").fadeIn('slow');
+		});
+	});
+	if(time > 0){
+		say("Add time to the causes");
+		Bhavana_addToCause(time, code);
+	}
+}
 
 // Send a contact email
 function sendMail(){
@@ -219,18 +235,14 @@ function setSessionDetails(subjects, subjectsDets){
 
 }
 
+
 // Add meditation times to the causes
 function Bhavana_addToCause(_totalTime, _causeCode){
 
 	say("I will submit this time to the causes?");
 
     // Lets see first if the user wants to participate in global meditations
-    var privacyOption = keyGet("bhavana_privacyGlobalMeditations", 1);
-
-    if(privacyOption == '0'){
-        Cala.say("No, s/he does not want to participate");
-        //return false;
-    }
+    var privacyOption = keyGet("bhavana_privacyGlobalMeditations", 0);
 
 	$.ajax({
 		type: 'GET',
@@ -242,8 +254,7 @@ function Bhavana_addToCause(_totalTime, _causeCode){
 			w: "bhavana",
 			r: "causes_add_to",
 			causeCode: _causeCode,
-			totalTime: _totalTime,
-            privacy: keyGet("bhavana_privacyGlobalMeditations", 0)
+			totalTime: _totalTime
 		},
 		success: function (data) {
 			say(data);
@@ -254,7 +265,6 @@ function Bhavana_addToCause(_totalTime, _causeCode){
 // End of sessions
 /*****************************************************************************/
 
-
 /*****************************************************************************/
 // Reports/Charts
 //////////////////////////////////////////////////////////////////////////////
@@ -262,6 +272,7 @@ function Bhavana_addToCause(_totalTime, _causeCode){
 function createChart(chartTitle, canvasId, chartLabels, chartData, type){
 
 	console.log("Creating chart");
+
 
 	if(chartLabels.length === 0){
 		$("#myCharts").html("No hay datos en este momento");
@@ -293,8 +304,6 @@ function createChart(chartTitle, canvasId, chartLabels, chartData, type){
 // Get all meditation times per day, for me?
 function getAllMeditationTimesPerDay(){
 
-	say("There is connexion lets get the times");
-
 	$.ajax({
 		type: 'GET',
 		url: Cala_apiUrl,
@@ -304,84 +313,84 @@ function getAllMeditationTimesPerDay(){
 			r: "bhavana_meditations_get_group_meditations",
 		ini: 7, //Start 7 days ago
 		},
-		success: function (allDetails) {
-			var newData = {
-				labels: allDetails.resp.dates,
-		datasets: [
-	{
-		label: "Solo Meditando",
-		fillColor: "rgba(231,77,30,0.2)",
-		strokeColor: "rgba(231,77,30,1)",
-		pointColor: "rgba(231,77,30,1)",
-		pointStrokeColor: "#fff",
-		pointHighlightFill: "#fff",
-		pointHighlightStroke: "rgba(255,255,153,1)",
-		data: allDetails.resp.details.Ninguna
-	},
+        success: function (allDetails) {
+            var newData = {
+                labels: allDetails.resp.dates,
+        datasets: [
     {
-		label: "Paz",
-		fillColor: "rgba(255,255,153,0.2)",
-		strokeColor: "rgba(255,255,153,1)",
-		pointColor: "rgba(255,255,153,1)",
-		pointStrokeColor: "#fff",
-		pointHighlightFill: "#fff",
-		pointHighlightStroke: "rgba(255,255,153,1)",
-		data: allDetails.resp.details.Paz
-	},
-	{
-		label: "Humildad",
-		fillColor: "rgba(51,255,153,0.2)",
-		strokeColor: "rgba(51,255,153,1)",
-		pointColor: "rgba(51,255,153,1)",
-		pointStrokeColor: "#fff",
-		pointHighlightFill: "#fff",
-		pointHighlightStroke: "rgba(51,255,153,1)",
-		data: allDetails.resp.details.Humildad
-	},
-	{
-		label: "Compasión",
-		fillColor: "rgba(76,153,0,0.2)",
-		strokeColor: "rgba(76,153,0,1)",
-		pointColor: "rgba(76,153,0,1)",
-		pointStrokeColor: "#fff",
-		pointHighlightFill: "#fff",
-		pointHighlightStroke: "rgba(76,153,0,1)",
-		data: allDetails.resp.details['Compasi\u00f3n']
-	}
-	]
-			};
-			var ctx = document.getElementById("myChart").getContext("2d");
-			var options = {
-				responsive: true,
-				multiTooltipTemplate: "<%= datasetLabel %> - <%= value %>",
-				legendTemplate : "<ul class=\"list-group <%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li class=\"list-group-item\"><span style=\"background-color:<%=datasets[i].strokeColor%>\">&nbsp;&nbsp;</span>&nbsp;<%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
-			};
-			window.myGroupTimesChart = new Chart(ctx).Line(newData, options);
+        label: "Solo Meditando",
+        fillColor: "rgba(231,77,30,0.2)",
+        strokeColor: "rgba(231,77,30,1)",
+        pointColor: "rgba(231,77,30,1)",
+        pointStrokeColor: "#fff",
+        pointHighlightFill: "#fff",
+        pointHighlightStroke: "rgba(255,255,153,1)",
+        data: allDetails.resp.details.Ninguna
+    },
+    {
+        label: "Paz",
+        fillColor: "rgba(220,220,220,0.2)",
+        strokeColor: "rgba(255,255,153,1)",
+        pointColor: "rgba(255,255,153,1)",
+        pointStrokeColor: "#fff",
+        pointHighlightFill: "#fff",
+        pointHighlightStroke: "rgba(255,255,153,1)",
+        data: allDetails.resp.details.Paz
+    },
+    {
+        label: "Humildad",
+        fillColor: "rgba(51,255,153,0.2)",
+        strokeColor: "rgba(51,255,153,1)",
+        pointColor: "rgba(51,255,153,1)",
+        pointStrokeColor: "#fff",
+        pointHighlightFill: "#fff",
+        pointHighlightStroke: "rgba(51,255,153,1)",
+        data: allDetails.resp.details.Humildad
+    },
+    {
+        label: "Compasión",
+        fillColor: "rgba(76,153,0,0.2)",
+        strokeColor: "rgba(76,153,0,1)",
+        pointColor: "rgba(76,153,0,1)",
+        pointStrokeColor: "#fff",
+        pointHighlightFill: "#fff",
+        pointHighlightStroke: "rgba(76,153,0,1)",
+        data: allDetails.resp.details['Compasi\u00f3n']
+    }
+    ]
+            };
+            var ctx = document.getElementById("myChart").getContext("2d");
+            var options = {
+                responsive: true,
+                multiTooltipTemplate: "<%= datasetLabel %> - <%= value %>",
+                legendTemplate : "<ul class=\"list-group <%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li class=\"list-group-item\"><span style=\"background-color:<%=datasets[i].strokeColor%>\">&nbsp;&nbsp;</span>&nbsp;<%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+            };
+            window.myGroupTimesChart = new Chart(ctx).Line(newData, options);
             document.getElementById("groupTimesChart").innerHTML = myGroupTimesChart.generateLegend();
-		}
-	});
+        }
+    });
 
 }
 
 // Get my meditation times per day
 function getMyMeditationTimesPerDay(){
-	
-	say("Lets get the times");
 
-	$.ajax({
-		type: 'GET',
-		url: Cala_apiUrl,
-		dataType: "json",
-		data: {
+    say("Lets get the times");
+
+    $.ajax({
+        type: 'GET',
+        url: Cala_apiUrl,
+        dataType: "json",
+        data: {
             iam: Cala_IAM,
-            sessionKey: Cala_SESSION_KEY,
-			r: "bhavana_meditations_get_my_times",
-			w: "bhavana",
-			goBack: 7 //Start 7 days ago
-		},
-		success: function (response) {
+        sessionKey: Cala_SESSION_KEY,
+        r: "bhavana_meditations_get_my_times",
+        w: "bhavana",
+        goBack: 7 //Start 7 days ago
+        },
+        success: function (response) {
             if(response.resp != ERROR_DB_NO_RESULTS_FOUND){
-			    createChart("Meditación por día", "myChart", response.resp.labels, response.resp.times, 'lines');
+                createChart("Meditación por día", "myChart", response.resp.labels, response.resp.times, 'lines');
             }
             else{
                 Cala.say("Nothing found");
@@ -390,7 +399,7 @@ function getMyMeditationTimesPerDay(){
         error: function(){
             Cala.say("Error");
         }
-	});
+    });
 
 }
 
@@ -412,7 +421,7 @@ function getMyMeditationTimesPerCause(){
         success: function (response) {
             if(response.resp != ERROR_DB_NO_RESULTS_FOUND){
 
-                Cala.say("Got good information for the pie: " + response.resp);
+                Cala.say("Got good information for the pie" + response.resp);
 
                 var options = {legendTemplate: "<ul class=\"list-group <%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li class=\"list-group-item\"><span style=\"background-color:<%=segments[i].fillColor%>\">&nbsp;<%=segments[i].value%>&nbsp;</span>&nbsp;<%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"};
                 var ctx = document.getElementById('chartPiePerCause').getContext('2d');

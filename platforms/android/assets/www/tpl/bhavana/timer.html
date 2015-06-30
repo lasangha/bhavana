@@ -1,35 +1,10 @@
-<div class="alert alert-warning" role="alert">
-    Recuerde verificar el volumen antes de iniciar la sesión.
-    Haga una prueba de sonido <button type="button" class="btn btn-success" onClick="return bhavana_playSound();">Aquí</button>
-</div>
-
 <div id="bhavana_timerNumbers" style="align: center;" align="center">
-    <div class="btn-group" role="group" id="bhavana_selectMeditationTimes">
-        <button type="button" class="btn btn-info btn-lg dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-            Tiempo sugeridos
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu">
-            <a class="list-group-item" href="" onClick="return bhavana_timerSetTime(45);">45</a>
-            <a class="list-group-item" href="" onClick="return bhavana_timerSetTime(30);">30</a>
-            <a class="list-group-item" href="" onClick="return bhavana_timerSetTime(25);">25</a>
-            <a class="list-group-item" href="" onClick="return bhavana_timerSetTime(15);">15</a>
-            <a class="list-group-item" href="" onClick="return bhavana_timerSetTime(5);">5</a>
-        </ul>
-    </div>
-    <br />
-    <br />
-    <div class="btn-group" role="group" id="bhavana_selectMeditationIntention">
-        <button type="button" class="btn btn-info btn-lg dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-            Hoy voy a meditar por...
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu">
-            <a class="list-group-item" href="" onClick="return bhavana_timerSetIntention('non');">Solo quiero meditar</a>
-            <a class="list-group-item" href="" onClick="return bhavana_timerSetIntention('paz');">La Paz</a>
-            <a class="list-group-item" href="" onClick="return bhavana_timerSetIntention('com');">Compasión</a>
-            <a class="list-group-item" href="" onClick="return bhavana_timerSetIntention('hum');">Humildad</a>
-        </ul>
+    <div class="btn-group" role="group" aria-label="...">
+        <button type="button" class="btn btn-default btn-lg" onClick="return bhavana_timerSetTime(45);">45</button>
+        <button type="button" class="btn btn-default btn-lg" onClick="return bhavana_timerSetTime(30);">30</button>
+        <button type="button" class="btn btn-default btn-lg" onClick="return bhavana_timerSetTime(25);">25</button>
+        <button type="button" class="btn btn-default btn-lg" onClick="return bhavana_timerSetTime(15);">15</button>
+        <button type="button" class="btn btn-default btn-lg" onClick="return bhavana_timerSetTime(5);">5</button>
     </div>
 </div>
 
@@ -37,10 +12,8 @@
 <div class="input-group input-group-lg">
     <span class="input-group-addon" id="bhavana_timerMinutesIndicator">Minutos</span>
     <input type="numbers" id="bhavana_timerTime" class="form-control"
-    placeholder="Tiempo" aria-describedby="bhavana_timerMinutesIndicator"
-    onKeyup="this.value=this.value.replace(/[^\d]/,'')"
-    onClick="bhavana_selectAll('bhavana_timerTime');" 
-    >
+    placeholder="Tiempo a meditar" aria-describedby="bhavana_timerMinutesIndicator"
+    onKeyup="this.value=this.value.replace(/[^\d]/,'')">
 </div>
 
 <br />
@@ -67,29 +40,13 @@
 
 <script type="text/javascript">
 
-// Selects all text in a text area or input field
-// Thanks to: http://javascript-array.com/scripts/onclick_select_all_text_in_field/
-function bhavana_selectAll(id){
-    document.getElementById(id).focus();
-    document.getElementById(id).select();
-}
-
 function bhavana_timerSetTime(time){
     $("#bhavana_timerTime").val(time);
-    return false;
 }
 
 // Total time to meditate
 var bhavana_totalTime = 0;
 var bhavana_internalTimer = 0;
-
-// Intention
-var bhavana_intention = 'non';
-
-function bhavana_timerSetIntention(intention){
-    bhavana_intention = intention;
-    return false;
-}
 
 // I do the actual timing for the meditation
 function bhavana_timeMyMeditationTimer(){
@@ -118,17 +75,10 @@ function bhavana_timeMyMeditationTimer(){
     }else{
         var audio = new Audio('tpl/bhavana/bell_1.mp3');
         audio.play();
-        Bhavana_addToCause(bhavana_totalTime, 'non');
         bhavana_timerStop();
+		Bhavana_addToCause(time, code);
     }
 
-}
-
-// Plays the sound
-function bhavana_playSound(){
-    Cala.say("Playing sound...");
-    var audio = new Audio('tpl/bhavana/bell_1.mp3');
-    audio.play();
 }
 
 // Stop the timer and go back to square one
@@ -165,9 +115,8 @@ function bhavana_timeMyMeditation(){
 
             $("#bhavana_timerStartButton").hide();
             $("#bhavana_timerStopButton").show();
-
             // Convert to seconds
-            bhavana_totalTime = bhavana_totalTime * 60;
+            bhavana_totalTime = bhavana_totalTime * 1;
             bhavana_internalTimer = 0;
             bhavana_timeMyMeditationTimer();
 

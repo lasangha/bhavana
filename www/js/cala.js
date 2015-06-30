@@ -108,17 +108,6 @@ var Cala = function() {
 		say: function(what){
 			console.log(what);
 		},
-        // Check if the user is logged in
-        userLogedIn: function(){
-            Cala.say("I'm I logged in?");
-            if(keyGet(VAR_CURRENT_USER_NAME, "") === ""){
-                Cala.say("I am not logged in");
-                return false;
-            }else{
-                Cala.say("I am logged in");
-                return true;
-            }
-        },
         userPerms: function(perm, goHere){
 
             Cala.say("Checking perms: " + perm);

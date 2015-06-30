@@ -17,7 +17,10 @@
 <title>Bhavana | Retiro Personal De Meditación</title>
 </head> <!-- end of head -->
 <body>
-
+<script>
+    // For debbuging if required
+    //window.localStorage.clear();
+</script>
 <div id="container">
 
     <nav class="navbar navbar-default navbar-fixed-top">
@@ -29,7 +32,7 @@
 
                 <ul class="nav navbar-nav">
                     <li>
-                        <a href="#userMenu" type="button" class="btn btn-default btn-sm" onClick="return Cala_displayTopMenu();">
+                        <a href="" type="button" class="btn btn-default btn-sm" onClick="return Cala_displayTopMenu();">
                             Menu
                         </a>
                     </li>
@@ -67,7 +70,6 @@
                     Acerca de
                 </a>
             </ul>
-
         </div>
         <div id="Cala_alertMessages"></div>
         <div id="mainContent">
@@ -75,21 +77,16 @@
     </div><!-- //body -->
 
     <footer style="text-align: center;">
-        <div class="row" align="center">
-            <div class="col-md-4">
-                <a href="?x=about">
-                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-                    Acerca de Nosotros
-                </a>
-                <a href="?x=core/terms">
-                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                    Términos de Uso
-                </a>
-                <span style="color: grey; font-size: 10px;">v 0.2.8</span>
-            </div>
-            <div class="col-md-4">
-
-            </div>
+        <div align="center">
+          <a href="?x=about">
+              <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+              Acerca de Nosotros
+          </a>
+          <a href="?x=core/terms">
+              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+              Términos de Uso
+          </a>
+         <span style="color: grey; font-size: 10px;">v 0.2.7</span>
         </div>
     </footer><!-- //footer -->
 </div><!-- //content -->
@@ -101,20 +98,36 @@
 // Stuff for the app
 //
 //*****************************************************************************
-var Cala_apiUrl = 'http://meditacion.lasangha.org/api/';
 
 // Is this in an app?
 function Cala_externalLink(linkId){
 
+	var inApp = true;
+
     // I will only act if I am running on an app
+    if(inApp === true){
 
-    // Get the path
-    var whereTo = $("#" + linkId).attr("href");
-    console.log("Clicked me: " + whereTo);
-    navigator.app.loadUrl(whereTo, { openExternal:true });
-    return false;
+        // Get the path
 
+        var whereTo = $("#" + linkId).attr("href");
+
+        if(whereTo.indexOf("http") === 0){
+              console.log("External link");
+        }else{
+              whereTo = "http://meditacion.lasangha.org/" + whereTo;
+        }
+
+        console.log("Clicked me: " + whereTo);
+
+        navigator.app.loadUrl(whereTo, { openExternal:true });
+        //window.open(whereTo, '_blank');
+        return false;
+    }else{
+        return true;
+    }
 }
+
+var Cala_apiUrl = 'http://meditacion.lasangha.org/api/';
 
 // ./Stuff for the app
 //*****************************************************************************/
@@ -124,10 +137,8 @@ $('#Cala_topMenu').toggle();
 function Cala_displayTopMenu(){
     Cala.say("Showing/hidding top menu");
     $('#Cala_topMenu').toggle('slow');
-    window.scrollTo(0,0);
     return false;
 }
-
 </script>
 <script type="text/javascript" src="js/cala.js"></script>
 <script type="text/javascript" src="tpl/bhavana/js/bhavana.js"></script>
